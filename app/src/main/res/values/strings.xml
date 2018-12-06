@@ -11,6 +11,8 @@
     <string name="add_term_label">Add Term</string>
     <string name="term_title_label">Term</string>
     <string name="endingLabel">Ends</string>
+    <string name="course_title_label">Course Name</string>
+    <string name="course_code_label">Course Code</string>
 
 
 </resources>

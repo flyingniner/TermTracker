@@ -9,19 +9,22 @@
         android:roundIcon="@mipmap/ic_launcher_wgu_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".MainActivity"
             android:launchMode="singleTop">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".TermActivity"
-            android:parentActivityName=".MainActivity"/>
-        <activity android:name=".TermAddEditActivity"
-            android:parentActivityName=".TermActivity"/>
+        <activity
+            android:name=".TermActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".TermAddEditActivity"
+            android:parentActivityName=".TermActivity" />
+        <activity android:name=".CourseAddEditActivity"></activity>
     </application>
 
 </manifest>

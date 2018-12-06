@@ -12,14 +12,14 @@
         android:padding="8dp">
 
         <ImageView
-            android:id="@+id/course_term_progressIcon"
+            android:id="@+id/course_item_progress_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:src="@drawable/ic_inprogress_72dp" />
 
         <TextView
-            android:id="@+id/course_title"
+            android:id="@+id/course_item_course_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="1"
@@ -30,8 +30,8 @@
             android:id="@+id/start_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/course_title"
-            android:layout_toLeftOf="@+id/course_term_progressIcon"
+            android:layout_below="@id/course_item_course_title"
+            android:layout_toLeftOf="@+id/course_item_progress_icon"
             android:orientation="horizontal"
             android:layout_marginRight="8dp">
 
@@ -40,14 +40,14 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:id="@+id/course_start_label"
+                    android:id="@+id/course_item_start_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
                     android:text="Start" />
 
                 <TextView
-                    android:id="@+id/course_term_start"
+                    android:id="@+id/course_item_course_start"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
@@ -60,7 +60,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/start_row"
-            android:layout_toLeftOf="@+id/course_term_progressIcon"
+            android:layout_toLeftOf="@+id/course_item_progress_icon"
             android:orientation="horizontal"
             android:layout_marginRight="8dp">
 
@@ -69,14 +69,14 @@
                 android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/course_goal_label"
+                android:id="@+id/course_item_end_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/goalLabel"
                 android:layout_alignParentStart="true"/>
 
                 <TextView
-                    android:id="@+id/course_term_goal"
+                    android:id="@+id/course_item_course_end"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="02/28/2018"

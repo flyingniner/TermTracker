@@ -35,13 +35,16 @@ public class Course
     private LocalDate startDate;
 
 
-    @ColumnInfo(name = "COURSE_COMPLETED_DATE")
+    @ColumnInfo(name = "COURSE_END_DATE")
     @TypeConverters(Converters.class)
     private LocalDate endDate;
 
-    @ColumnInfo(name = "COURSE_GOAL_DATE")
-    @TypeConverters(Converters.class)
-    private LocalDate goalDate;
+    @ColumnInfo(name = "COURSE_STATUS")
+    private String status;
+
+//    @ColumnInfo(name = "COURSE_GOAL_DATE")
+//    @TypeConverters(Converters.class)
+//    private LocalDate goalDate;
 
     @ColumnInfo(name = "FK_MENTOR_ID", index = true)
     private int courseMentorId;
@@ -59,15 +62,16 @@ public class Course
     }
 
     @Ignore
-    public Course(int courseId, String title, LocalDate startDate, LocalDate endDate, LocalDate goalDate, int courseMentorId, int termId)
+    public Course(int courseId, String title, LocalDate startDate, LocalDate endDate, String status,int courseMentorId, int termId)
     {
         this.courseId = courseId;
         this.title = title;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.goalDate = goalDate;
+//        this.goalDate = goalDate;
         this.courseMentorId = courseMentorId;
         this.termId = termId;
+        this.status = status;
     }
 
 
@@ -113,15 +117,19 @@ public class Course
         this.endDate = endDate;
     }
 
-    public LocalDate getGoalDate()
-    {
-        return goalDate;
-    }
+//    public LocalDate getGoalDate()
+//    {
+//        return goalDate;
+//    }
+//
+//    public void setGoalDate(LocalDate goalDate)
+//    {
+//        this.goalDate = goalDate;
+//    }
 
-    public void setGoalDate(LocalDate goalDate)
-    {
-        this.goalDate = goalDate;
-    }
+    public String getStatus() { return status; }
+
+    public void setStatus(String status) {this.status = status;}
 
     public int getCourseMentorId()
     {
