@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="list_view" type="id" />
+    <item name="btnAssessments" type="id" />
+    <item name="btnCourses" type="id" />
+    <item name="btnTerms" type="id" />
+    <item name="termTitle" type="id" />
+    <item name="termStart" type="id" />
+    <item name="termEnd" type="id" />
+</resources>

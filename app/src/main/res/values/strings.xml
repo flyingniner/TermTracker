@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">WGU TermTracker</string>
+    <string name="startLabel">Start</string>
+    <string name="goalLabel">Goal</string>
+    <string name="endLabel">Completed</string>
+    <string name="contentDesc_status_icon">A progress icon</string>
+    <string name="btnAssessments">Assessments</string>
+    <string name="btnCourses">Courses</string>
+    <string name="btnTerms">Terms</string>
+    <string name="termendLabel">End</string>
+    <string name="add_term_label">Add Term</string>
+    <string name="term_title_label">Term</string>
+    <string name="endingLabel">Ends</string>
+
+
+</resources>

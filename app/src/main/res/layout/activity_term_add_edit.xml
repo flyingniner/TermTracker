@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".TermAddEditActivity">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp">
+
+        <TextView
+            android:id="@+id/edit_term_title_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:text="@string/term_title_label"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/edit_term_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/edit_term_title_label"
+            android:hint="Title"
+            android:inputType="text"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+
+        <TextView
+            android:id="@+id/edit_term_start_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/edit_term_title"
+            android:text="@string/startLabel"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/edit_term_start"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/edit_term_start_label"
+            android:hint="01/01/2018"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+        <ImageButton
+            android:id="@+id/start_date_picker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_event_black_24dp"
+            android:layout_alignTop="@id/edit_term_start_label"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="16dp"
+            android:maxHeight="24dp"
+            />
+
+        <TextView
+            android:id="@+id/edit_term_end_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/edit_term_start"
+            android:layout_alignParentStart="true"
+            android:text="@string/endingLabel"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/edit_term_end"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/edit_term_end_label"
+            android:hint="06/30/2018"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+        <ImageButton
+            android:id="@+id/end_date_picker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_event_black_24dp"
+            android:layout_alignTop="@id/edit_term_end_label"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="16dp"
+            android:maxHeight="24dp"
+            />
+        <ListView
+            android:id="@+id/edit_term_course_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/edit_term_button_panel"
+            android:layout_below="@+id/edit_term_end"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="-1dp">
+
+        </ListView>
+
+
+        <LinearLayout
+            android:id="@+id/edit_term_button_panel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/save_term"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginRight="24dp"
+                android:paddingHorizontal="16dp"
+                android:text="Save" />
+
+            <Button
+                android:id="@+id/add_course"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_toRightOf="@id/save_term"
+                android:paddingHorizontal="16dp"
+                android:text="Add course" />
+
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>
