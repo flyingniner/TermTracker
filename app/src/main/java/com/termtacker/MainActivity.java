@@ -171,8 +171,8 @@ public class MainActivity extends AppCompatActivity
      */
     private void loadCoursesActivity(View view)
     {
-//        Intent intent = new Intent(this, CoursesActivity.class);
-//        startActivityForResult(intent,courseIntent);
+        Intent intent = new Intent(this, CoursesActivity.class);
+        startActivityForResult(intent,courseIntent);
     }
 
     /**

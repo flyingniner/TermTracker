@@ -11,16 +11,18 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
-@Entity(tableName = "COURSES", foreignKeys = {
-        @ForeignKey(
-                entity = Term.class,
-                parentColumns = "TERM_ID",
-                childColumns = "FK_TERM_ID"),
-        @ForeignKey(
-                entity = Mentor.class,
-                parentColumns = "MENTOR_ID",
-                childColumns = "FK_MENTOR_ID"
-        )})
+//@Entity(tableName = "COURSES"), foreignKeys = {
+//        @ForeignKey(
+//                entity = Term.class,
+//                parentColumns = "TERM_ID",
+//                childColumns = "FK_TERM_ID"),
+//        @ForeignKey(
+//                entity = Mentor.class,
+//                parentColumns = "MENTOR_ID",
+//                childColumns = "FK_MENTOR_ID"
+//        )})
+
+@Entity(tableName = "COURSES")
 public class Course
 {
     @PrimaryKey(autoGenerate = true)
@@ -59,6 +61,17 @@ public class Course
     public Course()
     {
 
+    }
+
+    @Ignore
+    public Course(String title, LocalDate startDate, LocalDate endDate, String status,int courseMentorId, int termId)
+    {
+        this.title = title;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.courseMentorId = courseMentorId;
+        this.termId = termId;
+        this.status = status;
     }
 
     @Ignore

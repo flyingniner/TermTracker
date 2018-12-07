@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 8,
-    "identityHash": "447be3ffa980bb739c681dd3786247cf",
+    "identityHash": "cfc9d1288f894f91bfc1f5fc825a3be9",
     "entities": [
       {
         "tableName": "ASSESSMENTS",
@@ -77,7 +77,7 @@
       },
       {
         "tableName": "COURSES",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`COURSE_ID` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `COURSE_TITLE` TEXT, `COURSE_START_DATE` INTEGER, `COURSE_END_DATE` INTEGER, `COURSE_STATUS` TEXT, `FK_MENTOR_ID` INTEGER NOT NULL, `FK_TERM_ID` INTEGER NOT NULL, FOREIGN KEY(`FK_TERM_ID`) REFERENCES `TERMS`(`TERM_ID`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`FK_MENTOR_ID`) REFERENCES `MENTORS`(`MENTOR_ID`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`COURSE_ID` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `COURSE_TITLE` TEXT, `COURSE_START_DATE` INTEGER, `COURSE_END_DATE` INTEGER, `COURSE_STATUS` TEXT, `FK_MENTOR_ID` INTEGER NOT NULL, `FK_TERM_ID` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "courseId",
@@ -146,30 +146,7 @@
             "createSql": "CREATE  INDEX `index_COURSES_FK_TERM_ID` ON `${TABLE_NAME}` (`FK_TERM_ID`)"
           }
         ],
-        "foreignKeys": [
-          {
-            "table": "TERMS",
-            "onDelete": "NO ACTION",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "FK_TERM_ID"
-            ],
-            "referencedColumns": [
-              "TERM_ID"
-            ]
-          },
-          {
-            "table": "MENTORS",
-            "onDelete": "NO ACTION",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "FK_MENTOR_ID"
-            ],
-            "referencedColumns": [
-              "MENTOR_ID"
-            ]
-          }
-        ]
+        "foreignKeys": []
       },
       {
         "tableName": "NOTES",
@@ -310,7 +287,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"447be3ffa980bb739c681dd3786247cf\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"cfc9d1288f894f91bfc1f5fc825a3be9\")"
     ]
   }
 }

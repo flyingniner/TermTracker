@@ -13,6 +13,11 @@
     <string name="endingLabel">Ends</string>
     <string name="course_title_label">Course Name</string>
     <string name="course_code_label">Course Code</string>
+    <string name="go_to_terms">Terms</string>
+    <string name="go_to_assessments">Assessments</string>
+    <string name="go_to_courses">Courses</string>
+    <string name="got_to_mentors">Mentors</string>
+    <string name="go_to_mentors">Mentors</string>
 
 
 </resources>

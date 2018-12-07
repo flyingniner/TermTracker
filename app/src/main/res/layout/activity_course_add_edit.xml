@@ -22,25 +22,25 @@
             android:layout_below="@id/course_add_edit_title_label"
             android:hint="Math 101"/>
 
-        <TextView
-            android:id="@+id/course_add_edit_code_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/course_code_label"
-            android:layout_below="@id/course_add_edit_title"/>
-        <EditText
-            android:id="@+id/course_add_edit_code"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="MTH101"
-            android:layout_below="@id/course_add_edit_code_label"/>
+        <!--<TextView-->
+            <!--android:id="@+id/course_add_edit_code_label"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="@string/course_code_label"-->
+            <!--android:layout_below="@id/course_add_edit_title"/>-->
+        <!--<EditText-->
+            <!--android:id="@+id/course_add_edit_code"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:hint="MTH101"-->
+            <!--android:layout_below="@id/course_add_edit_code_label"/>-->
 
         <TextView
         android:id="@+id/course_add_edit_start_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Start"
-        android:layout_below="@id/course_add_edit_code"/>
+        android:layout_below="@id/course_add_edit_title"/>
         <EditText
             android:id="@+id/course_add_edit_start"
             android:layout_width="match_parent"
@@ -49,7 +49,7 @@
             android:layout_below="@id/course_add_edit_start_label"/>
 
         <ImageButton
-            android:id="@+id/course_add_edit_"
+            android:id="@+id/course_add_edit_start_date_picker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_event_black_24dp"
@@ -82,6 +82,7 @@
             android:maxHeight="24dp"/>
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/course_add_edit_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/course_add_edit_end"
@@ -115,13 +116,13 @@
                 android:text="Add Assessment" />
 
             <Button
-                android:id="@+id/course_add_edit_add_note"
+                android:id="@+id/course_add_edit_notes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 android:paddingHorizontal="16dp"
-                android:text="Add Note" />
+                android:text="Notes" />
 
         </LinearLayout>
     </RelativeLayout>

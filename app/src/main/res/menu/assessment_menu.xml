@@ -5,12 +5,9 @@
     <item
         android:id="@+id/nav_to_home"
         android:title="Home"
-        app:showAsAction="collapseActionView"/>
-
-    <item
-        android:id="@+id/go_to_assessments"
-        android:title="@string/go_to_assessments"
+        app:showAsAction="collapseActionView"
         />
+
 
     <item
         android:id="@+id/go_to_courses"
@@ -21,4 +18,9 @@
         android:id="@+id/go_to_mentors"
         android:title="@string/go_to_mentors"
         />
+
+    <item
+        android:id="@+id/go_to_terms"
+        android:title="@string/go_to_terms"
+        app:showAsAction="collapseActionView"/>
 </menu>

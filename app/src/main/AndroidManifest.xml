@@ -24,7 +24,8 @@
         <activity
             android:name=".TermAddEditActivity"
             android:parentActivityName=".TermActivity" />
-        <activity android:name=".CourseAddEditActivity"></activity>
+        <activity android:name=".CourseAddEditActivity" />
+        <activity android:name=".CoursesActivity"></activity>
     </application>
 
 </manifest>

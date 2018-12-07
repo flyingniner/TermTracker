@@ -32,15 +32,19 @@ public class TermAddEditActivity extends AppCompatActivity
     private Button buttonAddCourse;
 
     private static final String TAG = TermAddEditActivity.class.getCanonicalName();
-    public static final String EXTRA_ID = "com.termtracker.EXTRA_ID";
-    public static final String EXTRA_TITLE = "com.termtracker.EXTRA_TITLE";
-    public static final String EXTRA_START = "com.termtracker.EXTRA_START";
-    public static final String EXTRA_END = "com.termtracker.EXTRA_END";
-    public static final String EXTRA_STATUS = "com.termtracker.EXTRA_STATUS";
+//    public static final String EXTRA_ID = "com.termtracker.EXTRA_ID";
+//    public static final String EXTRA_TITLE = "com.termtracker.EXTRA_TITLE";
+//    public static final String EXTRA_START = "com.termtracker.EXTRA_START";
+//    public static final String EXTRA_END = "com.termtracker.EXTRA_END";
+//    public static final String EXTRA_STATUS = "com.termtracker.EXTRA_STATUS";
+
+    public static final String EXTRA_CURRENT_TERM_ID = "com.termtracker.EXTRA_CURRENT_TERM_ID";
 
     private Calendar calendar;
     private DatePickerDialog datePickerDialog;
     private TermViewModel termViewModel;
+
+
 
 
     @Override
@@ -63,15 +67,15 @@ public class TermAddEditActivity extends AppCompatActivity
 
         //Check if this is an existing term that is to be edited
         Intent intent = getIntent();
-        if (intent.hasExtra(EXTRA_ID))
+        if (intent.hasExtra(TermActivity.EXTRA_ID))
         {
             setTitle("Edit Term");
-            Log.d(TAG,"START: " + intent.getStringExtra(EXTRA_START));
-            Log.d(TAG,"END: " + intent.getStringExtra(EXTRA_END));
-            Log.d(TAG,"PROGRESS: " + intent.getStringExtra(EXTRA_STATUS));
-            editTextTitle.setText(intent.getStringExtra(EXTRA_TITLE));
-            editTextStart.setText(intent.getStringExtra(EXTRA_START));
-            editTextEnd.setText(intent.getStringExtra(EXTRA_END));
+            Log.d(TAG,"START: " + intent.getStringExtra(TermActivity.EXTRA_START));
+            Log.d(TAG,"END: " + intent.getStringExtra(TermActivity.EXTRA_END));
+            Log.d(TAG,"PROGRESS: " + intent.getStringExtra(TermActivity.EXTRA_STATUS));
+            editTextTitle.setText(intent.getStringExtra(TermActivity.EXTRA_TITLE));
+            editTextStart.setText(intent.getStringExtra(TermActivity.EXTRA_START));
+            editTextEnd.setText(intent.getStringExtra(TermActivity.EXTRA_END));
         }
         else
         {
@@ -86,6 +90,7 @@ public class TermAddEditActivity extends AppCompatActivity
 
     private void setButtonListeners()
     {
+        //region StartDate DatePicker
         startDatePicker.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -108,7 +113,10 @@ public class TermAddEditActivity extends AppCompatActivity
                 datePickerDialog.show();
             }
         });
+        //endregion
 
+
+        //region EndDate DatePicker
         endDatePicker.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -137,6 +145,10 @@ public class TermAddEditActivity extends AppCompatActivity
         });
 
         buttonAddCourse.setOnClickListener(listener -> {
+
+            Intent intent = new Intent();
+            intent.putExtra(EXTRA_CURRENT_TERM_ID, getIntent().getIntExtra(TermActivity.EXTRA_ID, -1));
+
             //TODO: save the term and then launch the courses activity. Not usre if I can use my already created "saveTerm()"
             //because that sends a request item back to the calling activity, so probably need to overload or call Term
 
@@ -183,14 +195,14 @@ public class TermAddEditActivity extends AppCompatActivity
         }
 
         Intent data = new Intent();
-        data.putExtra(EXTRA_TITLE, title);
-        data.putExtra(EXTRA_START, start.toEpochDay());
-        data.putExtra(EXTRA_END, end.toEpochDay());
+        data.putExtra(TermActivity.EXTRA_TITLE, title);
+        data.putExtra(TermActivity.EXTRA_START, start.toEpochDay());
+        data.putExtra(TermActivity.EXTRA_END, end.toEpochDay());
 
-        int id = getIntent().getIntExtra(EXTRA_ID, -1);
+        int id = getIntent().getIntExtra(TermActivity.EXTRA_ID, -1);
         if (id != -1)
         {
-            data.putExtra(EXTRA_ID, id);
+            data.putExtra(TermActivity.EXTRA_ID, id);
         }
 
         setResult(RESULT_OK, data);
@@ -220,15 +232,15 @@ public class TermAddEditActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId()) {
-            case R.id.add_term:
-                saveTerm();
-                return true;
-            case R.id.nav_to_home:
-                return true;
-            default:
+//        switch (item.getItemId()) {
+//            case R.id.add_term:
+//                saveTerm();
+//                return true;
+//            case R.id.nav_to_home:
+//                return true;
+//            default:
                 return super.onOptionsItemSelected(item);
 
-        }
+//        }
     }
 }
