@@ -210,7 +210,7 @@ public class TermAddEditActivity extends AppCompatActivity
     }
 
 
-    //TODO: add menu items to the top bar (see AddEditNoteActivity example)
+
     /**
      * Creates the menu in the activity bar
      * @param menu
@@ -232,15 +232,28 @@ public class TermAddEditActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-//        switch (item.getItemId()) {
-//            case R.id.add_term:
-//                saveTerm();
-//                return true;
-//            case R.id.nav_to_home:
-//                return true;
-//            default:
+        Intent intent;
+
+        switch (item.getItemId()) {
+            case R.id.go_to_assessments:
+//                intent = new Intent(this, AssessmentActivity.class);
+//                startActivityForResult(intent, 0);
+                return true;
+            case R.id.go_to_courses:
+                intent = new Intent(this, CoursesActivity.class);
+                startActivityForResult(intent, 0);
+                return true;
+            case R.id.go_to_mentors:
+//                intent = new Intent(this, MentorsActivity.class);
+//                startActivityForResult(intent, 0);
+                return true;
+            case R.id.go_to_home:
+                intent = new Intent(this, MainActivity.class);
+                startActivityForResult(intent, 0);
+                return true;
+            default:
                 return super.onOptionsItemSelected(item);
 
-//        }
+        }
     }
 }

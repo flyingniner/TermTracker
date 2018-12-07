@@ -15,12 +15,11 @@ public class TermAdapter extends ListAdapter<Term, TermAdapter.TermHolder>
 {
     private TermAdapter.onItemClickListener listener;
 //    private List<Term> terms;
-    int termDetailIntentId = 444;
+    int termDetailIntentId = 8;
 
     public TermAdapter()
     {
         super(DIFF_CALLBACK);
-//        terms = termList;
     }
 
     private static final DiffUtil.ItemCallback<Term> DIFF_CALLBACK = new DiffUtil.ItemCallback<Term>()
@@ -46,8 +45,8 @@ public class TermAdapter extends ListAdapter<Term, TermAdapter.TermHolder>
     @Override
     public TermHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.term_item,parent,false);
-        return new TermHolder(itemView);
+        View vieItem = LayoutInflater.from(parent.getContext()).inflate(R.layout.term_item,parent,false);
+        return new TermHolder(vieItem);
     }
 
     @Override

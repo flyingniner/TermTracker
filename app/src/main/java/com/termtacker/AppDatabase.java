@@ -20,7 +20,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
         Assessment.class, Course.class,
         Note.class, Mentor.class,
         Term.class},
-        version = 8)
+        version = 9)
 @TypeConverters(Converters.class)
 public abstract class AppDatabase extends RoomDatabase
 {

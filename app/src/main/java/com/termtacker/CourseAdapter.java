@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 public class CourseAdapter extends ListAdapter<Course, CourseAdapter.CourseHolder>
 {
     private CourseAdapter.onItemClickListener listener;
-    int courseTermIntentID = 925;
+    int courseTermIntentID = 7;
 
     public CourseAdapter() {
         super(DIFF_CALLBACK);

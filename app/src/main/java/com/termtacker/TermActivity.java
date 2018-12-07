@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -35,6 +36,8 @@ public class TermActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_term);
+
+        setTitle("Terms");
 
         FloatingActionButton buttonAddTerm = findViewById(R.id.term_activity_floating_add_term);
         buttonAddTerm.setOnClickListener(v -> {
@@ -61,11 +64,11 @@ public class TermActivity extends AppCompatActivity
             public void onItemClick(Term term)
             {
                 Intent intent = new Intent(TermActivity.this, TermAddEditActivity.class);
-                Log.d(TAG, "ID: " + term.getTermId());
-                Log.d(TAG, "TITLE: " + term.getTitle());
-                Log.d(TAG, "START: " + term.getStartDate().format(Utils.dateFormatter_MMddyyyy));
-                Log.d(TAG, "END: " + term.getEndDate().format(Utils.dateFormatter_MMddyyyy));
-                Log.d(TAG, "PROGRESS: " + term.getStatus());
+//                Log.d(TAG, "ID: " + term.getTermId());
+//                Log.d(TAG, "TITLE: " + term.getTitle());
+//                Log.d(TAG, "START: " + term.getStartDate().format(Utils.dateFormatter_MMddyyyy));
+//                Log.d(TAG, "END: " + term.getEndDate().format(Utils.dateFormatter_MMddyyyy));
+//                Log.d(TAG, "PROGRESS: " + term.getStatus());
                 intent.putExtra(EXTRA_ID, term.getTermId());
                 intent.putExtra(EXTRA_TITLE, term.getTitle());
                 intent.putExtra(EXTRA_START, term.getStartDate().format(Utils.dateFormatter_MMddyyyy));
@@ -83,7 +86,36 @@ public class TermActivity extends AppCompatActivity
     {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.term_menu, menu);
+
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        Intent intent;
+        //TODO: figure out how to move between screens from the menu?
+        switch (item.getItemId())
+        {
+            case R.id.go_to_assessments:
+//                intent = new Intent(this, CoursesActivity.class); //TODO: change to AssessmentActivity.class
+//                startActivityForResult(intent,0);
+                return true;
+            case R.id.go_to_mentors:
+//                intent = new Intent(this, MentorsActivity.class); //TODO: change to MentorActivity.class
+//                startActivityForResult(intent,0);
+                return true;
+            case R.id.go_to_courses:
+                intent = new Intent(this, CoursesActivity.class);
+                startActivityForResult(intent,0);
+                return true;
+            case R.id.go_to_home:
+                intent = new Intent(this, MainActivity.class);
+                startActivityForResult(intent,0);
+                return true;
+
+            default: return super.onOptionsItemSelected(item);
+        }
     }
 
     /**

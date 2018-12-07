@@ -4,6 +4,9 @@ import android.content.Intent;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -13,9 +16,10 @@ import android.widget.RelativeLayout;
 public class MainActivity extends AppCompatActivity
 {
     //region intentIds
-    int assessmentIntent = 111;
-    int courseIntent = 222;
-    int TERMS_REQUEST = 333;
+    public static final int ASSESSMENT_REQUEST = 1;
+    public static final int COURSE_REQUEST = 2;
+    public static final int MENTOR_REQUEST = 3;
+    public static final int TERMS_REQUEST = 4;
     //endregion
     //region conversions
     /* DP Conversions:  px = dp * (dpi / 160) */
@@ -161,7 +165,7 @@ public class MainActivity extends AppCompatActivity
     private void loadAssessmentActivity(View view)
     {
 //        Intent intent = new Intent(this, AssessmentActivity.class);
-//        startActivityForResult(intent,assessmentIntent);
+//        startActivityForResult(intent, ASSESSMENT_REQUEST);
     }
 
     /**
@@ -172,7 +176,7 @@ public class MainActivity extends AppCompatActivity
     private void loadCoursesActivity(View view)
     {
         Intent intent = new Intent(this, CoursesActivity.class);
-        startActivityForResult(intent,courseIntent);
+        startActivityForResult(intent, COURSE_REQUEST);
     }
 
     /**
@@ -184,5 +188,40 @@ public class MainActivity extends AppCompatActivity
     {
         Intent intent = new Intent(this, TermActivity.class);
         startActivityForResult(intent, TERMS_REQUEST);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        Intent intent;
+        switch (item.getItemId())
+        {
+//            case R.id.go_to_assessments:
+//                intent = new Intent(this, AssessmentActivity.class);
+//                startActivityForResult(intent,ASSESSMENT_REQUEST);
+//                return true;
+            case R.id.go_to_courses:
+                intent = new Intent(this, CoursesActivity.class);
+                startActivityForResult(intent,COURSE_REQUEST);
+                return true;
+//            case R.id.go_to_Mentor:
+//                intent = new Intent(this, MentorActivity.class);
+//                startActivityForResult(intent,MENTOR_REQUEST);
+//                return true;
+            case R.id.go_to_terms:
+                intent = new Intent(this, TermActivity.class);
+                startActivityForResult(intent,TERMS_REQUEST);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

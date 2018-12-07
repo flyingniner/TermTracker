@@ -22,8 +22,8 @@ public class CourseViewModel extends AndroidViewModel
     }
 
     public void insertCourse(Course course) { repository.insertCourse(course);}
-    public void updateCourse(Course course) { repository.insertCourse(course);}
-    public void deleteCourse(Course course) { repository.insertCourse(course);}
+    public void updateCourse(Course course) { repository.updateCourse(course);}
+    public void deleteCourse(Course course) { repository.deleteCourse(course);}
 
     public LiveData<List<Course>> getFilteredCourses(int termId)
     {

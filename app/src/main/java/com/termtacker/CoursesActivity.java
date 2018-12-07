@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -23,8 +24,10 @@ public class CoursesActivity extends AppCompatActivity
 {
     public static final String TAG = CoursesActivity.class.getCanonicalName();
     private CourseViewModel courseViewModel;
-    public static final int ADD_COURSE_REQUEST = 93920;
-    public static final int EDIT_COURSE_REQUEST = 43920;
+    public static final int ADD_COURSE_REQUEST = 5;
+    public static final int EDIT_COURSE_REQUEST = 6;
+
+
 
     public static final String EXTRA_ID = "com.termtracker.CoursesActivity.EXTRA_ID";
     public static final String EXTRA_TITLE = "com.termtracker.CoursesActivity.EXTRA_TITLE";
@@ -40,9 +43,11 @@ public class CoursesActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_courses);
 
+        setTitle("Courses");
+
         FloatingActionButton buttonAddCourse = findViewById(R.id.courses_add_course);
         buttonAddCourse.setOnClickListener(v -> {
-            Intent intent = new Intent();
+            Intent intent = new Intent(this, CourseAddEditActivity.class);
             startActivityForResult(intent, ADD_COURSE_REQUEST);
         });
 
@@ -54,8 +59,7 @@ public class CoursesActivity extends AppCompatActivity
         recyclerView.setAdapter(courseAdapter);
 
         courseViewModel = ViewModelProviders.of(this).get(CourseViewModel.class);
-        courseViewModel.getAllCourses().observe(this, courses ->
-                courseAdapter.submitList(courses)
+        courseViewModel.getAllCourses().observe(this, list -> courseAdapter.submitList(list)
         );
 
         courseAdapter.setOnItemClickListener(course -> {
@@ -155,21 +159,20 @@ public class CoursesActivity extends AppCompatActivity
         //TODO: figure out how to move between screens from the menu?
         switch (item.getItemId())
         {
-            case R.menu.assessment_menu:
-                 intent = new Intent(this, CoursesActivity.class); //TODO: change to AssessmentActivity.class
-                startActivityForResult(intent,0);
+            case R.id.go_to_assessments:
+//                intent = new Intent(this, CoursesActivity.class); //TODO: change to AssessmentActivity.class
+//                startActivityForResult(intent,0);
                 return true;
-
-            case R.menu.mentor_menu:
-                intent = new Intent(this, CoursesActivity.class); //TODO: change to MentorActivity.class
-                startActivityForResult(intent,0);
+            case R.id.go_to_mentors:
+//                intent = new Intent(this, CoursesActivity.class); //TODO: change to MentorActivity.class
+//                startActivityForResult(intent,0);
                 return true;
-            case R.menu.term_menu:
+            case R.id.go_to_terms:
                 intent = new Intent(this, TermActivity.class);
                 startActivityForResult(intent,0);
                 return true;
-            case R.menu.main_menu:
-                intent = new Intent(this, MenuInflater.class);
+            case R.id.go_to_home:
+                intent = new Intent(this, MainActivity.class);
                 startActivityForResult(intent,0);
                 return true;
 
