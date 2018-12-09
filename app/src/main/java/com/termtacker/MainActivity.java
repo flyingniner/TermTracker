@@ -60,6 +60,9 @@ public class MainActivity extends AppCompatActivity
         addLogo();
         loadButtons();
 
+        AppDatabase db = AppDatabase.getInstance(getApplicationContext());
+
+
         relativeLayout.addView(linearLayout);
 
     }

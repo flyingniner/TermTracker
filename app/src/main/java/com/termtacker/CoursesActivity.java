@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -63,14 +64,24 @@ public class CoursesActivity extends AppCompatActivity
         );
 
         courseAdapter.setOnItemClickListener(course -> {
-            Intent intent = new Intent();
+            Intent intent = new Intent(this, CourseAddEditActivity.class);
             intent.putExtra(EXTRA_ID, course.getCourseId());
             intent.putExtra(EXTRA_TITLE, course.getTitle());
-            intent.putExtra(EXTRA_START, course.getStartDate());
-            intent.putExtra(EXTRA_END, course.getEndDate());
+            intent.putExtra(EXTRA_START, course.getStartDate().format(Utils.dateFormatter_MMddyyyy).toString());
+            intent.putExtra(EXTRA_END, course.getEndDate().format(Utils.dateFormatter_MMddyyyy).toString());
             intent.putExtra(EXTRA_STATUS, course.getStatus());
             intent.putExtra(EXTRA_TERMID, course.getTermId());
             intent.putExtra(EXTRA_MENTORID, course.getCourseMentorId());
+            Log.d(TAG,
+            "CourseID: " +course.getCourseId() +"\r\nTitle " +
+                    course.getTitle() + "\r\nStart " +
+                    course.getStartDate() + "\r\nEnd " +
+                    course.getEndDate() + "\r\nStatus " +
+                    course.getStatus() + "\r\nTermID " +
+                    course.getTermId() + "\r\nMentorId " +
+                    course.getCourseMentorId()
+            );
+
 
             startActivityForResult(intent, EDIT_COURSE_REQUEST);
         });
@@ -128,10 +139,10 @@ public class CoursesActivity extends AppCompatActivity
                 Toast.makeText(CoursesActivity.this,
                                "Coursed Added!", Toast.LENGTH_SHORT).show();
             }
-            else if (requestCode == EDIT_COURSE_REQUEST && resultCode == RESULT_OK) {
+            else if (requestCode == EDIT_COURSE_REQUEST) {
                 int courseId = data.getIntExtra(EXTRA_ID, -1);
                 course = new Course(courseId, title, start, end, status, mentorId, termId);
-                courseViewModel.insertCourse(course);
+                courseViewModel.updateCourse(course);
                 Toast.makeText(CoursesActivity.this,
                                "Coursed Updated!", Toast.LENGTH_SHORT).show();
             }

@@ -2,6 +2,8 @@ package com.termtacker;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -43,6 +45,7 @@ public class TermAddEditActivity extends AppCompatActivity
     private Calendar calendar;
     private DatePickerDialog datePickerDialog;
     private TermViewModel termViewModel;
+    private CourseViewModel courseViewModel;
 
 
 
@@ -76,6 +79,19 @@ public class TermAddEditActivity extends AppCompatActivity
             editTextTitle.setText(intent.getStringExtra(TermActivity.EXTRA_TITLE));
             editTextStart.setText(intent.getStringExtra(TermActivity.EXTRA_START));
             editTextEnd.setText(intent.getStringExtra(TermActivity.EXTRA_END));
+
+            RecyclerView recyclerView = findViewById(R.id.edit_term_course_list);
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+            recyclerView.setHasFixedSize(true);
+
+            final CourseAdapter courseAdapter = new CourseAdapter();
+            recyclerView.setAdapter(courseAdapter);
+
+            courseViewModel = ViewModelProviders.of(this).get(CourseViewModel.class);
+            courseViewModel.getFilteredCourses(intent.getIntExtra(TermActivity.EXTRA_ID,0))
+                    .observe(this, list -> courseAdapter.submitList(list)
+            );
+
         }
         else
         {
@@ -83,8 +99,6 @@ public class TermAddEditActivity extends AppCompatActivity
         }
 
         setButtonListeners();
-
-
 
     }
 

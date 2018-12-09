@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -20,7 +21,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
         Assessment.class, Course.class,
         Note.class, Mentor.class,
         Term.class},
-        version = 9)
+        version = 11)
 @TypeConverters(Converters.class)
 public abstract class AppDatabase extends RoomDatabase
 {
@@ -51,10 +52,93 @@ public abstract class AppDatabase extends RoomDatabase
         {
             super.onCreate(db);
 //            new PopulateStatusTableAsync(INSTANCE).execute();
-            new PopuplateMentorTableAsync(INSTANCE).execute();
-            new PopulateTermTableAsync(INSTANCE).execute();
+
+
+        }
+
+        @Override
+        public void onOpen(@NonNull SupportSQLiteDatabase db)
+        {
+//            super.onOpen(db);
+//
+//            Mentor[] mentors = getMentorsForPrePop();
+//            Course[] courses = getCoursesForPrePop();
+//            Term[] terms = getTermsForPrePop();
+//
+//            new PopuplateMentorTableAsync(INSTANCE.mentorDao()).execute(mentors);
+//            new PopulateTermTableAsync(INSTANCE.termDao()).execute(terms);
+//            new PopulateCourseTableAsync(INSTANCE.courseDao()).execute(courses);
         }
     };
+
+    private static Mentor[] getMentorsForPrePop()
+    {
+        return new Mentor[]{
+                new Mentor("John Smith", 8774357948L, "cmsoftware@wgu.edu"),
+                new Mentor("Sammy Doe", 8774357948L, "cmsoftware@wgu.edu"),
+                new Mentor("Mia Joe", 8774357948L, "cmsoftware@wgu.edu"),
+        };
+    }
+
+    private static Course[] getCoursesForPrePop()
+    {
+        return new Course[] {
+                new Course("Math 101",
+                           LocalDate.of(2018, Month.JANUARY, 1),
+                           LocalDate.of(2018, Month.FEBRUARY, 28),
+                           Status.COMPLETED,
+                           1,
+                           1),
+                new Course("Intro to Programming",
+                           LocalDate.of(2018, Month.MARCH, 1),
+                           LocalDate.of(2018, Month.APRIL, 30),
+                           Status.COMPLETED,
+                           2,
+                           1),
+                new Course("Intro to Databases",
+                           LocalDate.of(2018, Month.MAY, 1),
+                           LocalDate.of(2018, Month.JUNE, 30),
+                           Status.COMPLETED,
+                           3,
+                           1),
+                new Course("Programming for the Web",
+                           LocalDate.of(2018, Month.JULY, 1),
+                           LocalDate.of(2018, Month.JULY, 31),
+                           Status.COMPLETED,
+                           1,
+                           2),
+                new Course("Intermediate Programming I",
+                           LocalDate.of(2018, Month.AUGUST, 1),
+                           LocalDate.of(2018, Month.OCTOBER, 31),
+                           Status.IN_PROGRESS,
+                           2,
+                           2),
+                new Course("Networking Fundamentals",
+                           LocalDate.of(2018, Month.NOVEMBER, 1),
+                           LocalDate.of(2018, Month.DECEMBER, 31),
+                           Status.PENDING,
+                           3,
+                           2),
+        };
+    }
+
+    private static Term[] getTermsForPrePop()
+    {
+        return new Term[] {
+        new Term("Spring 2018",
+                 LocalDate.of(2018,Month.JANUARY,1),
+                 LocalDate.of(2018,Month.JUNE,30),
+                 Status.COMPLETED),
+        new Term("Spring 2018",
+                 LocalDate.of(2018,Month.JULY,1),
+                 LocalDate.of(2018,Month.DECEMBER,31),
+                 Status.IN_PROGRESS),
+        new Term("Spring 2018",
+                 LocalDate.of(2019,Month.JANUARY,1),
+                 LocalDate.of(2019,Month.JUNE,30),
+                 Status.PENDING)
+        };
+    }
 
 
     private static AppDatabase buildDatabaseInstance(Context context)
@@ -63,7 +147,7 @@ public abstract class AppDatabase extends RoomDatabase
                 AppDatabase.class,DB_NAME)
                 .fallbackToDestructiveMigration()
                 .addCallback(roomCallBack)
-                .allowMainThreadQueries()
+                /*.allowMainThreadQueries()*/
                 .build();
         return db;
     }
@@ -74,66 +158,91 @@ public abstract class AppDatabase extends RoomDatabase
         INSTANCE = null;
     }
 
-//    private static class PopulateStatusTableAsync extends AsyncTask<Void, Void, Void>
-//    {
-//        private StatusDao statusDao;
-//
-//        private PopulateStatusTableAsync(AppDatabase db)
-//        {
-//            statusDao = db.statusDao();
-//        }
-//
-//        @Override
-//        protected Void doInBackground(Void... voids)
-//        {
-//            statusDao.insertStatus(new com.termtacker.Status("Completed"));
-//            statusDao.insertStatus(new com.termtacker.Status("Pending"));
-//            statusDao.insertStatus(new com.termtacker.Status("InComplete"));
-//            statusDao.insertStatus(new com.termtacker.Status("InProgress"));
-//            return null;
-//        }
-//    }
-
-    private static class PopuplateMentorTableAsync extends AsyncTask<Void, Void, Void>
+    private static class PopuplateMentorTableAsync extends AsyncTask<Mentor, Void, Void>
     {
         private static final String TAG = "PopulateMentorTableAsysnc";
         private MentorDao mentorDao;
 
-        public PopuplateMentorTableAsync(AppDatabase db)
+        public PopuplateMentorTableAsync(MentorDao mentorDao)
         {
-            mentorDao = db.mentorDao();
+            this.mentorDao = mentorDao;
         }
 
         @Override
-        protected Void doInBackground(Void... voids)
+        protected Void doInBackground(Mentor... mentors)
         {
-            Log.d(TAG,"inserting mentors");
-            mentorDao.insertMentor(new Mentor("John Smith",8774357948L,"John.Smith@wgu.edu"));
-            mentorDao.insertMentor(new Mentor("Sally Joe",8774357948L,"Sally.Joe@wgu.edu"));
-            Mentor mentor = mentorDao.getMentorByName("John Smith");
-            Log.d(TAG, "Mentor Id Created for John Smith" + mentor.getMentorId());
+            for (int i = 0; i < mentors.length; i++)
+            {
+                try
+                {
+                    Log.d(TAG, "Inserting mentor: " + mentors[i].getName());
+                    mentorDao.insertMentor(mentors[i]);
+                }
+                catch (Exception e)
+                {
+                    Log.d(TAG, "Error inserting the mentor, see stack trace: " + e.getMessage() + e.getStackTrace());
+                }
+            }
             return null;
         }
     }
 
-    private static class PopulateTermTableAsync extends AsyncTask<Void, Void, Void>
+    private static class PopulateTermTableAsync extends AsyncTask<Term, Void, Void>
     {
         private static final String TAG = "PopulateTermTableAsysnc";
         private TermDao termDao;
 
-        public PopulateTermTableAsync(AppDatabase db)
+        public PopulateTermTableAsync(TermDao termDao)
         {
-            termDao = db.termDao();
+            this.termDao = termDao;
         }
 
         @Override
-        protected Void doInBackground(Void... voids)
+        protected Void doInBackground(Term... terms)
         {
-            Log.d(TAG,"inserting mentors");
-            termDao.insertTerm(new Term("Term 1", LocalDate.of(2018,1,1), LocalDate.of(2018,6,30), com.termtacker.Status.COMPLETED));
-            termDao.insertTerm(new Term("Term 2", LocalDate.of(2018,7,1), LocalDate.of(2018,12,31), com.termtacker.Status.IN_PROGRESS));
-            LiveData<List<Term>> terms = termDao.getTerms();
-            Log.d(TAG, "Term 1 created with end date of: " + terms.getValue().get(0).getEndDate());
+            for (int i = 0; i < terms.length; i++)
+            {
+                try
+                {
+                    Log.d(TAG, "Inserting mentor: " + terms[i].getTitle());
+                    termDao.insertTerm(terms[i]);
+                }
+                catch (Exception e)
+                {
+                    Log.d(TAG, "Error inserting the term, see stack trace: " + e.getMessage() + e.getStackTrace());
+                }
+            }
+            return null;
+        }
+    }
+
+    private static class PopulateCourseTableAsync extends AsyncTask<Course, Void, Void>
+    {
+        private static final String TAG = "PopulateCourseTableAsysnc";
+        private CourseDao courseDao;
+
+        public PopulateCourseTableAsync(CourseDao courseDao)
+        {
+            this.courseDao = courseDao;
+        }
+
+        @Override
+        protected Void doInBackground(Course... courses)
+        {
+            try
+            {
+                for (int i = 0; i < courses.length; i++)
+                {
+                    Log.d(TAG,"Inserting course: " + courses[i].getTitle());
+                    courseDao.insertCourse(courses[i]);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.d(TAG, "Error inserting the course, see stack trace: " + e.getMessage() + e.getStackTrace());
+            }
+
+
             return null;
         }
     }

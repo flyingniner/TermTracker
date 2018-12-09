@@ -2,6 +2,7 @@ package com.termtacker;
 
 import android.app.Application;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.nio.file.DirectoryStream;
 import java.util.ArrayList;
@@ -97,14 +98,17 @@ public class CourseRepository
     {
         private CourseDao courseDao;
 
-        private UpdateCourseAsync(CourseDao assessmentDao)
+        private UpdateCourseAsync(CourseDao courseDao)
         {
-            this.courseDao = assessmentDao;
+            this.courseDao = courseDao;
         }
 
         @Override
         protected Void doInBackground(Course... courses)
         {
+            Log.d("CourseRepo", "Id: " +
+                  courses[0].getCourseId() + "\r\nTitle: " +
+                    courses[0].getTitle());
             courseDao.updateCourse(courses[0]);
             return null;
         }

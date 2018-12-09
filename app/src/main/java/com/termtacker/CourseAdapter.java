@@ -28,7 +28,7 @@ public class CourseAdapter extends ListAdapter<Course, CourseAdapter.CourseHolde
         @Override
         public boolean areItemsTheSame(@NonNull Course oldItem, @NonNull Course newItem)
         {
-            return oldItem.getTermId() == newItem.getTermId();
+            return oldItem.getCourseId() == newItem.getCourseId();
         }
 
         @Override
@@ -57,7 +57,7 @@ public class CourseAdapter extends ListAdapter<Course, CourseAdapter.CourseHolde
         Course currentCourse = getItem(position);
         holder.textViewCourseName.setText(currentCourse.getTitle());
         holder.textViewCourseStart.setText(currentCourse.getStartDate().format(Utils.dateFormatter_MMMddyyyy));
-        holder.textViewCourseEndLabel.setText(currentCourse.getStartDate().format(Utils.dateFormatter_MMMddyyyy));
+        holder.textViewCourseEnd.setText(currentCourse.getEndDate().format(Utils.dateFormatter_MMMddyyyy));
 
         switch (currentCourse.getStatus())
         {
@@ -92,7 +92,7 @@ public class CourseAdapter extends ListAdapter<Course, CourseAdapter.CourseHolde
         {
             super(itemView);
             this.textViewCourseName = itemView.findViewById(R.id.course_item_course_title);
-            this.textViewCourseStart = itemView.findViewById(R.id.course_item_course_title);
+            this.textViewCourseStart = itemView.findViewById(R.id.course_item_course_start);
             this.textViewCourseEnd = itemView.findViewById(R.id.course_item_course_end);
             this.textViewCourseEndLabel = itemView.findViewById(R.id.course_item_end_label);
             this.imageViewCourseStatus = itemView.findViewById(R.id.course_item_progress_icon);

@@ -6,6 +6,7 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.icu.util.Calendar;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,27 +24,32 @@ import static com.termtacker.TermAddEditActivity.EXTRA_CURRENT_TERM_ID;
 
 public class CourseAddEditActivity extends AppCompatActivity
 {
+    private static final String TAG = TermAddEditActivity.class.getCanonicalName();
+
     //region Layout items
     private EditText editTextCourseTitle;
-    //    private EditText editTextCourseCode;
     private EditText editTextCourseStart;
     private TextView textViewCourseEndLabel;
     private EditText editTextCourseEnd;
     private ImageView startDatePicker;
     private ImageView endDatePicker;
+    private EditText editTextCourseStatus;
+    private EditText editTextCourseTermId;
+    private EditText editTextCourseMentorId;
     private Button saveButton;
     private Button addAssessmentsButton;
     private Button addNoteButton;
     //endregion
 
-    private static final String TAG = TermAddEditActivity.class.getCanonicalName();
-
-    private int termId;
+//    private Course course;
     private Calendar calendar;
     private DatePickerDialog datePickerDialog;
     private CourseViewModel courseViewModel;
-    private LocalDate startDate;
-    private LocalDate endDate;
+//    private LocalDate startDate;
+//    private LocalDate endDate;
+
+    private boolean isExistingCourse = false;
+    private int courseId = -1; //indicates a new id will need to be set
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -51,42 +57,42 @@ public class CourseAddEditActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course_add_edit);
 
-
-        Intent intent = getIntent();
-
-        termId = intent.getIntExtra(EXTRA_CURRENT_TERM_ID, -1);
+        //get references to form elements
         editTextCourseTitle = findViewById(R.id.course_add_edit_title);
         editTextCourseStart = findViewById(R.id.course_add_edit_start);
         textViewCourseEndLabel = findViewById(R.id.course_add_edit_end_label);
         editTextCourseEnd = findViewById(R.id.course_add_edit_end);
         startDatePicker = findViewById(R.id.course_add_edit_start_date_picker);
         endDatePicker = findViewById(R.id.course_add_edit_end_date_picker);
+        editTextCourseStatus = findViewById(R.id.course_add_edit_status);
+        editTextCourseTermId = findViewById(R.id.course_add_edit_term);
+        editTextCourseMentorId = findViewById(R.id.course_add_edit_mentor);
+
         saveButton = findViewById(R.id.course_add_edit_save);
         addAssessmentsButton = findViewById(R.id.course_add_edit_add_assessement);
         addNoteButton = findViewById(R.id.course_add_edit_notes);
 
-        if (intent.hasExtra(CoursesActivity.EXTRA_ID))  //not sure if this the correct id to look
-        // for, maybe use the term id?
+
+
+        Intent intent = getIntent();
+        if (intent.hasExtra(CoursesActivity.EXTRA_ID))
         {
             setTitle("Edit Course");
+            isExistingCourse = true;
+            courseId = intent.getIntExtra(CoursesActivity.EXTRA_ID, 0);
+            String status = intent.getStringExtra(CoursesActivity.EXTRA_STATUS);
 
-            editTextCourseTitle.setText(intent.getStringExtra(CoursesActivity.EXTRA_TITLE).toString());
-            editTextCourseStart.setText(intent.getStringExtra(CoursesActivity.EXTRA_START).toString());
+            editTextCourseTitle.setText(intent.getStringExtra(CoursesActivity.EXTRA_TITLE));
+            editTextCourseStart.setText(intent.getStringExtra(CoursesActivity.EXTRA_START));
+            editTextCourseEnd.setText(intent.getStringExtra(CoursesActivity.EXTRA_END));
+            editTextCourseStatus.setText(status);
+            editTextCourseTermId.setText(String.valueOf(intent.getIntExtra(CoursesActivity.EXTRA_TERMID, 0)));
+            editTextCourseMentorId.setText(String.valueOf(intent.getIntExtra(CoursesActivity.EXTRA_MENTORID, 0)));
 
-            String endDateStr = intent.getStringExtra(CoursesActivity.EXTRA_END).toString();
-            editTextCourseEnd.setText(endDateStr);
-
-            String[] endDateArry = endDateStr.split("/");
-
-            LocalDate endDate = LocalDate.of(Integer.parseInt(endDateArry[2]),
-                                             Integer.parseInt(endDateArry[0]),
-                                             Integer.parseInt(endDateArry[1]));
-
-            if (intent.getStringExtra(CoursesActivity.EXTRA_STATUS).toString() == Status.COMPLETED)
-                textViewCourseEndLabel.setText("Completed");
-            else
+            if (status == null)
                 textViewCourseEndLabel.setText("Goal");
-
+            else
+                textViewCourseEndLabel.setText("Completed");
         }
         else
         {
@@ -218,14 +224,14 @@ public class CourseAddEditActivity extends AppCompatActivity
         String title = editTextCourseTitle.getText().toString().trim();
         if (title.isEmpty())
         {
-            Toast.makeText(this, "A title is required", Toast.LENGTH_LONG);
+            Toast.makeText(this, "A title is required", Toast.LENGTH_LONG).show();
             return;
         }
 
         String startStr = editTextCourseStart.getText().toString();
         if (startStr.isEmpty())
         {
-            Toast.makeText(this, "A start date is required", Toast.LENGTH_LONG);
+            Toast.makeText(this, "A start date is required", Toast.LENGTH_LONG).show();
             return;
         }
         String[] s = startStr.split("/");
@@ -236,7 +242,7 @@ public class CourseAddEditActivity extends AppCompatActivity
         String endStr = editTextCourseEnd.getText().toString();
         if (endStr.isEmpty())
         {
-            Toast.makeText(this, "An end date is required", Toast.LENGTH_LONG);
+            Toast.makeText(this, "An end date is required", Toast.LENGTH_LONG).show();
             return;
         }
         String[] e = endStr.split("/");
@@ -245,20 +251,26 @@ public class CourseAddEditActivity extends AppCompatActivity
 
         if (start.isAfter(end))
         {
-            Toast.makeText(this, "Term Start must come before End", Toast.LENGTH_LONG);
+            Toast.makeText(this, "Term Start must come before End", Toast.LENGTH_LONG).show();
             return;
         }
 
+        int termId = Integer.parseInt(editTextCourseTermId.getText().toString());
+        int mentorId = Integer.parseInt(editTextCourseMentorId.getText().toString());
+
+        String status = editTextCourseStatus.getText().toString();
+
+
         Intent data = new Intent();
+
+        data.putExtra(CoursesActivity.EXTRA_ID, courseId);
         data.putExtra(CoursesActivity.EXTRA_TITLE, title);
         data.putExtra(CoursesActivity.EXTRA_START, start.toEpochDay());
         data.putExtra(CoursesActivity.EXTRA_END, end.toEpochDay());
+        data.putExtra(CoursesActivity.EXTRA_STATUS, status);
+        data.putExtra(CoursesActivity.EXTRA_TERMID, termId);
+        data.putExtra(CoursesActivity.EXTRA_MENTORID, mentorId);
 
-        int id = getIntent().getIntExtra(TermActivity.EXTRA_ID, -1);
-        if (id != -1)
-        {
-            data.putExtra(TermActivity.EXTRA_ID, id);
-        }
 
         setResult(RESULT_OK, data);
         finish();
