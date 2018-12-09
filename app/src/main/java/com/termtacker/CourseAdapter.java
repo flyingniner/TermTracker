@@ -63,17 +63,22 @@ public class CourseAdapter extends ListAdapter<Course, CourseAdapter.CourseHolde
         {
             case Status.COMPLETED:
                 holder.imageViewCourseStatus.setImageResource(R.drawable.ic_completed_72dp);
+                holder.textViewCourseEndLabel.setText(R.string.endLabel);
                 break;
             case Status.PENDING:
                 holder.imageViewCourseStatus.setImageResource(R.drawable.ic_pending_72dp);
+                holder.textViewCourseEndLabel.setText(R.string.goalLabel);
                 break;
             case Status.IN_PROGRESS:
                 holder.imageViewCourseStatus.setImageResource(R.drawable.ic_inprogress_72dp);
+                holder.textViewCourseEndLabel.setText(R.string.goalLabel);
                 break;
             case Status.INCOMPLETE:
                 holder.imageViewCourseStatus.setImageResource(R.drawable.ic_incomplete_72dp);
+                holder.textViewCourseEndLabel.setText(R.string.endLabel);
                 break;
         }
+
 
 
     }
@@ -84,7 +89,7 @@ public class CourseAdapter extends ListAdapter<Course, CourseAdapter.CourseHolde
     {
         private TextView textViewCourseName;
         private TextView textViewCourseStart;
-        private TextView textViewCourseEnd; //TODO: set date value as goal date unless its marked completed.
+        private TextView textViewCourseEnd;
         private TextView textViewCourseEndLabel; //TODO: set label as gaol unless its marked completed
         private ImageView imageViewCourseStatus;
 

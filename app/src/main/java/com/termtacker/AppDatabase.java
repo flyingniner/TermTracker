@@ -147,7 +147,7 @@ public abstract class AppDatabase extends RoomDatabase
                 AppDatabase.class,DB_NAME)
                 .fallbackToDestructiveMigration()
                 .addCallback(roomCallBack)
-                /*.allowMainThreadQueries()*/
+                .allowMainThreadQueries()
                 .build();
         return db;
     }

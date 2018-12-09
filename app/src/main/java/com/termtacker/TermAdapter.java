@@ -45,8 +45,8 @@ public class TermAdapter extends ListAdapter<Term, TermAdapter.TermHolder>
     @Override
     public TermHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        View vieItem = LayoutInflater.from(parent.getContext()).inflate(R.layout.term_item,parent,false);
-        return new TermHolder(vieItem);
+        View viewItem = LayoutInflater.from(parent.getContext()).inflate(R.layout.term_item,parent,false);
+        return new TermHolder(viewItem);
     }
 
     @Override

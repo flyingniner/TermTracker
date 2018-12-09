@@ -88,12 +88,12 @@
             android:layout_below="@id/course_add_edit_end"
             android:hint="status"/>
 
-        <EditText
+        <Button
             android:id="@+id/course_add_edit_mentor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/course_add_edit_status"
-            android:hint="mentor id"/>
+            android:text="Contact Course Mentor"/>
 
         <EditText
             android:id="@+id/course_add_edit_term"

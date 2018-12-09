@@ -7,7 +7,7 @@ import androidx.lifecycle.LiveData;
 
 public class MentorRepository
 {
-    private LiveData<Mentor> mentor;
+    private Mentor mentor;
     private MentorDao mentorDao;
 
     public MentorRepository(Application application, int courseId)
@@ -32,10 +32,12 @@ public class MentorRepository
         new DeleteMentorAsync(mentorDao).execute();
     }
 
-    public LiveData<Mentor> getMentor(int courseId)
-    {
-        return mentor;
-    }
+//    public LiveData<Mentor> getMentor(int courseId)
+//    {
+//        return mentor;
+//    }
+
+    public Mentor getMentor() { return this.mentor; }
 
     public static class InsertMentorAsync extends AsyncTask<Mentor,Void, Void>
     {
@@ -89,5 +91,24 @@ public class MentorRepository
         }
     }
 
+    public static class GetMentorAsync extends AsyncTask<Void, Void, Void>
+    {
+        private MentorDao mentorDao;
+        private int courseId;
+
+        public GetMentorAsync(MentorDao mentorDao, int courseId)
+        {
+            this.mentorDao = mentorDao;
+            this.courseId = courseId;
+        }
+
+
+        @Override
+        protected Void doInBackground(Void... voids)
+        {
+            mentorDao.getMentorByCourseId(courseId);
+            return null;
+        }
+    }
 
 }

@@ -3,24 +3,27 @@ package com.termtacker;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.icu.util.Calendar;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.time.LocalDate;
-
-import static com.termtacker.TermAddEditActivity.EXTRA_CURRENT_TERM_ID;
 
 public class CourseAddEditActivity extends AppCompatActivity
 {
@@ -35,7 +38,7 @@ public class CourseAddEditActivity extends AppCompatActivity
     private ImageView endDatePicker;
     private EditText editTextCourseStatus;
     private EditText editTextCourseTermId;
-    private EditText editTextCourseMentorId;
+    private Button contactCourseMentor;
     private Button saveButton;
     private Button addAssessmentsButton;
     private Button addNoteButton;
@@ -66,7 +69,7 @@ public class CourseAddEditActivity extends AppCompatActivity
         endDatePicker = findViewById(R.id.course_add_edit_end_date_picker);
         editTextCourseStatus = findViewById(R.id.course_add_edit_status);
         editTextCourseTermId = findViewById(R.id.course_add_edit_term);
-        editTextCourseMentorId = findViewById(R.id.course_add_edit_mentor);
+        contactCourseMentor = findViewById(R.id.course_add_edit_mentor);
 
         saveButton = findViewById(R.id.course_add_edit_save);
         addAssessmentsButton = findViewById(R.id.course_add_edit_add_assessement);
@@ -87,7 +90,7 @@ public class CourseAddEditActivity extends AppCompatActivity
             editTextCourseEnd.setText(intent.getStringExtra(CoursesActivity.EXTRA_END));
             editTextCourseStatus.setText(status);
             editTextCourseTermId.setText(String.valueOf(intent.getIntExtra(CoursesActivity.EXTRA_TERMID, 0)));
-            editTextCourseMentorId.setText(String.valueOf(intent.getIntExtra(CoursesActivity.EXTRA_MENTORID, 0)));
+            contactCourseMentor.setText("Contact Course Mentor");
 
             if (status == null)
                 textViewCourseEndLabel.setText("Goal");
@@ -97,6 +100,7 @@ public class CourseAddEditActivity extends AppCompatActivity
         else
         {
             setTitle("Add Course");
+            contactCourseMentor.setText("Select a Mentor");
         }
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -150,14 +154,15 @@ public class CourseAddEditActivity extends AppCompatActivity
 
                 datePickerDialog = new DatePickerDialog(
                         CourseAddEditActivity.this, new DatePickerDialog.OnDateSetListener()
-                                {
-                                    @Override
-                                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth)
-                                    {
-                                        editTextCourseStart.setText(
-                                                (monthOfYear + 1) + "/" +dayOfMonth + "/"+ year);
-                                    }
-                                }, year, month, day);
+                {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth)
+
+                    {
+                        editTextCourseStart.setText(
+                                (monthOfYear + 1) + "/" + dayOfMonth + "/" + year);
+                    }
+                }, year, month, day);
 
                 datePickerDialog.show();
             }
@@ -178,14 +183,14 @@ public class CourseAddEditActivity extends AppCompatActivity
 
                 datePickerDialog = new DatePickerDialog(
                         CourseAddEditActivity.this, new DatePickerDialog.OnDateSetListener()
-                                {
-                                    @Override
-                                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth)
-                                    {
-                                        editTextCourseEnd.setText(
-                                                (monthOfYear + 1) + "/" + dayOfMonth + "/" + year);
-                                    }
-                                }, year, month, day);
+                {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth)
+                    {
+                        editTextCourseEnd.setText(
+                                (monthOfYear + 1) + "/" + dayOfMonth + "/" + year);
+                    }
+                }, year, month, day);
                 datePickerDialog.show();
             }
         });
@@ -196,7 +201,7 @@ public class CourseAddEditActivity extends AppCompatActivity
                                       });
 
         addAssessmentsButton.setOnClickListener(listener ->
-        {
+                                                {
 //
 ////            Intent intent = new Intent(this, AssessmentActivity.class);
 ////            intent.putExtra(EXTRA_CURRENT_TERM_ID,
@@ -205,19 +210,29 @@ public class CourseAddEditActivity extends AppCompatActivity
 ////                                                                           -1
 //            ));
 
-            //TODO: save the course and then launch the assessments activity. Not usre if I can
-            // use my already created "saveTerm()" because that sends a request item back to
-            // the calling activity, so probably need to overload or call Term
+                                                    //TODO: save the course and then launch the assessments activity. Not usre if I can
+                                                    // use my already created "saveTerm()" because that sends a request item back to
+                                                    // the calling activity, so probably need to
+                                                    // overload or call Term
 
-            //basically, will need to query the db to see if this term exists, and if so, then
-            // peform an update. Else, insert. eitherway, I'll need to capture the ID from
-            // teh insert/update statement to pass along as an intent to the next screen.
+                                                    //basically, will need to query the db to see
+                                                    // if this term exists, and if so, then
+                                                    // peform an update. Else, insert. eitherway, I'll need to capture the ID from
+                                                    // teh insert/update statement to pass along as an intent to the next screen.
 
-            //alternatively, i could save the term, then update the buttons dynamially: Save
-            // becomes "close", which just returns to teh prior screen, but the add courses still
-            // will be available? not sure yet.
+                                                    //alternatively, i could save the term, then update the buttons dynamially: Save
+                                                    // becomes "close", which just returns to teh
+                                                    // prior screen, but the add courses still
+                                                    // will be available? not sure yet.
+                                                });
+
+
+        contactCourseMentor.setOnClickListener(listener -> {
+
+            onButtonViewMentorContactClick(new View(this));
         });
     }
+
 
     private void saveCourse()
     {
@@ -256,7 +271,7 @@ public class CourseAddEditActivity extends AppCompatActivity
         }
 
         int termId = Integer.parseInt(editTextCourseTermId.getText().toString());
-        int mentorId = Integer.parseInt(editTextCourseMentorId.getText().toString());
+        int mentorId = Integer.parseInt(contactCourseMentor.getText().toString());
 
         String status = editTextCourseStatus.getText().toString();
 
@@ -274,6 +289,47 @@ public class CourseAddEditActivity extends AppCompatActivity
 
         setResult(RESULT_OK, data);
         finish();
+    }
+
+    private void onButtonViewMentorContactClick(View view)
+    {
+        LayoutInflater inflater = (LayoutInflater) CourseAddEditActivity.this.getSystemService(
+                LAYOUT_INFLATER_SERVICE);
+
+        View popupView = inflater.inflate(R.layout.layout_contact_mentor,null);
+
+
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        boolean focusable = true;
+        final PopupWindow popupWindow = new PopupWindow(
+                popupView, width, height, focusable
+        );
+
+        TextView mentorName = popupView.findViewById(R.id.text_view_mentor_name);
+        TextView mentorPhone = popupView.findViewById(R.id.text_view_mentor_phone);
+        TextView mentorEmail = popupView.findViewById(R.id.text_view_mentor_email);
+
+
+        MentorRepository repository = new MentorRepository(getApplication(), courseId);
+        Mentor mentor = repository.getMentor();
+
+        mentorName.setText(mentor.getName());
+        mentorPhone.setText(String.format(String.valueOf(mentor.getPhoneNumber()), Utils.phoneNumber));
+        mentorEmail.setText(mentor.getEmail());
+
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+        popupView.setOnTouchListener(
+                new View.OnTouchListener()
+                {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event)
+                    {
+                        popupWindow.dismiss();
+                        return true;
+                    }
+                });
     }
 
     /**

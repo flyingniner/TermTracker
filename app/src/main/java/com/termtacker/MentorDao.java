@@ -16,10 +16,12 @@ public interface MentorDao
     @Update
     void updateMentor(Mentor mentor);
 
-    @Query("SELECT MENTOR_ID, MENTOR_NAME, MENTOR_PHONE, MENTOR_EMAIL FROM MENTORS, " +
-            "COURSES WHERE MENTOR_ID = FK_MENTOR_ID " +
-            "AND COURSE_ID = :courseId")
-    LiveData<Mentor> getMentorByCourseId(int courseId);
+    @Query("SELECT MENTOR_ID, MENTOR_NAME, MENTOR_PHONE, MENTOR_EMAIL FROM MENTORS " +
+            "JOIN COURSES ON MENTOR_ID = FK_MENTOR_ID " +
+            "WHERE COURSE_ID = :courseId") //TODO: query so that only one result can be returned, not that there should be more than one.
+    Mentor getMentorByCourseId(int courseId);
+//    LiveData<Mentor> getMentorByCourseId(int courseId);
+//            "COURSES WHERE MENTOR_ID = FK_MENTOR_ID " +
 
     @Query("SELECT * FROM MENTORS WHERE MENTOR_NAME = :Name")
     Mentor getMentorByName(String Name);

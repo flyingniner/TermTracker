@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimary"
+    android:orientation="vertical"
+    android:layout_gravity="center|center_vertical">
+
+
+    <TextView
+        android:id="@+id/text_view_mentor_name"
+        android:layout_width="247dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Johny Applseed"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/text_view_mentor_phone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="24dp"/>
+
+    <TextView
+        android:id="@+id/text_view_mentor_phone"
+        android:layout_width="247dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:gravity="center"
+        android:inputType="phone"
+        android:text="(877) 435-7948"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/text_view_mentor_email"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_view_mentor_name"
+        android:textColor="#FFFFFF"/>
+
+    <TextView
+        android:id="@+id/text_view_mentor_email"
+        android:layout_width="247dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:gravity="center"
+        android:inputType="textEmailAddress"
+        android:text="cmsoftware@wgu.edu"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_view_mentor_phone"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="24dp"/>
+</LinearLayout>
