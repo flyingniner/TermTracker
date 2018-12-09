@@ -167,7 +167,7 @@ public class CourseAddEditActivity extends AppCompatActivity
                 datePickerDialog.show();
             }
         });
-        //endregion
+
 
 
         //region EndDate DatePicker

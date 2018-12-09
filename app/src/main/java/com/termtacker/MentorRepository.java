@@ -10,6 +10,12 @@ public class MentorRepository
     private Mentor mentor;
     private MentorDao mentorDao;
 
+    public MentorRepository(Application application)
+    {
+        AppDatabase database = AppDatabase.getInstance(application.getApplicationContext());
+        this.mentorDao = database.mentorDao();
+    }
+
     public MentorRepository(Application application, int courseId)
     {
         AppDatabase database = AppDatabase.getInstance(application.getApplicationContext());
