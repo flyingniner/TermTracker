@@ -83,7 +83,7 @@ public class CoursesActivity extends AppCompatActivity
             );
 
 
-            startActivityForResult(intent, EDIT_COURSE_REQUEST);
+                startActivityForResult(intent, EDIT_COURSE_REQUEST);
         });
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT)

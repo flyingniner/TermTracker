@@ -64,11 +64,6 @@ public class TermActivity extends AppCompatActivity
             public void onItemClick(Term term)
             {
                 Intent intent = new Intent(TermActivity.this, TermAddEditActivity.class);
-//                Log.d(TAG, "ID: " + term.getTermId());
-//                Log.d(TAG, "TITLE: " + term.getTitle());
-//                Log.d(TAG, "START: " + term.getStartDate().format(Utils.dateFormatter_MMddyyyy));
-//                Log.d(TAG, "END: " + term.getEndDate().format(Utils.dateFormatter_MMddyyyy));
-//                Log.d(TAG, "PROGRESS: " + term.getStatus());
                 intent.putExtra(EXTRA_ID, term.getTermId());
                 intent.putExtra(EXTRA_TITLE, term.getTitle());
                 intent.putExtra(EXTRA_START, term.getStartDate().format(Utils.dateFormatter_MMddyyyy));

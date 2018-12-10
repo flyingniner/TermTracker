@@ -3,17 +3,21 @@ package com.termtacker;
 import android.app.Application;
 import android.os.AsyncTask;
 
+import java.util.List;
+
 import androidx.lifecycle.LiveData;
 
 public class MentorRepository
 {
     private Mentor mentor;
     private MentorDao mentorDao;
+    private List<Mentor> mentors;
 
     public MentorRepository(Application application)
     {
         AppDatabase database = AppDatabase.getInstance(application.getApplicationContext());
         this.mentorDao = database.mentorDao();
+        this.mentors = mentorDao.getAllMentors();
     }
 
     public MentorRepository(Application application, int courseId)
@@ -44,6 +48,8 @@ public class MentorRepository
 //    }
 
     public Mentor getMentor() { return this.mentor; }
+
+    public List<Mentor> getAllMentors() {return this.mentors; }
 
     public static class InsertMentorAsync extends AsyncTask<Mentor,Void, Void>
     {

@@ -1,5 +1,6 @@
 package com.termtacker;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
@@ -28,6 +29,7 @@ import java.time.LocalDate;
 public class CourseAddEditActivity extends AppCompatActivity
 {
     private static final String TAG = TermAddEditActivity.class.getCanonicalName();
+    public static final int SELECT_MENTOR_REQUEST = 7;
 
     //region Layout items
     private EditText editTextCourseTitle;
@@ -44,7 +46,7 @@ public class CourseAddEditActivity extends AppCompatActivity
     private Button addNoteButton;
     //endregion
 
-//    private Course course;
+    private Course course;
     private Calendar calendar;
     private DatePickerDialog datePickerDialog;
     private CourseViewModel courseViewModel;
@@ -53,6 +55,7 @@ public class CourseAddEditActivity extends AppCompatActivity
 
     private boolean isExistingCourse = false;
     private int courseId = -1; //indicates a new id will need to be set
+    private int mentorId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -83,6 +86,7 @@ public class CourseAddEditActivity extends AppCompatActivity
             setTitle("Edit Course");
             isExistingCourse = true;
             courseId = intent.getIntExtra(CoursesActivity.EXTRA_ID, 0);
+            mentorId = intent.getIntExtra(CoursesActivity.EXTRA_MENTORID, 0);
             String status = intent.getStringExtra(CoursesActivity.EXTRA_STATUS);
 
             editTextCourseTitle.setText(intent.getStringExtra(CoursesActivity.EXTRA_TITLE));
@@ -229,7 +233,10 @@ public class CourseAddEditActivity extends AppCompatActivity
 
         contactCourseMentor.setOnClickListener(listener -> {
 
-            onButtonViewMentorContactClick(new View(this));
+            if(contactCourseMentor.getText().toString().equals("Select a Mentor"))
+                onButtonSelectAMentorClick();
+            else
+                onButtonViewMentorContactClick(new View(this));
         });
     }
 
@@ -271,7 +278,7 @@ public class CourseAddEditActivity extends AppCompatActivity
         }
 
         int termId = Integer.parseInt(editTextCourseTermId.getText().toString());
-        int mentorId = Integer.parseInt(contactCourseMentor.getText().toString());
+
 
         String status = editTextCourseStatus.getText().toString();
 
@@ -293,6 +300,8 @@ public class CourseAddEditActivity extends AppCompatActivity
 
     private void onButtonViewMentorContactClick(View view)
     {
+
+        {
         LayoutInflater inflater = (LayoutInflater) CourseAddEditActivity.this.getSystemService(
                 LAYOUT_INFLATER_SERVICE);
 
@@ -315,7 +324,7 @@ public class CourseAddEditActivity extends AppCompatActivity
         Mentor mentor = repository.getMentor();
 
         mentorName.setText(mentor.getName());
-        mentorPhone.setText(String.format(String.valueOf(mentor.getPhoneNumber()), Utils.phoneNumber));
+        mentorPhone.setText(Utils.formatPhoneNumber(mentor.getPhoneNumber()));
         mentorEmail.setText(mentor.getEmail());
 
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
@@ -330,6 +339,25 @@ public class CourseAddEditActivity extends AppCompatActivity
                         return true;
                     }
                 });
+        }
+    }
+
+    private void onButtonSelectAMentorClick()
+    {
+
+        Intent intent = new Intent(this, SelectMentorActivity.class);
+        startActivityForResult(intent, SELECT_MENTOR_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK && requestCode == SELECT_MENTOR_REQUEST)
+        {
+            this.mentorId = data.getIntExtra(SelectMentorActivity.EXTRA_MENTOR_ID, 0);
+        }
     }
 
     /**

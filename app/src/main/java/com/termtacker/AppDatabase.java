@@ -21,7 +21,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
         Assessment.class, Course.class,
         Note.class, Mentor.class,
         Term.class},
-        version = 11)
+        version = 13)
 @TypeConverters(Converters.class)
 public abstract class AppDatabase extends RoomDatabase
 {
@@ -53,21 +53,22 @@ public abstract class AppDatabase extends RoomDatabase
             super.onCreate(db);
 //            new PopulateStatusTableAsync(INSTANCE).execute();
 
+            super.onOpen(db);
+
+            Mentor[] mentors = getMentorsForPrePop();
+            Course[] courses = getCoursesForPrePop();
+            Term[] terms = getTermsForPrePop();
+
+            new PopuplateMentorTableAsync(INSTANCE.mentorDao()).execute(mentors);
+            new PopulateTermTableAsync(INSTANCE.termDao()).execute(terms);
+            new PopulateCourseTableAsync(INSTANCE.courseDao()).execute(courses);
 
         }
 
         @Override
         public void onOpen(@NonNull SupportSQLiteDatabase db)
         {
-//            super.onOpen(db);
-//
-//            Mentor[] mentors = getMentorsForPrePop();
-//            Course[] courses = getCoursesForPrePop();
-//            Term[] terms = getTermsForPrePop();
-//
-//            new PopuplateMentorTableAsync(INSTANCE.mentorDao()).execute(mentors);
-//            new PopulateTermTableAsync(INSTANCE.termDao()).execute(terms);
-//            new PopulateCourseTableAsync(INSTANCE.courseDao()).execute(courses);
+
         }
     };
 

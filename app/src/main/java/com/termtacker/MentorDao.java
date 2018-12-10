@@ -1,5 +1,7 @@
 package com.termtacker;
 
+import java.util.List;
+
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
@@ -25,6 +27,9 @@ public interface MentorDao
 
     @Query("SELECT * FROM MENTORS WHERE MENTOR_NAME = :Name")
     Mentor getMentorByName(String Name);
+
+    @Query("SELECT * FROM MENTORS")
+    List<Mentor> getAllMentors();
 
     @Delete
     void deleteMentor(Mentor mentor);

@@ -92,7 +92,7 @@ public class MentorAdapter extends ListAdapter<Mentor, MentorAdapter.MentorHolde
     {
         Mentor currentMentor = getItem(position);
         holder.textViewMentorName.setText(currentMentor.getName());
-        holder.textViewMentorPhone.setText(String.format(String.valueOf(currentMentor.getPhoneNumber()),Utils.phoneNumber));
+        holder.textViewMentorPhone.setText(Utils.formatPhoneNumber(currentMentor.getPhoneNumber()));
         holder.textViewMentorEmail.setText(currentMentor.getEmail());
 
     }
