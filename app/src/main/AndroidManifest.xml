@@ -30,7 +30,8 @@
         <activity
             android:name=".CoursesActivity"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".SelectMentorActivity"></activity>
+        <activity android:name=".SelectMentorActivity" />
+        <activity android:name=".AssessmentAddEditActivity" />
     </application>
 
 </manifest>

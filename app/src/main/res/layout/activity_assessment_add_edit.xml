@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AssessmentAddEditActivity">
+
+    <Spinner
+        android:id="@+id/assessment_type_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:prompt="Assessment type..."
+        android:layout_marginTop="16dp">
+
+    </Spinner>
+    <EditText
+        android:id="@+id/assessment_add_edit_assessment_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="type...this should be a drop down?"
+        android:layout_below="@id/assessment_type_spinner"
+        />
+</RelativeLayout>

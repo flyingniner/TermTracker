@@ -11,14 +11,16 @@ import androidx.lifecycle.LiveData;
 public class AssessmentViewModel extends AndroidViewModel
 {
     private AssessmentRepository assessmentRepo;
-    private LiveData<List<Assessment>> courseAssessments;
+//    private LiveData<List<Assessment>> courseAssessments;
+    private LiveData<List<Assessment>> allAssessments;
 
     public AssessmentViewModel(@NonNull Application application, int courseId)
     {
         super(application);
 
         assessmentRepo = new AssessmentRepository(application, courseId);
-        courseAssessments = assessmentRepo.getCourseAssessments();
+        allAssessments = assessmentRepo.getAllAssessments();
+
     }
 
     public void insertAssessment(Assessment assessment)
@@ -36,9 +38,14 @@ public class AssessmentViewModel extends AndroidViewModel
         assessmentRepo.deleteAssessment(assessment);
     }
 
-    public LiveData<List<Assessment>> getAssessmentsForCourse()
+    public LiveData<List<Assessment>> getAllAssessments()
     {
-        return courseAssessments;
+        return allAssessments;
+    }
+
+    public LiveData<List<Assessment>> getAssessmentsForCourse(int courseId)
+    {
+        return assessmentRepo.getCourseAssessments(courseId);
     }
 
 }
