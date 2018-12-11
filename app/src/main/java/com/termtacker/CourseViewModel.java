@@ -12,7 +12,7 @@ public class CourseViewModel extends AndroidViewModel
 {
     private CourseRepository repository;
     private LiveData<List<Course>> allCourses;
-    private LiveData<List<Course>> filteredCourses;
+//    private LiveData<List<Course>> filteredCourses;
 
     public CourseViewModel(@NonNull Application application)
     {
@@ -32,6 +32,7 @@ public class CourseViewModel extends AndroidViewModel
 
     public LiveData<List<Course>> getAllCourses()
     {
-        return repository.getAllCourses();
+        return allCourses;
+//        return repository.getAllCourses();
     }
 }

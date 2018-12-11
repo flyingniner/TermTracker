@@ -3,20 +3,22 @@ package com.termtacker;
 import android.app.Application;
 import android.os.AsyncTask;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
 
 public class AssessmentRepository
 {
     private AssessmentDao assessmentDao;
-    private LiveData<List<Assessment>> courseAssessments;
+    private LiveData<List<Assessment>> allAssessments;
 
     public AssessmentRepository(Application application, int courseId)
     {
         AppDatabase database = AppDatabase.getInstance(application.getApplicationContext());
         this.assessmentDao = database.assessmentDao();
-        courseAssessments = assessmentDao.getAssessmentsForCourse(courseId);
+        allAssessments = assessmentDao.getAssessmentsForCourse(courseId);
     }
 
 //region Getters
@@ -35,10 +37,24 @@ public class AssessmentRepository
         new DeleteAssessmentAsync(assessmentDao).execute();
     }
 
-    public LiveData<List<Assessment>> getCourseAssessments()
+    public LiveData<List<Assessment>> getCourseAssessments(int courseId)
     {
+        LiveData<List<Assessment>> filteredData = Transformations.map(allAssessments, newDataSet -> {
+            List<Assessment> filteredAssessments = new ArrayList<>();
+            for (Assessment a : newDataSet)
+            {
+                if (a.getCourseId() == courseId)
+                    filteredAssessments.add(a);
+            }
+            return filteredAssessments;
+        });
 
-        return courseAssessments;
+        return filteredData;
+    }
+
+    public LiveData<List<Assessment>> getAllAssessments()
+    {
+        return allAssessments;
     }
 //endregion
 

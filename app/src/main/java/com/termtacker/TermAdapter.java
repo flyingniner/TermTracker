@@ -90,7 +90,7 @@ public class TermAdapter extends ListAdapter<Term, TermAdapter.TermHolder>
             this.textViewTitle = itemView.findViewById(R.id.term_item_Title);
             this.texViewStart = itemView.findViewById(R.id.term_item_Start);
             this.textViewEnd = itemView.findViewById(R.id.term_item_End);
-            this.imageViewProgressIcon = itemView.findViewById(R.id.term_item_progressIcon);
+            this.imageViewProgressIcon = itemView.findViewById(R.id.assessment_item_progressIcon);
 
             itemView.setOnClickListener(v -> {
                 int position = getAdapterPosition();

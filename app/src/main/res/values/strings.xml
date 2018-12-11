@@ -18,6 +18,9 @@
     <string name="go_to_courses">Courses</string>
     <string name="got_to_mentors">Mentors</string>
     <string name="go_to_mentors">Mentors</string>
+    <string name="assessmentTypePre">PreAssessment</string>
+    <string name="assessmentTypeObj">Objective</string>
+    <string name="assessmentTypePrj">Performance</string>
 
 
 </resources>
