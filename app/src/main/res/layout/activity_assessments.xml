@@ -4,18 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TermActivity">
-
+    tools:context=".AssessmentsActivity">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/term_recycler_view"
+        android:id="@+id/assessments_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/term_item"/>
-
+        tools:listitem="@layout/assessment_item"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/term_activity_floating_add_term"
+        android:id="@+id/assessments_activity_floating_add_term"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_add_transparent_72dp"

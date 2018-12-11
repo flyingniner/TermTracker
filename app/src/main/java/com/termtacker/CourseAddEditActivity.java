@@ -70,8 +70,8 @@ public class CourseAddEditActivity extends AppCompatActivity
         editTextCourseEnd = findViewById(R.id.course_add_edit_end);
         startDatePicker = findViewById(R.id.course_add_edit_start_date_picker);
         endDatePicker = findViewById(R.id.course_add_edit_end_date_picker);
-        editTextCourseStatus = findViewById(R.id.course_add_edit_status);
-        editTextCourseTermId = findViewById(R.id.course_add_edit_term);
+//        editTextCourseStatus = findViewById(R.id.course_add_edit_status);
+//        editTextCourseTermId = findViewById(R.id.course_add_edit_term);
         contactCourseMentor = findViewById(R.id.course_add_edit_mentor);
 
         saveButton = findViewById(R.id.course_add_edit_save);
@@ -92,8 +92,8 @@ public class CourseAddEditActivity extends AppCompatActivity
             editTextCourseTitle.setText(intent.getStringExtra(CoursesActivity.EXTRA_TITLE));
             editTextCourseStart.setText(intent.getStringExtra(CoursesActivity.EXTRA_START));
             editTextCourseEnd.setText(intent.getStringExtra(CoursesActivity.EXTRA_END));
-            editTextCourseStatus.setText(status);
-            editTextCourseTermId.setText(String.valueOf(intent.getIntExtra(CoursesActivity.EXTRA_TERMID, 0)));
+//            editTextCourseStatus.setText(status);
+//            editTextCourseTermId.setText(String.valueOf(intent.getIntExtra(CoursesActivity.EXTRA_TERMID, 0)));
             contactCourseMentor.setText("Contact Course Mentor");
 
             if (status == null)

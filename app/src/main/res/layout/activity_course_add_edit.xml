@@ -81,34 +81,34 @@
             android:layout_marginRight="16dp"
             android:maxHeight="24dp"/>
 
-        <EditText
-            android:id="@+id/course_add_edit_status"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/course_add_edit_end"
-            android:hint="status"/>
+        <!--<EditText-->
+            <!--android:id="@+id/course_add_edit_status"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_below="@id/course_add_edit_end"-->
+            <!--android:hint="status"/>-->
 
         <Button
             android:id="@+id/course_add_edit_mentor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/course_add_edit_status"
+            android:layout_below="@id/course_add_edit_end"
             android:text="Contact Course Mentor"/>
 
-        <EditText
-            android:id="@+id/course_add_edit_term"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/course_add_edit_mentor"
-            android:hint="term id"/>
+        <!--<EditText-->
+            <!--android:id="@+id/course_add_edit_term"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_below="@id/course_add_edit_mentor"-->
+            <!--android:hint="term id"/>-->
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/course_add_edit_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/course_add_edit_term"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/course_add_edit_mentor"
             android:layout_above="@id/course_add_edit_button_group"
-            tools:listitem="@layout/course_item"/><!--TODO: placeholder image, replace with assessment cardview-->
+            tools:listitem="@layout/assessment_item"/><!--TODO: placeholder image, replace with assessment cardview-->
 
         <LinearLayout
             android:id="@+id/course_add_edit_button_group"

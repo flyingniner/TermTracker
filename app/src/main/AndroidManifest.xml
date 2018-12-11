@@ -32,6 +32,7 @@
             android:parentActivityName=".MainActivity" />
         <activity android:name=".SelectMentorActivity" />
         <activity android:name=".AssessmentAddEditActivity" />
+        <activity android:name=".AssessmentsActivity"></activity>
     </application>
 
 </manifest>

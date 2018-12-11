@@ -78,10 +78,10 @@ public class AssessmentAddEditActivity extends AppCompatActivity implements Adap
         });
 
         Intent intent = getIntent();
-//        if (intent.hasExtra(AssessmentsActivity.EXTRA_ID))
-//        {
-//
-//        }
+        if (intent.hasExtra(AssessmentsActivity.EXTRA_ID))
+        {
+
+        }
     }
 
 
