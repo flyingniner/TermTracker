@@ -89,17 +89,17 @@ public class TermActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item)
     {
         Intent intent;
-        //TODO: figure out how to move between screens from the menu?
+
         switch (item.getItemId())
         {
             case R.id.go_to_assessments:
-//                intent = new Intent(this, CoursesActivity.class); //TODO: change to AssessmentActivity.class
-//                startActivityForResult(intent,0);
+                intent = new Intent(this, AssessmentsActivity.class);
+                startActivityForResult(intent,0);
                 return true;
-            case R.id.go_to_mentors:
+//            case R.id.go_to_mentors:
 //                intent = new Intent(this, MentorsActivity.class); //TODO: change to MentorActivity.class
 //                startActivityForResult(intent,0);
-                return true;
+//                return true;
             case R.id.go_to_courses:
                 intent = new Intent(this, CoursesActivity.class);
                 startActivityForResult(intent,0);

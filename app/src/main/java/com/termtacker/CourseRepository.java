@@ -4,7 +4,6 @@ import android.app.Application;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import java.nio.file.DirectoryStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,10 +45,22 @@ public class CourseRepository
         return courses;
     }
 
+    /**
+     * Gets the list of course titles where the course has not been
+     * marked as "complete".
+     *
+     * Note: courses can only be marked complete if all assessessments
+     * that were added to the course have been marked as passed during
+     * the term.
+     * @return
+     */
+    public List<String> getTitlesForNonCompletedCourses()
+    {
+        return courseDao.getTitlesForUnCompletedCourses();
+    }
+
     public LiveData<List<Course>> getCoursesForTerm(int termId)
     {
-        //TODO: find a way to filter my list by term id. Can't do it on LiveData
-//        LiveData<List<Course>> filteredData = Transformations.map(courses, newDataSet -> applyFilter(newDataSet, termId));
         LiveData<List<Course>> filteredData = Transformations.map(courses, newDataSet -> {
             List<Course> filteredCourses = new ArrayList<>();
             for (Course c : newDataSet)
@@ -63,27 +74,26 @@ public class CourseRepository
         return filteredData;
     }
 
-//    List<Course> applyFilter(List<Course> list, int termId)
-//    {
-//        List<Course> filteredCourses = new ArrayList<>();
-//
-//        for (Course item : list)
-//        {
-//            if (item.getTermId() == termId)
-//                filteredCourses.add(item);
-//        }
-//
-//        return filteredCourses;
-//    }
+    public String getCourseName(int courseId)
+    {
+        //TODO: this may need to be done async...
+        return courseDao.getCourseName(courseId);
+    }
+
+    public int getCourseId(String courseName)
+    {
+        return courseDao.getCourseId(courseName);
+    }
+
 
 //region AsyncCalls
     private static class InsertCourseAsync extends AsyncTask<Course,Void,Void>
     {
         private CourseDao courseDao;
 
-        private InsertCourseAsync(CourseDao assessmentDao)
+        private InsertCourseAsync(CourseDao courseDao)
         {
-            this.courseDao = assessmentDao;
+            this.courseDao = courseDao;
         }
 
         @Override

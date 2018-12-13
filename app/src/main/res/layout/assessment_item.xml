@@ -17,6 +17,7 @@
             android:layout_alignParentEnd="true"
             android:src="@drawable/ic_inprogress_72dp" />
 
+        <!--TODO: add name of course-->
         <LinearLayout
             android:id="@+id/assessment_item_first_row"
             android:layout_width="match_parent"

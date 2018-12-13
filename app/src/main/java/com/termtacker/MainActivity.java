@@ -167,8 +167,8 @@ public class MainActivity extends AppCompatActivity
      */
     private void loadAssessmentActivity(View view)
     {
-//        Intent intent = new Intent(this, AssessmentActivity.class);
-//        startActivityForResult(intent, ASSESSMENT_REQUEST);
+        Intent intent = new Intent(this, AssessmentsActivity.class);
+        startActivityForResult(intent, ASSESSMENT_REQUEST);
     }
 
     /**

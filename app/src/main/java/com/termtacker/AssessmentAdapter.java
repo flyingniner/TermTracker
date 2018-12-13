@@ -41,7 +41,7 @@ public class AssessmentAdapter extends ListAdapter<Assessment, AssessmentAdapter
         holder.assessmentScheduledDate.setText(currentAssessment.getAssessmentDate().format(Utils.dateFormatter_MMMddyyyy));
 
         String result = currentAssessment.getResult();
-        if (result.equals(Status.COMPLETED))
+        if (result.equals(Status.PASSED))
             holder.assessmentProgressIcon.setImageResource(R.drawable.ic_completed_72dp);
         else if (result.equals(Status.PENDING))
             holder.assessmentProgressIcon.setImageResource(R.drawable.ic_pending_72dp);
