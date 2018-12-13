@@ -51,6 +51,9 @@ public class AssessmentAddEditActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_assessment_add_edit);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_cancel_black_24dp);
+
 
         loadAssessmentTypeSpinner();
         loadCoursesSpinner();
@@ -95,6 +98,17 @@ public class AssessmentAddEditActivity extends AppCompatActivity
             editTextAssessmentCode.setText(intent.getStringExtra(AssessmentsActivity.EXTRA_ASSESSMENT_CODE));
             editTextScheduled.setText(intent.getStringExtra(AssessmentsActivity.EXTRA_ASSESSMENT_SCHEDULED));
 
+            String passedResult = intent.getStringExtra(AssessmentsActivity.EXTRA_ASSESSMENT_RESULT);
+
+            if (passedResult.equals(Status.PASSED))
+                checkBoxResultPassed.setChecked(true);
+            else if (passedResult == Status.APPROACHING)
+                checkBoxResultApproaching.setChecked(true);
+            else
+            {
+                checkBoxResultPassed.setChecked(false);
+                checkBoxResultApproaching.setChecked(false);
+            }
         }
 
         buttonSave.setOnClickListener(listener -> {

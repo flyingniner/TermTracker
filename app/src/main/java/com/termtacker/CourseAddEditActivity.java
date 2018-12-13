@@ -63,6 +63,9 @@ public class CourseAddEditActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course_add_edit);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_cancel_black_24dp);
+
         //get references to form elements
         editTextCourseTitle = findViewById(R.id.course_add_edit_title);
         editTextCourseStart = findViewById(R.id.course_add_edit_start);
@@ -107,8 +110,7 @@ public class CourseAddEditActivity extends AppCompatActivity
             contactCourseMentor.setText("Select a Mentor");
         }
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_cancel_black_24dp);
+
 
         /**
          * This section here is for displaying the sublist of assessments associated with the

@@ -34,11 +34,6 @@ public class TermAddEditActivity extends AppCompatActivity
     private Button buttonAddCourse;
 
     private static final String TAG = TermAddEditActivity.class.getCanonicalName();
-//    public static final String EXTRA_ID = "com.termtracker.EXTRA_ID";
-//    public static final String EXTRA_TITLE = "com.termtracker.EXTRA_TITLE";
-//    public static final String EXTRA_START = "com.termtracker.EXTRA_START";
-//    public static final String EXTRA_END = "com.termtracker.EXTRA_END";
-//    public static final String EXTRA_STATUS = "com.termtracker.EXTRA_STATUS";
 
     public static final String EXTRA_CURRENT_TERM_ID = "com.termtracker.EXTRA_CURRENT_TERM_ID";
 
