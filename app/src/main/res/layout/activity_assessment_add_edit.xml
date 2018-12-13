@@ -31,6 +31,7 @@
         android:layout_below="@id/assessment_add_edit_assessment_type_label"
         android:minHeight="32dp"
         android:backgroundTint="@color/colorPrimary"
+        android:prompt="@string/spinner_assessment_type"
         />
 
 
@@ -71,12 +72,13 @@
         android:textStyle="bold"/>
 
     <Spinner
-        android:id="@+id/assessment_add_edit_parent_course"
+        android:id="@+id/assessment_add_edit_parent_course_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/assessment_add_edit_course_label"
         android:backgroundTint="@color/colorPrimary"
-        android:minHeight="32dp"/>
+        android:minHeight="32dp"
+        android:prompt="@string/spinner_course_name"/>
 
     <TextView
         android:id="@+id/assessment_add_edit_date_label"
@@ -86,7 +88,7 @@
         android:gravity="center"
         android:layout_alignParentEnd="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@id/assessment_add_edit_parent_course"
+        android:layout_below="@id/assessment_add_edit_parent_course_spinner"
         android:layout_marginTop="16dp"
         android:textStyle="bold"
         />

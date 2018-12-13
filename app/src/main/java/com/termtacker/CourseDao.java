@@ -27,4 +27,14 @@ public interface CourseDao
     @Delete
     void deleteCourse(Course course);
 
+    @Query("SELECT COURSE_TITLE FROM COURSES " +
+            "WHERE COURSE_STATUS <> 'COMPLETED' " +
+            "ORDER BY COURSE_TITLE ASC")
+    List<String> getTitlesForUnCompletedCourses();
+
+    @Query("SELECT COURSE_TITLE FROM COURSES WHERE COURSE_ID = :courseId")
+    String getCourseName(int courseId);
+
+    @Query("SELECT COURSE_ID FROM COURSES WHERE COURSE_TITLE = :courseName")
+    int getCourseId(String courseName);
 }

@@ -14,10 +14,10 @@
         android:title="@string/go_to_courses"
         />
 
-    <item
-        android:id="@+id/go_to_mentors"
-        android:title="@string/go_to_mentors"
-        />
+    <!--<item-->
+        <!--android:id="@+id/go_to_mentors"-->
+        <!--android:title="@string/go_to_mentors"-->
+        <!--/>-->
 
     <item
         android:id="@+id/go_to_terms"

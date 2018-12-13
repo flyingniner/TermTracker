@@ -21,6 +21,8 @@
     <string name="assessmentTypePre">PreAssessment</string>
     <string name="assessmentTypeObj">Objective</string>
     <string name="assessmentTypePrj">Performance</string>
+    <string name="spinner_assessment_type">Select an assessment type...</string>
+    <string name="spinner_course_name">Select a course...</string>
 
 
 </resources>

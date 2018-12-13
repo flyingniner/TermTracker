@@ -14,11 +14,11 @@ public class AssessmentViewModel extends AndroidViewModel
 //    private LiveData<List<Assessment>> courseAssessments;
     private LiveData<List<Assessment>> allAssessments;
 
-    public AssessmentViewModel(@NonNull Application application, int courseId)
+    public AssessmentViewModel(@NonNull Application application)
     {
         super(application);
-
-        assessmentRepo = new AssessmentRepository(application, courseId);
+        assessmentRepo = new AssessmentRepository(application);
+//        assessmentRepo = new AssessmentRepository(application, courseId);
         allAssessments = assessmentRepo.getAllAssessments();
 
     }

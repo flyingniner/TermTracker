@@ -14,6 +14,13 @@ public class AssessmentRepository
     private AssessmentDao assessmentDao;
     private LiveData<List<Assessment>> allAssessments;
 
+    public AssessmentRepository(Application application)
+    {
+        AppDatabase database = AppDatabase.getInstance(application.getApplicationContext());
+        this.assessmentDao = database.assessmentDao();
+        allAssessments = assessmentDao.getAssessments();
+    }
+
     public AssessmentRepository(Application application, int courseId)
     {
         AppDatabase database = AppDatabase.getInstance(application.getApplicationContext());
@@ -24,17 +31,17 @@ public class AssessmentRepository
 //region Getters
     public void insertAssessment(Assessment assessment)
     {
-        new InsertAssessmentAsync(assessmentDao).execute();
+        new InsertAssessmentAsync(assessmentDao).execute(assessment);
     }
 
     public void updateAssessment(Assessment assessment)
     {
-        new UpdateAssessmentAsync(assessmentDao).execute();
+        new UpdateAssessmentAsync(assessmentDao).execute(assessment);
     }
 
     public void deleteAssessment(Assessment assessment)
     {
-        new DeleteAssessmentAsync(assessmentDao).execute();
+        new DeleteAssessmentAsync(assessmentDao).execute(assessment);
     }
 
     public LiveData<List<Assessment>> getCourseAssessments(int courseId)

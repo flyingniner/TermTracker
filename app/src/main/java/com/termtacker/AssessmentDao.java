@@ -21,6 +21,9 @@ public interface AssessmentDao
     @Query("SELECT * FROM ASSESSMENTS WHERE FK_COURSE_ID = :courseId")
     LiveData<List<Assessment>> getAssessmentsForCourse(int courseId);
 
+    @Query("SELECT * FROM ASSESSMENTS")
+    LiveData<List<Assessment>> getAssessments();
+
     @Delete()
     int deleteAssessment(Assessment assessment);
 }
