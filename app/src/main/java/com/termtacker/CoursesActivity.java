@@ -72,18 +72,8 @@ public class CoursesActivity extends AppCompatActivity
             intent.putExtra(EXTRA_STATUS, course.getStatus());
             intent.putExtra(EXTRA_TERMID, course.getTermId());
             intent.putExtra(EXTRA_MENTORID, course.getCourseMentorId());
-            Log.d(TAG,
-            "CourseID: " +course.getCourseId() +"\r\nTitle " +
-                    course.getTitle() + "\r\nStart " +
-                    course.getStartDate() + "\r\nEnd " +
-                    course.getEndDate() + "\r\nStatus " +
-                    course.getStatus() + "\r\nTermID " +
-                    course.getTermId() + "\r\nMentorId " +
-                    course.getCourseMentorId()
-            );
 
-
-                startActivityForResult(intent, EDIT_COURSE_REQUEST);
+            startActivityForResult(intent, EDIT_COURSE_REQUEST);
         });
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT)

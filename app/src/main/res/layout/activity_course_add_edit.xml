@@ -8,107 +8,103 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        >
 
         <TextView
             android:id="@+id/course_add_edit_title_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/course_title_label"/>
+            android:text="@string/course_title_label"
+            android:gravity="center"/>
+
         <EditText
             android:id="@+id/course_add_edit_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/course_add_edit_title_label"
-            android:hint="Math 101"/>
-
-        <!--<TextView-->
-            <!--android:id="@+id/course_add_edit_code_label"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="@string/course_code_label"-->
-            <!--android:layout_below="@id/course_add_edit_title"/>-->
-        <!--<EditText-->
-            <!--android:id="@+id/course_add_edit_code"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:hint="MTH101"-->
-            <!--android:layout_below="@id/course_add_edit_code_label"/>-->
+            android:hint="Math 101"
+            android:layout_marginHorizontal="8dp"/>
 
         <TextView
-        android:id="@+id/course_add_edit_start_label"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Start"
-        android:layout_below="@id/course_add_edit_title"/>
+            android:id="@+id/course_add_edit_start_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/course_add_edit_title"
+            android:text="Start"
+            android:gravity="center"/>
+
         <EditText
             android:id="@+id/course_add_edit_start"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/course_add_edit_start_label"
             android:hint="01/01/2018"
-            android:layout_below="@id/course_add_edit_start_label"/>
+            android:layout_marginHorizontal="8dp"/>
 
         <ImageButton
             android:id="@+id/course_add_edit_start_date_picker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_event_black_24dp"
             android:layout_alignTop="@id/course_add_edit_start_label"
             android:layout_alignParentEnd="true"
             android:layout_marginRight="16dp"
-            android:maxHeight="24dp"/>
+            android:maxHeight="24dp"
+            android:src="@drawable/ic_event_black_24dp" />
 
         <TextView
             android:id="@+id/course_add_edit_end_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/course_add_edit_start"
             android:text="End"
-            android:layout_below="@id/course_add_edit_start"/>
+            android:gravity="center"/>
+
         <EditText
             android:id="@+id/course_add_edit_end"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/course_add_edit_end_label"
             android:hint="02/15/2018"
-            android:layout_below="@id/course_add_edit_end_label"/>
+            android:layout_marginHorizontal="8dp"/>
 
         <ImageButton
             android:id="@+id/course_add_edit_end_date_picker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_event_black_24dp"
             android:layout_alignTop="@id/course_add_edit_end_label"
             android:layout_alignParentEnd="true"
             android:layout_marginRight="16dp"
-            android:maxHeight="24dp"/>
+            android:maxHeight="24dp"
+            android:src="@drawable/ic_event_black_24dp" />
 
-        <!--<EditText-->
-            <!--android:id="@+id/course_add_edit_status"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_below="@id/course_add_edit_end"-->
-            <!--android:hint="status"/>-->
 
         <Button
             android:id="@+id/course_add_edit_mentor"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/course_add_edit_end"
-            android:text="Contact Course Mentor"/>
+            android:text="Contact Course Mentor"
+            android:layout_centerHorizontal="true"
+            android:paddingHorizontal="24dp"/>
 
-        <!--<EditText-->
-            <!--android:id="@+id/course_add_edit_term"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_below="@id/course_add_edit_mentor"-->
-            <!--android:hint="term id"/>-->
+
+
+        <TextView
+            android:id="@+id/course_add_edit_assessements_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/course_add_edit_mentor"
+            android:text="Assessments:"
+            android:gravity="center"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/course_add_edit_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/course_add_edit_mentor"
             android:layout_above="@id/course_add_edit_button_group"
-            tools:listitem="@layout/assessment_item"/><!--TODO: placeholder image, replace with assessment cardview-->
+            android:layout_below="@id/course_add_edit_assessements_label"
+            tools:listitem="@layout/assessment_item" />
 
         <LinearLayout
             android:id="@+id/course_add_edit_button_group"
