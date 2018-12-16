@@ -1,5 +1,6 @@
 package com.termtacker;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,9 @@ class Note
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "COURSE_NOTE_ID")
     private int courseNoteId;
+
+    @ColumnInfo(name = "NOTE_DATE")
+    private LocalDate noteDate;
 
     @ColumnInfo(name = "NOTE")
     private String note;
@@ -54,6 +58,16 @@ class Note
     public void setCourseId(int courseId)
     {
         this.courseId = courseId;
+    }
+
+    public LocalDate getNoteDate()
+    {
+        return noteDate;
+    }
+
+    public void setNoteDate(LocalDate noteDate)
+    {
+        this.noteDate = noteDate;
     }
 
 //endregion

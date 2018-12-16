@@ -214,7 +214,6 @@ public class AssessmentAddEditActivity extends AppCompatActivity
             scheduled = Utils.convertStringDate(
                 editTextScheduled.getText().toString()
             );
-            result = determineResult(scheduled);
         }
         catch (NullPointerException np)
         {
@@ -225,9 +224,12 @@ public class AssessmentAddEditActivity extends AppCompatActivity
             return;
         }
 
+        result = determineResult(scheduled);
+
 
         Intent data = new Intent();
 
+        //TODO: determine where the call is from (ie. from AssessmentsActivity or CourseAddEditActivity
         if (id > 0)
             data.putExtra(AssessmentsActivity.EXTRA_ID,id);
         data.putExtra(AssessmentsActivity.EXTRA_ASSESSMENT_CODE, code);

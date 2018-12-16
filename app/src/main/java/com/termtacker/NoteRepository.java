@@ -22,20 +22,20 @@ public class NoteRepository
     //region Assessments
     public void insertNote(Note note)
     {
-        new InsertNoteAsync(noteDao).execute();
+        new InsertNoteAsync(noteDao).execute(note);
     }
 
     public void updateNote(Note note)
     {
-        new UpdateNoteAsync(noteDao).execute();
+        new UpdateNoteAsync(noteDao).execute(note);
     }
 
     public void deleteNote(Note note)
     {
-        new DeleteNoteAsync(noteDao).execute();
+        new DeleteNoteAsync(noteDao).execute(note);
     }
 
-    public LiveData<List<Note>> getCoursesForTerm()
+    public LiveData<List<Note>> getNotesForCourse()
     {
         return courseNotes;
     }
