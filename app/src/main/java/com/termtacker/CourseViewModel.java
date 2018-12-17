@@ -2,6 +2,7 @@ package com.termtacker;
 
 import android.app.Application;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -11,6 +12,7 @@ import androidx.lifecycle.LiveData;
 public class CourseViewModel extends AndroidViewModel
 {
     private CourseRepository repository;
+    private TermRepository termRepository;
     private LiveData<List<Course>> allCourses;
 
     public CourseViewModel(@NonNull Application application)
@@ -18,6 +20,7 @@ public class CourseViewModel extends AndroidViewModel
         super(application);
         repository = new CourseRepository(application);
         allCourses = repository.getAllCourses();
+        termRepository = new TermRepository(application);
     }
 
     public void insertCourse(Course course) { repository.insertCourse(course);}
@@ -43,5 +46,10 @@ public class CourseViewModel extends AndroidViewModel
     public int getCourseId(String courseName)
     {
         return repository.getCourseId(courseName);
+    }
+
+    public LocalDate getTermEndDate(int termId)
+    {
+        return termRepository.getTermEndDate(termId);
     }
 }

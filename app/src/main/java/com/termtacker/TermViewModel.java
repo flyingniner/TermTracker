@@ -2,6 +2,7 @@ package com.termtacker;
 
 import android.app.Application;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -40,4 +41,5 @@ class TermViewModel extends AndroidViewModel
         return allterms;
     }
 
+    public LocalDate getTermEndDate(int termId) { return repository.getTermEndDate(termId);}
 }

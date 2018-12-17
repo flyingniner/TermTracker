@@ -37,6 +37,7 @@ public class CoursesActivity extends AppCompatActivity
     public static final String EXTRA_STATUS = "com.termtracker.CoursesActivity.EXTRA_STATUS";
     public static final String EXTRA_TERMID = "com.termtracker.CoursesActivity.EXTRA_TERMID";
     public static final String EXTRA_MENTORID = "com.termtracker.CoursesActivity.EXTRA_MENTORID";
+    public static final String EXTRA_TERM_END = "com.termtracker.CoursesActivity.EXTRA_TERM_END";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -63,6 +64,8 @@ public class CoursesActivity extends AppCompatActivity
         courseViewModel.getAllCourses().observe(this, list -> courseAdapter.submitList(list)
         );
 
+
+
         courseAdapter.setOnItemClickListener(course -> {
             Intent intent = new Intent(this, CourseAddEditActivity.class);
             intent.putExtra(EXTRA_ID, course.getCourseId());
@@ -72,6 +75,7 @@ public class CoursesActivity extends AppCompatActivity
             intent.putExtra(EXTRA_STATUS, course.getStatus());
             intent.putExtra(EXTRA_TERMID, course.getTermId());
             intent.putExtra(EXTRA_MENTORID, course.getCourseMentorId());
+            intent.putExtra(EXTRA_TERM_END, courseViewModel.getTermEndDate(course.getTermId()).toEpochDay());
 
             startActivityForResult(intent, EDIT_COURSE_REQUEST);
         });

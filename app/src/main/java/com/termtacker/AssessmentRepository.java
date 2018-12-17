@@ -59,6 +59,16 @@ public class AssessmentRepository
         return filteredData;
     }
 
+    public List<Assessment> getStaticCourseAssessments(int courseId)
+    {
+        List<Assessment> filteredAssessments = new ArrayList<>();
+        allAssessments.getValue().forEach(x -> {
+            if (x.getCourseId() == courseId)
+                filteredAssessments.add(x);
+        });
+        return filteredAssessments;
+    }
+
     public LiveData<List<Assessment>> getAllAssessments()
     {
         return allAssessments;

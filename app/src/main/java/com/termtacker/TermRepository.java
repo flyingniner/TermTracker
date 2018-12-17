@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
+import java.time.LocalDate;
 import java.util.List;
 
 import androidx.cardview.widget.CardView;
@@ -39,6 +40,8 @@ public class TermRepository
     {
         new DeleteTermAsync(termDao).execute(term);
     }
+
+    public LocalDate getTermEndDate(int termId) { return termDao.getTermEndDate(termId);}
 
 
 
@@ -119,4 +122,6 @@ public class TermRepository
             return null;
         }
     }
+
+
 }

@@ -48,4 +48,9 @@ public class AssessmentViewModel extends AndroidViewModel
         return assessmentRepo.getCourseAssessments(courseId);
     }
 
+    public List<Assessment> getNonObservableAssessmentsForCourse(int courseId)
+    {
+        return assessmentRepo.getStaticCourseAssessments(courseId);
+    }
+
 }
