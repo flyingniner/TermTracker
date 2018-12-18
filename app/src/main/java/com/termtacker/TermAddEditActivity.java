@@ -1,5 +1,6 @@
 package com.termtacker;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -8,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.icu.util.Calendar;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -36,13 +36,27 @@ public class TermAddEditActivity extends AppCompatActivity
     private static final String TAG = TermAddEditActivity.class.getCanonicalName();
 
     public static final String EXTRA_CURRENT_TERM_ID = "com.termtracker.EXTRA_CURRENT_TERM_ID";
+    public static final int TERM_ADDEDIT_EDITCOURSEREQUEST = 432;
+    public static final int TERM_ADDEDIT_ADDCOURSEREQUEST = 543;
 
     private Calendar calendar;
     private DatePickerDialog datePickerDialog;
     private TermViewModel termViewModel;
     private CourseViewModel courseViewModel;
+    private int termId;
+    private LocalDate termEndDate;
+    private LocalDate termStartDate;
 
 
+    public static final String EXTRA_TERM_ID = "com.termtracker.TermAddEditActivity_EXTRA_TERM_ID";
+    public static final String EXTRA_TERM_END = "com.termtracker.TermAddEditActivity_EXTRA_TERM_END";
+    public static final String EXTRA_TERM_START = "com.termtracker.TermAddEditActivity_EXTRA_TERM_START";
+    public static final String EXTRA_COURSE_ID = "com.termtracker.TermAddEditActivity_EXTRA_COURSE_ID";
+    public static final String EXTRA_MENTOR_ID = "com.termtracker.TermAddEditActivity_EXTRA_MENTOR_ID";
+    public static final String EXTRA_TITLE = "com.termtracker.TermAddEditActivity_EXTRA_TITLE";
+    public static final String EXTRA_START = "com.termtracker.TermAddEditActivity_EXTRA_START";
+    public static final String EXTRA_COURSE_END = "com.termtracker.TermAddEditActivity_EXTRA_COURSE_END";
+    public static final String EXTRA_STATUS = "com.termtracker.TermAddEditActivity_EXTRA_STATUS";
 
 
     @Override
@@ -68,12 +82,12 @@ public class TermAddEditActivity extends AppCompatActivity
         if (intent.hasExtra(TermActivity.EXTRA_ID))
         {
             setTitle("Edit Term");
-            Log.d(TAG,"START: " + intent.getStringExtra(TermActivity.EXTRA_START));
-            Log.d(TAG,"END: " + intent.getStringExtra(TermActivity.EXTRA_END));
-            Log.d(TAG,"PROGRESS: " + intent.getStringExtra(TermActivity.EXTRA_STATUS));
             editTextTitle.setText(intent.getStringExtra(TermActivity.EXTRA_TITLE));
-            editTextStart.setText(intent.getStringExtra(TermActivity.EXTRA_START));
-            editTextEnd.setText(intent.getStringExtra(TermActivity.EXTRA_END));
+            termId = intent.getIntExtra(TermActivity.EXTRA_ID , 0);
+            termStartDate = LocalDate.ofEpochDay(intent.getLongExtra(TermActivity.EXTRA_START, 0));
+            termEndDate = LocalDate.ofEpochDay(intent.getLongExtra(TermActivity.EXTRA_END,0));
+            editTextStart.setText(termStartDate.format(Utils.dateFormatter_MMddyyyy));
+            editTextEnd.setText(termEndDate.format(Utils.dateFormatter_MMddyyyy));
 
             RecyclerView recyclerView = findViewById(R.id.edit_term_course_list);
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -84,8 +98,25 @@ public class TermAddEditActivity extends AppCompatActivity
 
             courseViewModel = ViewModelProviders.of(this).get(CourseViewModel.class);
             courseViewModel.getFilteredCourses(intent.getIntExtra(TermActivity.EXTRA_ID,0))
-                    .observe(this, list -> courseAdapter.submitList(list)
-            );
+                    .observe(this, list -> courseAdapter.submitList(list));
+
+            courseAdapter.setOnItemClickListener(course -> {
+                Intent courseDataIntent = new Intent(
+                        TermAddEditActivity.this,
+                        CourseAddEditActivity.class);
+
+                courseDataIntent.putExtra(EXTRA_TERM_ID, course.getTermId());
+                courseDataIntent.putExtra(EXTRA_TERM_END, termEndDate.toEpochDay());
+                courseDataIntent.putExtra(EXTRA_TERM_START, termStartDate.toEpochDay());
+                courseDataIntent.putExtra(EXTRA_COURSE_ID, course.getCourseId());
+                courseDataIntent.putExtra(EXTRA_START, course.getStartDate().toEpochDay());
+                courseDataIntent.putExtra(EXTRA_COURSE_END, course.getEndDate().toEpochDay());
+                courseDataIntent.putExtra(EXTRA_MENTOR_ID, course.getCourseMentorId());
+                courseDataIntent.putExtra(EXTRA_TITLE, course.getTitle());
+                courseDataIntent.putExtra(EXTRA_STATUS, course.getStatus());
+
+                startActivityForResult(courseDataIntent, TERM_ADDEDIT_EDITCOURSEREQUEST);
+            });
 
         }
         else
@@ -124,7 +155,6 @@ public class TermAddEditActivity extends AppCompatActivity
         });
         //endregion
 
-
         //region EndDate DatePicker
         endDatePicker.setOnClickListener(new View.OnClickListener()
         {
@@ -155,17 +185,12 @@ public class TermAddEditActivity extends AppCompatActivity
 
         buttonAddCourse.setOnClickListener(listener -> {
 
-            Intent intent = new Intent();
-            intent.putExtra(EXTRA_CURRENT_TERM_ID, getIntent().getIntExtra(TermActivity.EXTRA_ID, -1));
+            Intent intent = new Intent(
+                    TermAddEditActivity.this, CourseAddEditActivity.class);
+            intent.putExtra(EXTRA_TERM_ID, termId);
+            intent.putExtra(EXTRA_TERM_END, termEndDate.toEpochDay());
+            intent.putExtra(EXTRA_TERM_START, termStartDate.toEpochDay());
 
-            //TODO: save the term and then launch the courses activity. Not usre if I can use my already created "saveTerm()"
-            //because that sends a request item back to the calling activity, so probably need to overload or call Term
-
-            //basically, will need to query the db to see if this term exists, and if so, then peform an update. Else, insert.
-            //eitherway, I'll need to capture the ID from teh insert/update statement to pass along as an intent to the next screen.
-
-            //alternatively, i could save the term, then update the buttons dynamially: Save becomes "close", which just returns to teh
-            //prior screen, but the add courses still will be available? not sure yet.
         });
     }
 
@@ -219,6 +244,43 @@ public class TermAddEditActivity extends AppCompatActivity
     }
 
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode != RESULT_OK)
+            return;
+
+        if (requestCode == TERM_ADDEDIT_EDITCOURSEREQUEST)
+        {
+            Course c = new Course();
+            c.setTermId(termId);
+            c.setCourseId(data.getIntExtra(EXTRA_COURSE_ID, 0));
+            c.setTitle(data.getStringExtra(EXTRA_TITLE));
+            c.setStartDate(LocalDate.ofEpochDay(data.getLongExtra(EXTRA_START,0)));
+            c.setEndDate(LocalDate.ofEpochDay(data.getLongExtra(EXTRA_COURSE_END, 0)));
+            c.setCourseMentorId(data.getIntExtra(EXTRA_MENTOR_ID, 0));
+            c.setStatus(data.getStringExtra(EXTRA_STATUS));
+
+            courseViewModel.updateCourse(c);
+        }
+
+        else if (requestCode == TERM_ADDEDIT_ADDCOURSEREQUEST)
+        {
+            Course c = new Course();
+
+            c.setTermId(termId);
+            c.setTitle(data.getStringExtra(EXTRA_TITLE));
+            c.setStartDate(LocalDate.ofEpochDay(data.getLongExtra(EXTRA_START,0)));
+            c.setEndDate(LocalDate.ofEpochDay(data.getLongExtra(EXTRA_COURSE_END, 0)));
+            c.setCourseMentorId(data.getIntExtra(EXTRA_MENTOR_ID, 0));
+            c.setStatus(data.getStringExtra(EXTRA_STATUS));
+
+            courseViewModel.insertCourse(c);
+        }
+
+    }
 
     /**
      * Creates the menu in the activity bar

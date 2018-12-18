@@ -82,6 +82,9 @@ public class CourseAddEditActivity extends AppCompatActivity
     private int mentorId;
     private int termId;
     private LocalDate termEndDate;
+    private Intent intentFromCaller;
+    private boolean isCoursesActivityCaller = false;
+    private boolean isTermAddEditActivityCaller = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -106,13 +109,15 @@ public class CourseAddEditActivity extends AppCompatActivity
         //endregion
 
         //region set element values
-        Intent intent = getIntent();
-        if (intent.hasExtra(CoursesActivity.EXTRA_ID)) {
-            loadExistingCourseDetails(intent);
-        } else {
-            setTitle("Add Course");
-            contactCourseMentor.setText("Select a Mentor");
-        }
+        intentFromCaller = getIntent();
+
+        isCoursesActivityCaller = intentFromCaller.hasExtra(CoursesActivity.EXTRA_ID) ? true : false;
+        isTermAddEditActivityCaller = intentFromCaller.hasExtra(TermAddEditActivity.EXTRA_COURSE_ID) ? true : false;
+
+        loadExistingCourseDetails(intentFromCaller);
+
+
+
         //endregion
 
         //region set assessment(s) recycler view
@@ -160,24 +165,62 @@ public class CourseAddEditActivity extends AppCompatActivity
      */
     private void loadExistingCourseDetails(Intent intent)
     {
-        setTitle("Edit Course");
-        isExistingCourse = true;
-        courseId = intent.getIntExtra(CoursesActivity.EXTRA_ID, 0);
-        mentorId = intent.getIntExtra(CoursesActivity.EXTRA_MENTORID, 0);
-        termId = intent.getIntExtra(CoursesActivity.EXTRA_TERMID,0);
+        if (isCoursesActivityCaller)
+        {
+            setTitle("Edit Course");
+            isExistingCourse = true;
+            courseId = intent.getIntExtra(CoursesActivity.EXTRA_ID, 0);
+            mentorId = intent.getIntExtra(CoursesActivity.EXTRA_MENTORID, 0);
+            termId = intent.getIntExtra(CoursesActivity.EXTRA_TERMID,0);
 
-        editTextCourseTitle.setText(intent.getStringExtra(CoursesActivity.EXTRA_TITLE));
-        editTextCourseStart.setText(intent.getStringExtra(CoursesActivity.EXTRA_START));
-        editTextCourseEnd.setText(intent.getStringExtra(CoursesActivity.EXTRA_END));
-        contactCourseMentor.setText("Contact Course Mentor");
+            editTextCourseTitle.setText(intent.getStringExtra(CoursesActivity.EXTRA_TITLE));
+                editTextCourseStart.setText(LocalDate.ofEpochDay(
+                        intent.getLongExtra(CoursesActivity.EXTRA_START, 0))
+                        .format(Utils.dateFormatter_MMddyyyy));
+                editTextCourseEnd.setText(LocalDate.ofEpochDay(
+                        intent.getLongExtra(CoursesActivity.EXTRA_END, 0))
+                        .format(Utils.dateFormatter_MMddyyyy));
+            contactCourseMentor.setText("Contact Course Mentor");
 
-        String status = intent.getStringExtra(CoursesActivity.EXTRA_STATUS);
-        if (status == null)
-            textViewCourseEndLabel.setText("Goal");
+            String status = intent.getStringExtra(CoursesActivity.EXTRA_STATUS);
+            if (status == null)
+                textViewCourseEndLabel.setText("Goal");
+            else
+                textViewCourseEndLabel.setText("Completed");
+
+            termEndDate = LocalDate.ofEpochDay(intent.getLongExtra(CoursesActivity.EXTRA_TERM_END, 0));
+        }
+        else if (isTermAddEditActivityCaller)
+        {
+            setTitle("Edit Course");
+            isExistingCourse = true;
+            courseId = intent.getIntExtra(TermAddEditActivity.EXTRA_COURSE_ID, 0);
+            mentorId = intent.getIntExtra(TermAddEditActivity.EXTRA_MENTOR_ID, 0);
+            termId = intent.getIntExtra(TermAddEditActivity.EXTRA_TERM_ID,0);
+
+            editTextCourseTitle.setText(intent.getStringExtra(TermAddEditActivity.EXTRA_TITLE));
+            editTextCourseStart.setText(LocalDate.ofEpochDay(
+                    intent.getLongExtra(TermAddEditActivity.EXTRA_START, 0))
+                .format(Utils.dateFormatter_MMddyyyy));
+            editTextCourseEnd.setText(LocalDate.ofEpochDay(
+                    intent.getLongExtra(TermAddEditActivity.EXTRA_COURSE_END, 0))
+                    .format(Utils.dateFormatter_MMddyyyy));
+            contactCourseMentor.setText("Contact Course Mentor");
+
+            String status = intent.getStringExtra(TermAddEditActivity.EXTRA_STATUS);
+            if (status == null)
+                textViewCourseEndLabel.setText("Goal");
+            else
+                textViewCourseEndLabel.setText("Completed");
+
+            termEndDate = LocalDate.ofEpochDay(intent.getLongExtra(
+                    TermAddEditActivity.EXTRA_TERM_END, 0));
+        }
         else
-            textViewCourseEndLabel.setText("Completed");
-
-        termEndDate = LocalDate.ofEpochDay(intent.getLongExtra(CoursesActivity.EXTRA_TERM_END, 0));
+        {
+            setTitle("Add Course");
+            contactCourseMentor.setText("Select a Mentor");
+        }
     }
 
     /**
@@ -251,7 +294,9 @@ public class CourseAddEditActivity extends AppCompatActivity
 
                 intent.putExtra(EXTRA_ASSESSMENT_COURSE_ID, courseId);
                 startActivityForResult(intent, ADD_ASSESSMENT_REQUEST);
-            } else {
+            }
+            else
+            {
                 Toast.makeText(this,
                         "Please save the course before adding assessments.",
                         Toast.LENGTH_LONG).show();
@@ -302,6 +347,10 @@ public class CourseAddEditActivity extends AppCompatActivity
         LocalDate end = LocalDate.of(Integer.parseInt(e[2]), Integer.parseInt(e[0]), Integer
                 .parseInt(e[1]));
 
+        if(!checkDatesAreAcceptable(start, end, termEndDate))
+            return null;
+
+
         if (start.isAfter(end)) {
             Toast.makeText(this, "Term Start must come before End", Toast.LENGTH_LONG).show();
             return null;
@@ -321,11 +370,56 @@ public class CourseAddEditActivity extends AppCompatActivity
         c.setCourseMentorId(mentorId);
 
         if (isExistingCourse)
+        {
             c.setCourseId(courseId);
+//            c.setTermId(termId);
+        }
 
         return c;
     }
 
+    /**
+     * verifies the course start and end dates are valid for the term and
+     * that the end date does not come before the start date.
+     * @param start
+     * @param end
+     * @param termEndDate
+     * @return
+     */
+    private boolean checkDatesAreAcceptable(LocalDate start, LocalDate end, LocalDate termEndDate)
+    {
+        if (end.isAfter(termEndDate))
+        {
+            Toast.makeText(this,
+                    "The ending date for the course must be less than term end date.",
+                    Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+        //TODO: check the start date is not after end date,
+        if (end.isBefore(start))
+        {
+            Toast.makeText(this,
+                    "The ending date must come on or before the course end date",
+                    Toast.LENGTH_LONG).show();
+            return false;
+        }
+        //TODO: check the start date is not before term start
+//        if (true)
+//        {
+//            return false;
+//        }
+
+        return true;
+    }
+
+    /**
+     * Determines the status of the course based on the result of the
+     * associated assessments. If no assessments present, the status will
+     * show pending. To show as passed, both Objective and Performance
+     * assessments must have at least one assessment marked as passed.
+     * @return
+     */
     private String determineCourseStatus()
     {
         LocalDate now = LocalDate.now();
@@ -377,14 +471,28 @@ public class CourseAddEditActivity extends AppCompatActivity
         Course course = createCourseObj();
         Intent data = new Intent();
 
-        if (course.getCourseId() != 0)
-            data.putExtra(CoursesActivity.EXTRA_ID, courseId);
-        data.putExtra(CoursesActivity.EXTRA_TITLE, course.getTitle());
-        data.putExtra(CoursesActivity.EXTRA_START, course.getStartDate().toEpochDay());
-        data.putExtra(CoursesActivity.EXTRA_END, course.getEndDate().toEpochDay());
-        data.putExtra(CoursesActivity.EXTRA_STATUS, course.getStatus());
-        data.putExtra(CoursesActivity.EXTRA_TERMID, course.getTermId());
-        data.putExtra(CoursesActivity.EXTRA_MENTORID, course.getCourseMentorId());
+        if (isCoursesActivityCaller)
+        {
+            if (course.getCourseId() != 0)
+                data.putExtra(CoursesActivity.EXTRA_ID, courseId);
+            data.putExtra(CoursesActivity.EXTRA_TITLE, course.getTitle());
+            data.putExtra(CoursesActivity.EXTRA_START, course.getStartDate().toEpochDay());
+            data.putExtra(CoursesActivity.EXTRA_END, course.getEndDate().toEpochDay());
+            data.putExtra(CoursesActivity.EXTRA_STATUS, course.getStatus());
+            data.putExtra(CoursesActivity.EXTRA_TERMID, course.getTermId());
+            data.putExtra(CoursesActivity.EXTRA_MENTORID, course.getCourseMentorId());
+        }
+        else
+        {
+            if (course.getCourseId() != 0)
+                data.putExtra(TermAddEditActivity.EXTRA_COURSE_ID, courseId);
+            data.putExtra(TermAddEditActivity.EXTRA_TITLE, course.getTitle());
+            data.putExtra(TermAddEditActivity.EXTRA_START, course.getStartDate().toEpochDay());
+            data.putExtra(TermAddEditActivity.EXTRA_COURSE_END, course.getEndDate().toEpochDay());
+            data.putExtra(TermAddEditActivity.EXTRA_STATUS, course.getStatus());
+            data.putExtra(TermAddEditActivity.EXTRA_TERM_ID, course.getTermId());
+            data.putExtra(TermAddEditActivity.EXTRA_MENTOR_ID, course.getCourseMentorId());
+        }
 
         setResult(RESULT_OK, data);
         finish();

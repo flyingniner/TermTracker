@@ -67,6 +67,9 @@ public class TermAdapter extends ListAdapter<Term, TermAdapter.TermHolder>
             case Status.IN_PROGRESS:
                 holder.imageViewProgressIcon.setImageResource(R.drawable.ic_inprogress_72dp);
                 break;
+            case Status.INCOMPLETE:
+                holder.imageViewProgressIcon.setImageResource(R.drawable.ic_incomplete_72dp);
+                break;
         }
 
     }

@@ -1,5 +1,6 @@
 package com.termtacker;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class CourseAdapter extends ListAdapter<Course, CourseAdapter.CourseHolder>
 {
+    public static final String TAG = CourseAdapter.class.getCanonicalName();
     private CourseAdapter.onItemClickListener listener;
     int courseTermIntentID = 7;
 
@@ -79,6 +81,11 @@ public class CourseAdapter extends ListAdapter<Course, CourseAdapter.CourseHolde
                 break;
         }
 
+        Log.d(TAG, "id: " + currentCourse.getCourseId() +
+        "\tname: " + currentCourse.getTitle() +
+        "\tstart: " + currentCourse.getStartDate().format(Utils.dateFormatter_MMddyyyy) +
+        "\tend: " + currentCourse.getEndDate().format(Utils.dateFormatter_MMddyyyy) +
+        "\tstatus: " + currentCourse.getStatus());
 
 
     }

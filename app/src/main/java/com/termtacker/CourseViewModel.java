@@ -52,4 +52,9 @@ public class CourseViewModel extends AndroidViewModel
     {
         return termRepository.getTermEndDate(termId);
     }
+
+    public List<Course> getStaticFilteredCourses(int termId)
+    {
+        return repository.getStaticCoursesForTerm(termId);
+    }
 }

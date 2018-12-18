@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class TermActivity extends AppCompatActivity
 {
@@ -66,8 +67,8 @@ public class TermActivity extends AppCompatActivity
                 Intent intent = new Intent(TermActivity.this, TermAddEditActivity.class);
                 intent.putExtra(EXTRA_ID, term.getTermId());
                 intent.putExtra(EXTRA_TITLE, term.getTitle());
-                intent.putExtra(EXTRA_START, term.getStartDate().format(Utils.dateFormatter_MMddyyyy));
-                intent.putExtra(EXTRA_END, term.getEndDate().format(Utils.dateFormatter_MMddyyyy));
+                intent.putExtra(EXTRA_START, term.getStartDate().toEpochDay());
+                intent.putExtra(EXTRA_END, term.getEndDate().toEpochDay());
                 intent.putExtra(EXTRA_STATUS, term.getStatus());
                 startActivityForResult(intent, EDIT_TERM_REQUEST);
             }
@@ -133,11 +134,8 @@ public class TermActivity extends AppCompatActivity
             title = data.getStringExtra(EXTRA_TITLE);
             start = LocalDate.ofEpochDay(data.getLongExtra(EXTRA_START, 0));
             end = LocalDate.ofEpochDay(data.getLongExtra(EXTRA_END, 0));
-
-            Log.d(TAG, "return Start: " + start.format(Utils.dateFormatter_MMddyyyy));
-            Log.d(TAG, "return End: " + end.format(Utils.dateFormatter_MMddyyyy));
-
-            status = determineStatusForTerm(start, end);
+            int termId = data.getIntExtra(EXTRA_ID, 0);
+            status = determineStatusForTerm(start, end, termId);
 
             if (requestCode == EDIT_TERM_REQUEST) {
                 id = data.getIntExtra(EXTRA_ID, -1);
@@ -153,18 +151,53 @@ public class TermActivity extends AppCompatActivity
 
     }
 
-    private String determineStatusForTerm(LocalDate start, LocalDate end)
+    private String determineStatusForTerm(LocalDate start, LocalDate end, int termId)
     {
-        String status;
+        CourseViewModel courseViewModel = ViewModelProviders.of(TermActivity.this).get(CourseViewModel.class);
+        List<Course> courseList = courseViewModel.getStaticFilteredCourses(termId);
         LocalDate now = LocalDate.now();
-        if (start.isAfter(now)) {
-            status = Status.PENDING;
-        } else if ((start.isEqual(now) || start.isBefore(now)) && end.isAfter(now)) {
-            status = Status.IN_PROGRESS;
 
-        } else {
-            status = Status.COMPLETED;
+        if (start.isAfter(now)) //term hasn't started
+        {
+            return Status.PENDING;
         }
-        return status;
+
+        if (end.isAfter(now)) //term has started and is in progress
+        {
+            return Status.IN_PROGRESS;
+        }
+
+        for (Course c : courseList)
+        {
+            String status = c.getStatus();
+
+            if (status.equals(Status.INCOMPLETE))
+            {
+                return Status.INCOMPLETE;
+            }
+        }
+
+        return Status.COMPLETED;
+//
+//
+//
+//
+//        String status = Status.PASSED;
+//        for (Course c : courseList)
+//        {
+//
+//
+//        }
+//
+//        LocalDate now = LocalDate.now();
+//        if (start.isAfter(now)) {
+//            status = Status.PENDING;
+//        } else if ((start.isEqual(now) || start.isBefore(now)) && end.isAfter(now)) {
+//            status = Status.IN_PROGRESS;
+//
+//        } else {
+//            status = Status.COMPLETED;
+//        }
+//        return status;
     }
 }

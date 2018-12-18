@@ -59,6 +59,23 @@ public class CourseRepository
         return courseDao.getTitlesForUnCompletedCourses();
     }
 
+    public List<Course> getStaticCoursesForTerm(int termId)
+    {
+
+        List<Course> courses = courseDao.getStaticCourses();
+        List<Course> filtered = new ArrayList<>();
+        courses.forEach(x -> {
+            if (x.getTermId() == termId)
+                filtered.add(x);
+                }
+        );
+
+        return filtered;
+
+
+
+    }
+
     public LiveData<List<Course>> getCoursesForTerm(int termId)
     {
         LiveData<List<Course>> filteredData = Transformations.map(courses, newDataSet -> {

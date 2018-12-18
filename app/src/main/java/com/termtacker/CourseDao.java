@@ -37,4 +37,7 @@ public interface CourseDao
 
     @Query("SELECT COURSE_ID FROM COURSES WHERE COURSE_TITLE = :courseName")
     int getCourseId(String courseName);
+
+    @Query("SELECT * FROM COURSES")
+    List<Course> getStaticCourses();
 }

@@ -70,8 +70,8 @@ public class CoursesActivity extends AppCompatActivity
             Intent intent = new Intent(this, CourseAddEditActivity.class);
             intent.putExtra(EXTRA_ID, course.getCourseId());
             intent.putExtra(EXTRA_TITLE, course.getTitle());
-            intent.putExtra(EXTRA_START, course.getStartDate().format(Utils.dateFormatter_MMddyyyy).toString());
-            intent.putExtra(EXTRA_END, course.getEndDate().format(Utils.dateFormatter_MMddyyyy).toString());
+            intent.putExtra(EXTRA_START, course.getStartDate().toEpochDay());
+            intent.putExtra(EXTRA_END, course.getEndDate().toEpochDay());
             intent.putExtra(EXTRA_STATUS, course.getStatus());
             intent.putExtra(EXTRA_TERMID, course.getTermId());
             intent.putExtra(EXTRA_MENTORID, course.getCourseMentorId());
