@@ -139,23 +139,23 @@ public class AssessmentsActivity extends AppCompatActivity
         {
             assessment.setAssessmentCode(data.getStringExtra(EXTRA_ASSESSMENT_CODE));
             assessment.setAssessmentType(data.getStringExtra(EXTRA_ASSESSMENT_TYPE));
+            assessment.setResult(data.getStringExtra(EXTRA_ASSESSMENT_RESULT));
+
             LocalDate date = LocalDate.ofEpochDay(data.getLongExtra(EXTRA_ASSESSMENT_SCHEDULED, 0));
             assessment.setAssessmentDate(date);
 
-            String courseName = data.getStringExtra(EXTRA_ASSESSMENT_COURSE_NAME);
-            assessment.setCourseId(courseViewModel.getCourseId(courseName));
-
-            assessment.setResult(data.getStringExtra(EXTRA_ASSESSMENT_RESULT));
-
             if (requestCode == EDIT_ASSESSMENT_REQUEST)
             {
-                int assessmentID = data.getIntExtra(EXTRA_ID,0);
-                assessment.setAssessmentId(assessmentID);
+                assessment.setAssessmentId(data.getIntExtra(EXTRA_ID,0));
+                assessment.setCourseId(courseViewModel.getCourseId(data.getStringExtra(EXTRA_ASSESSMENT_COURSE_NAME)));
                 assessmentViewModel.updateAssessment(assessment);
                 Toast.makeText(this,"Assessment updated",Toast.LENGTH_LONG).show();
             }
             else
             {
+                String courseName = data.getStringExtra(EXTRA_ASSESSMENT_COURSE_NAME);
+                assessment.setCourseId(courseViewModel.getCourseId(courseName));
+
                 assessmentViewModel.insertAssessment(assessment);
                 Toast.makeText(this,"Assessment added",Toast.LENGTH_LONG).show();
             }

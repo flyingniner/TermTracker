@@ -37,6 +37,7 @@ public class AssessmentAddEditActivity extends AppCompatActivity
     //endregion
 
     //region fields
+    private int assessmentId;
     private String assessmentType;
     private String courseName;
     private Calendar calendar;
@@ -57,8 +58,10 @@ public class AssessmentAddEditActivity extends AppCompatActivity
 
         intentFromCaller = getIntent();
 
-        if (intentFromCaller.hasExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_ID))
+        if (intentFromCaller.hasExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_COURSE_ID))
+        {
             isCourseAddEditActivityCaller = true;
+        }
 
         loadAssessmentTypeSpinner();
         loadCoursesSpinner();
@@ -70,6 +73,20 @@ public class AssessmentAddEditActivity extends AppCompatActivity
         checkBoxResultPassed = findViewById(R.id.assessment_add_edit_passed);
         checkBoxResultApproaching = findViewById(R.id.assessment_add_edit_not_passed);
         buttonSave = findViewById(R.id.assessment_add_edit_save);
+
+        checkBoxResultPassed.setOnClickListener(listener -> {
+            if (checkBoxResultPassed.isChecked())
+            {
+                checkBoxResultApproaching.setChecked(false);
+            }
+        });
+
+        checkBoxResultApproaching.setOnClickListener(listener -> {
+            if (checkBoxResultApproaching.isChecked())
+            {
+                checkBoxResultPassed.setChecked(false);
+            }
+        });
 
         datePicker.setOnClickListener(new View.OnClickListener()
         {
@@ -115,15 +132,30 @@ public class AssessmentAddEditActivity extends AppCompatActivity
     {
         if (!isCourseAddEditActivityCaller) //if true, the caller was AssessmentsActivity
         {
-            editTextAssessmentCode.setText(intentFromCaller.getStringExtra(AssessmentsActivity.EXTRA_ASSESSMENT_CODE));
-            editTextScheduled.setText(intentFromCaller.getStringExtra(AssessmentsActivity.EXTRA_ASSESSMENT_SCHEDULED));
+            assessmentId = intentFromCaller.getIntExtra(AssessmentsActivity.EXTRA_ID, 0);
+            String passedResult;
+            if (assessmentId == 0)
+            {
+                passedResult = Status.PENDING;
+            }
+            else
+            {
+                passedResult = intentFromCaller.getStringExtra(AssessmentsActivity.EXTRA_ASSESSMENT_RESULT);
 
-            String passedResult = intentFromCaller.getStringExtra(AssessmentsActivity.EXTRA_ASSESSMENT_RESULT);
+                editTextAssessmentCode.setText(intentFromCaller
+                    .getStringExtra(AssessmentsActivity.EXTRA_ASSESSMENT_CODE));
+                editTextScheduled.setText(intentFromCaller
+                    .getStringExtra(AssessmentsActivity.EXTRA_ASSESSMENT_SCHEDULED));
+            }
 
             if (passedResult.equals(Status.PASSED))
+            {
                 checkBoxResultPassed.setChecked(true);
+            }
             else if (passedResult.equals(Status.APPROACHING))
+            {
                 checkBoxResultApproaching.setChecked(true);
+            }
             else
             {
                 checkBoxResultPassed.setChecked(false);
@@ -133,18 +165,32 @@ public class AssessmentAddEditActivity extends AppCompatActivity
 
         if (isCourseAddEditActivityCaller) //if true, the caller was CoursesAddEditActivity
         {
-            editTextAssessmentCode.setText(
-                    intentFromCaller.getStringExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_CODE));
-            editTextScheduled.setText(
-                    intentFromCaller.getStringExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_SCHEDULED));
+            assessmentId = intentFromCaller.getIntExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_ID, 0);
+            String passedResult;
+            if (assessmentId == 0)
+            {
+                passedResult = Status.PENDING;
+            }
+            else
+            {
+                passedResult = intentFromCaller.getStringExtra(
+                        CourseAddEditActivity.EXTRA_ASSESSMENT_RESULT);
 
-            String passedResult = intentFromCaller.getStringExtra(
-                    CourseAddEditActivity.EXTRA_ASSESSMENT_RESULT);
+                editTextAssessmentCode.setText(
+                        intentFromCaller.getStringExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_CODE));
+                editTextScheduled.setText(
+                        intentFromCaller.getStringExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_SCHEDULED));
+
+            }
 
             if (passedResult.equals(Status.PASSED))
+            {
                 checkBoxResultPassed.setChecked(true);
+            }
             else if (passedResult.equals(Status.APPROACHING))
+            {
                 checkBoxResultApproaching.setChecked(true);
+            }
             else
             {
                 checkBoxResultPassed.setChecked(false);
@@ -266,8 +312,6 @@ public class AssessmentAddEditActivity extends AppCompatActivity
      */
     private void saveAssessment(Intent intentFromCaller)
     {
-
-
         String code = editTextAssessmentCode.getText().toString();
 
         String type = assessmentTypeSpinner.getSelectedItem().toString();
@@ -307,25 +351,24 @@ public class AssessmentAddEditActivity extends AppCompatActivity
 
         if (!isCourseAddEditActivityCaller) //the caller was AssessmentsActivity
         {
-            int id = getIntent().getIntExtra(AssessmentsActivity.EXTRA_ID, 0);
-            if (id > 0)
-                data.putExtra(AssessmentsActivity.EXTRA_ID,id);
+            if (assessmentId > 0)
+                data.putExtra(AssessmentsActivity.EXTRA_ID,assessmentId);
+
             data.putExtra(AssessmentsActivity.EXTRA_ASSESSMENT_CODE, code);
             data.putExtra(AssessmentsActivity.EXTRA_ASSESSMENT_TYPE, type);
             data.putExtra(AssessmentsActivity.EXTRA_ASSESSMENT_COURSE_NAME, courseName);
             data.putExtra(AssessmentsActivity.EXTRA_ASSESSMENT_RESULT, result);
             data.putExtra(AssessmentsActivity.EXTRA_ASSESSMENT_SCHEDULED, scheduled.toEpochDay());
-
         }
 
         else //the caller was CoursesAddEditActivity
         {
-            int id = getIntent().getIntExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_ID, 0);
-            if (id > 0)
-                data.putExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_ID,id);
+            if (assessmentId > 0)
+                data.putExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_ID, assessmentId);
+
             data.putExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_CODE, code);
             data.putExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_TYPE, type);
-            data.putExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_COURSE_NAME, courseName);
+//            data.putExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_COURSE_NAME, courseName);
             data.putExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_RESULT, result);
             data.putExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_SCHEDULED, scheduled.toEpochDay());
         }

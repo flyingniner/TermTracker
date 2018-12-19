@@ -112,7 +112,7 @@ public class CourseAddEditActivity extends AppCompatActivity
         intentFromCaller = getIntent();
 
         isCoursesActivityCaller = intentFromCaller.hasExtra(CoursesActivity.EXTRA_ID) ? true : false;
-        isTermAddEditActivityCaller = intentFromCaller.hasExtra(TermAddEditActivity.EXTRA_COURSE_ID) ? true : false;
+        isTermAddEditActivityCaller = intentFromCaller.hasExtra(TermAddEditActivity.EXTRA_TERM_ID) ? true : false;
 
         loadExistingCourseDetails(intentFromCaller);
 
@@ -192,34 +192,40 @@ public class CourseAddEditActivity extends AppCompatActivity
         }
         else if (isTermAddEditActivityCaller)
         {
-            setTitle("Edit Course");
-            isExistingCourse = true;
-            courseId = intent.getIntExtra(TermAddEditActivity.EXTRA_COURSE_ID, 0);
-            mentorId = intent.getIntExtra(TermAddEditActivity.EXTRA_MENTOR_ID, 0);
-            termId = intent.getIntExtra(TermAddEditActivity.EXTRA_TERM_ID,0);
+            if (intent.getIntExtra(TermAddEditActivity.EXTRA_COURSE_ID, 0) > 0)
+            {
+                setTitle("Edit Course");
+                isExistingCourse = true;
 
-            editTextCourseTitle.setText(intent.getStringExtra(TermAddEditActivity.EXTRA_TITLE));
-            editTextCourseStart.setText(LocalDate.ofEpochDay(
-                    intent.getLongExtra(TermAddEditActivity.EXTRA_START, 0))
-                .format(Utils.dateFormatter_MMddyyyy));
-            editTextCourseEnd.setText(LocalDate.ofEpochDay(
-                    intent.getLongExtra(TermAddEditActivity.EXTRA_COURSE_END, 0))
+                courseId = intent.getIntExtra(TermAddEditActivity.EXTRA_COURSE_ID, 0);
+                mentorId = intent.getIntExtra(TermAddEditActivity.EXTRA_MENTOR_ID, 0);
+                termId = intent.getIntExtra(TermAddEditActivity.EXTRA_TERM_ID,0);
+
+                editTextCourseTitle.setText(intent.getStringExtra(TermAddEditActivity.EXTRA_TITLE));
+                editTextCourseStart.setText(LocalDate.ofEpochDay(
+                        intent.getLongExtra(TermAddEditActivity.EXTRA_START, 0))
                     .format(Utils.dateFormatter_MMddyyyy));
-            contactCourseMentor.setText("Contact Course Mentor");
+                editTextCourseEnd.setText(LocalDate.ofEpochDay(
+                        intent.getLongExtra(TermAddEditActivity.EXTRA_COURSE_END, 0))
+                        .format(Utils.dateFormatter_MMddyyyy));
+                contactCourseMentor.setText("Contact Course Mentor");
 
-            String status = intent.getStringExtra(TermAddEditActivity.EXTRA_STATUS);
-            if (status == null)
-                textViewCourseEndLabel.setText("Goal");
+                String status = intent.getStringExtra(TermAddEditActivity.EXTRA_STATUS);
+                if (status == null)
+                    textViewCourseEndLabel.setText("Goal");
+                else
+                    textViewCourseEndLabel.setText("Completed");
+
+            }
+
             else
-                textViewCourseEndLabel.setText("Completed");
+            {
+                setTitle("Add Course");
+                contactCourseMentor.setText("Select a Mentor");
+            }
 
             termEndDate = LocalDate.ofEpochDay(intent.getLongExtra(
                     TermAddEditActivity.EXTRA_TERM_END, 0));
-        }
-        else
-        {
-            setTitle("Add Course");
-            contactCourseMentor.setText("Select a Mentor");
         }
     }
 
@@ -292,7 +298,10 @@ public class CourseAddEditActivity extends AppCompatActivity
             if (isExistingCourse) {
                 Intent intent = new Intent(CourseAddEditActivity.this, AssessmentAddEditActivity.class);
 
+                //TODO: try to add a new assessment to Intro to Programming, check
+                //that the courseId is getting added.
                 intent.putExtra(EXTRA_ASSESSMENT_COURSE_ID, courseId);
+
                 startActivityForResult(intent, ADD_ASSESSMENT_REQUEST);
             }
             else
@@ -351,10 +360,10 @@ public class CourseAddEditActivity extends AppCompatActivity
             return null;
 
 
-        if (start.isAfter(end)) {
-            Toast.makeText(this, "Term Start must come before End", Toast.LENGTH_LONG).show();
-            return null;
-        }
+//        if (start.isAfter(end)) {
+//            Toast.makeText(this, "Term Start must come before End", Toast.LENGTH_LONG).show();
+//            return null;
+//        }
 
 //        int termId = Integer.parseInt(editTextCourseTermId.getText().toString());
 
@@ -429,36 +438,62 @@ public class CourseAddEditActivity extends AppCompatActivity
         boolean hasObjectiveAssessment = false;
         boolean hasPerformanceAssessment = false;
 
-
-        for (Assessment a : assessmentViewModel.getNonObservableAssessmentsForCourse(courseId))
+        if (courseId > 0)
         {
-            if (a.getAssessmentType().equals("Objective"))
-                hasObjectiveAssessment = true;
-            if (a.getAssessmentType().equals("Performance"))
-                hasPerformanceAssessment = true;
+            for (Assessment a : assessmentViewModel.getNonObservableAssessmentsForCourse(courseId))
+            {
+                if (a.getAssessmentType().equals("Objective"))
+                {
+                    hasObjectiveAssessment = true;
+                    if (a.getResult().equals(Status.PASSED))
+                    {
+                        objStatus = Status.PASSED;
+                    }
+                }
+                if (a.getAssessmentType().equals("Performance"))
+                {
+                    hasPerformanceAssessment = true;
+                    if (a.getResult().equals(Status.PASSED))
+                    {
+                        perStatus = Status.PASSED;
+                    }
+                }
+            }
+        }
 
-            if (a.getAssessmentType().equals("Objective") && a.getResult().equals(Status.PASSED))
-                objStatus = Status.PASSED;
-            if (a.getAssessmentType().equals("Performance") && a.getResult().equals(Status.PASSED))
-                objStatus = Status.PASSED;
-
+        if (hasObjectiveAssessment && hasPerformanceAssessment)
+        {
             if (objStatus.equals(Status.PASSED) && perStatus.equals(Status.PASSED))
+            {
                 return Status.COMPLETED;
+            }
+        }
 
-            if (objStatus.equals(Status.PASSED) && hasPerformanceAssessment == false)
+        else if (hasObjectiveAssessment && !hasPerformanceAssessment)
+        {
+            if (objStatus.equals(Status.PASSED))
+            {
                 return Status.COMPLETED;
+            }
+        }
 
-            if (perStatus.equals(Status.PASSED) && hasObjectiveAssessment == false)
+        else if (!hasObjectiveAssessment && hasPerformanceAssessment)
+        {
+            if (perStatus.equals(Status.PASSED))
+            {
                 return Status.COMPLETED;
+            }
         }
 
         // if jun 30 < today or = today, return in-progress
         // if today > jun 30, reurn incomplete
-        if (termEndDate.isAfter(now) || termEndDate.isEqual(now))
+        else if (termEndDate.isAfter(now) || termEndDate.isEqual(now))
         {
             return Status.IN_PROGRESS;
         }
-        else return Status.INCOMPLETE;
+
+        //if you get here, the course is incomplete
+        return Status.INCOMPLETE;
 
     }
 
@@ -469,6 +504,11 @@ public class CourseAddEditActivity extends AppCompatActivity
     private void saveCourse()
     {
         Course course = createCourseObj();
+        if (course == null)
+        {
+            Toast.makeText(this, "Message not saved...", Toast.LENGTH_LONG).show();
+            return;
+        }
         Intent data = new Intent();
 
         if (isCoursesActivityCaller)
@@ -577,36 +617,24 @@ public class CourseAddEditActivity extends AppCompatActivity
             contactCourseMentor.setText("Contact Course Mentor");
         }
 
-        if (requestCode == ADD_ASSESSMENT_REQUEST) {
-            Assessment assessment = new Assessment();
-            assessment.setAssessmentDate(LocalDate.ofEpochDay(data.getLongExtra(
-                    AssessmentsActivity.EXTRA_ASSESSMENT_SCHEDULED,
-                    0)));
+        Assessment assessment = new Assessment();
 
-            assessment.setAssessmentType(data.getStringExtra(AssessmentsActivity.EXTRA_ASSESSMENT_TYPE));
-            assessment.setAssessmentCode(data.getStringExtra(AssessmentsActivity.EXTRA_ASSESSMENT_CODE));
+        assessment.setAssessmentCode(data.getStringExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_CODE));
+        assessment.setAssessmentType(data.getStringExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_TYPE));
+        assessment.setResult(data.getStringExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_RESULT));
+        assessment.setCourseId(courseId);
+        assessment.setAssessmentDate(LocalDate.ofEpochDay(data.getLongExtra(
+                CourseAddEditActivity.EXTRA_ASSESSMENT_SCHEDULED,
+                0)));
 
-            assessment.setResult(data.getStringExtra(AssessmentsActivity.EXTRA_ASSESSMENT_RESULT));
-            assessment.setCourseId(courseId);
-
+        if (requestCode == ADD_ASSESSMENT_REQUEST)
+        {
             assessmentViewModel.insertAssessment(assessment);
         }
 
         if (requestCode == EDIT_ASSESSMENT_REQUEST)
         {
-            Assessment assessment = new Assessment();
             assessment.setAssessmentId(data.getIntExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_ID, 0));
-
-            assessment.setAssessmentDate(LocalDate.ofEpochDay(data.getLongExtra(
-                    CourseAddEditActivity.EXTRA_ASSESSMENT_SCHEDULED,
-                    0)));
-
-            assessment.setAssessmentType(data.getStringExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_TYPE));
-            assessment.setAssessmentCode(data.getStringExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_CODE));
-
-            assessment.setResult(data.getStringExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_RESULT));
-            assessment.setCourseId(courseId);
-
             assessmentViewModel.updateAssessment(assessment);
         }
     }

@@ -188,9 +188,10 @@ public class TermAddEditActivity extends AppCompatActivity
             Intent intent = new Intent(
                     TermAddEditActivity.this, CourseAddEditActivity.class);
             intent.putExtra(EXTRA_TERM_ID, termId);
-            intent.putExtra(EXTRA_TERM_END, termEndDate.toEpochDay());
             intent.putExtra(EXTRA_TERM_START, termStartDate.toEpochDay());
+            intent.putExtra(EXTRA_TERM_END, termEndDate.toEpochDay());
 
+            startActivityForResult(intent, TERM_ADDEDIT_ADDCOURSEREQUEST);
         });
     }
 

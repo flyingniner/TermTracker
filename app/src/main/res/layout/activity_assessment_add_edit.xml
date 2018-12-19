@@ -98,6 +98,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="02/15/2018"
+        android:inputType="date"
         android:layout_below="@id/assessment_add_edit_date_label"/>
 
     <ImageButton

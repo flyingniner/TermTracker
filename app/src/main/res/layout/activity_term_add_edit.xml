@@ -46,6 +46,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/edit_term_start_label"
             android:hint="01/01/2018"
+            android:inputType="date"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
         <ImageButton
@@ -74,6 +75,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/edit_term_end_label"
             android:hint="06/30/2018"
+            android:inputType="date"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
         <ImageButton
