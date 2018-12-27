@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,28 +19,34 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TermActivity"
-            android:parentActivityName=".MainActivity" />
+            android:name=".activities.TermActivity"
+            android:parentActivityName=".activities.MainActivity" />
         <activity
-            android:name=".TermAddEditActivity"
-            android:parentActivityName=".TermActivity" />
+            android:name=".activities.TermAddEditActivity"
+            android:parentActivityName=".activities.TermActivity" />
         <activity
-            android:name=".CourseAddEditActivity"
-            android:parentActivityName=".CoursesActivity" />
+            android:name=".activities.CourseAddEditActivity"
+            android:parentActivityName=".activities.CoursesActivity" />
         <activity
-            android:name=".CoursesActivity"
-            android:parentActivityName=".MainActivity" />
+            android:name=".activities.CoursesActivity"
+            android:parentActivityName=".activities.MainActivity" />
         <activity
-            android:name=".SelectMentorActivity"
-            android:parentActivityName=".CourseAddEditActivity" />
+            android:name=".activities.SelectMentorActivity"
+            android:parentActivityName=".activities.CourseAddEditActivity" />
         <activity
-            android:name=".AssessmentAddEditActivity"
-            android:parentActivityName=".AssessmentsActivity" />
+            android:name=".activities.AssessmentAddEditActivity"
+            android:parentActivityName=".activities.AssessmentsActivity" />
         <activity
-            android:name=".AssessmentsActivity"
-            android:parentActivityName=".MainActivity" />
-        <activity android:name=".NotesActivity" />
-        <activity android:name=".NoteAddEditActivity"></activity>
+            android:name=".activities.AssessmentsActivity"
+            android:parentActivityName=".activities.MainActivity" />
+        <activity android:name=".activities.NotesActivity" />
+        <activity android:name=".activities.NoteAddEditActivity" />
+        <activity android:name=".activities.CourseAlertActivity" />
+
+        <receiver
+            android:name=".utilities.TermReceiver"
+            android:enabled="true"
+            android:exported="true"></receiver>
     </application>
 
 </manifest>

@@ -1,4 +1,7 @@
 <resources>
+    <!--Assessments-->
+
+
     <string name="app_name">WGU TermTracker</string>
     <string name="startLabel">Start</string>
     <string name="goalLabel">Goal</string>
@@ -13,16 +16,17 @@
     <string name="endingLabel">Ends</string>
     <string name="course_title_label">Course Name</string>
     <string name="course_code_label">Course Code</string>
-    <string name="go_to_terms">Terms</string>
-    <string name="go_to_assessments">Assessments</string>
-    <string name="go_to_courses">Courses</string>
-    <string name="got_to_mentors">Mentors</string>
-    <string name="go_to_mentors">Mentors</string>
     <string name="assessmentTypePre">PreAssessment</string>
     <string name="assessmentTypeObj">Objective</string>
     <string name="assessmentTypePrj">Performance</string>
     <string name="spinner_assessment_type">Select an assessment type...</string>
     <string name="spinner_course_name">Select a course...</string>
 
-
-</resources>
+  <!--Menu-->
+    <string name="home">Home</string>
+    <string name="set_course_reminders">Set Course Reminders</string>
+    <string name="go_to_terms">Terms</string>
+    <string name="go_to_assessments">Assessments</string>
+    <string name="go_to_courses">Courses</string>
+    <string name="go_to_mentors">Mentors</string>
+  </resources>
