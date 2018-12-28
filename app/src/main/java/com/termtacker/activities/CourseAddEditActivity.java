@@ -717,10 +717,11 @@ public class CourseAddEditActivity extends AppCompatActivity
                 return true;
             case R.id.go_to_course_reminder:
                 intent = new Intent(this, CourseAlertActivity.class);
-                //TODO: update placeholder values with values from this course, call the checks first...
-                intent.putExtra(CourseAddEditActivity.EXTRA_ALERT_COURSE_NAME, "Course ABC");
-                intent.putExtra(CourseAddEditActivity.EXTRA_ALERT_COURSE_START, "12/01/2018");
-                intent.putExtra(CourseAddEditActivity.EXTRA_ALERT_COURSE_END, "12/05/2018");
+                intent.putExtra(CourseAddEditActivity.EXTRA_ALERT_COURSE_NAME, editTextCourseTitle.getText().toString());
+                intent.putExtra(CourseAddEditActivity.EXTRA_ALERT_COURSE_START,
+                        Utils.convertStringDate(editTextCourseStart.getText().toString()).toEpochDay());
+                intent.putExtra(CourseAddEditActivity.EXTRA_ALERT_COURSE_END,
+                        Utils.convertStringDate(editTextCourseEnd.getText().toString()).toEpochDay());
 
                 startActivityForResult(intent, ADD_ALERT_REQUEST);
                 return true;

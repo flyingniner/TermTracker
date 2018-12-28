@@ -29,4 +29,5 @@
     <string name="go_to_assessments">Assessments</string>
     <string name="go_to_courses">Courses</string>
     <string name="go_to_mentors">Mentors</string>
-  </resources>
+    <string name="notification_name">TermTrackerNotices</string>
+</resources>

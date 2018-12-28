@@ -20,11 +20,15 @@ import com.termtacker.utilities.TermReceiver;
 import com.termtacker.utilities.Utils;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CourseAlertActivity extends AppCompatActivity
 {
+    private int courseId;
     private TextView courseName;
     private TextView courseStart;
     private TextView courseEnd;
@@ -34,6 +38,7 @@ public class CourseAlertActivity extends AppCompatActivity
 
     public static final String EXTRA_TITLE = "com.termtracker.CourseAlertActivity_EXTRA_TITLE";
     public static final String EXTRA_DESCRIPTION = "com.termtracker.CourseAlertActivity_EXTRA_DESCRIPTION";
+    public static final String EXTRA_COURSE_ID = "com.termtracker.CourseAlertActivity_EXTRA_COURSE_ID";
 
 
     @Override
@@ -55,18 +60,37 @@ public class CourseAlertActivity extends AppCompatActivity
             public void onClick(View v)
             {
                 Intent data = new Intent(CourseAlertActivity.this, TermReceiver.class);
-
+                AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                 List<String> alerts = createAlertTitle();
                 for (String s : alerts)
                 {
                     data.putExtra(CourseAlertActivity.EXTRA_TITLE, s);
                     data.putExtra(CourseAlertActivity.EXTRA_DESCRIPTION, createAlertDesc(s));
+                    data.putExtra(CourseAlertActivity.EXTRA_COURSE_ID, courseId);
 
-                    PendingIntent sender = PendingIntent.getBroadcast(CourseAlertActivity.this, 0, data, 0);
+                    PendingIntent sender;
 
-                    //TODO: set the correct reminder date/time...d
-                    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                    alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, sender);
+//                    //TODO: set the correct reminder date/time...d
+//                    LocalDateTime start = Utils.convertStringDate(courseStart.getText().toString()).atStartOfDay().plusHours(8);
+//                    LocalDateTime end = Utils.convertStringDate(courseEnd.getText().toString()).atStartOfDay().plusHours(8);
+
+
+
+                    if (s.contains("starts"))
+                    {
+                        sender = PendingIntent.getBroadcast(CourseAlertActivity.this, 0, data, 0);
+                        alarmManager.setExact(AlarmManager.RTC_WAKEUP,
+                                Utils.convertStringDateToMillis(courseStart.getText().toString()),
+                                sender);
+                    }
+                    else
+                    {
+                        sender = PendingIntent.getBroadcast(CourseAlertActivity.this, 1, data, 0);
+                        alarmManager.setExact(AlarmManager.RTC_WAKEUP,
+                                Utils.convertStringDateToMillis(courseEnd.getText().toString()),
+                                sender);
+                    }
+
                 }
 
                 setResult(RESULT_OK, data);
@@ -87,10 +111,10 @@ public class CourseAlertActivity extends AppCompatActivity
     {
         List<String> alertTitles = new ArrayList<>();
         if (startReminder.isChecked()) {
-            alertTitles.add(new String(courseName + " starts today!"));
+            alertTitles.add(new String(courseName.getText().toString() + " starts today!"));
         }
         if (endReminder.isChecked()) {
-            alertTitles.add(new String(courseName + " ends today!"));
+            alertTitles.add(new String(courseName.getText().toString() + " ends today!"));
         }
         return alertTitles;
     }
@@ -99,6 +123,7 @@ public class CourseAlertActivity extends AppCompatActivity
     {
         Intent intent = getIntent();
 
+        courseId = intent.getIntExtra(CourseAddEditActivity.EXTRA_ALERT_COURSE_ID, 0);
         courseName.setText(intent.getStringExtra(CourseAddEditActivity.EXTRA_ALERT_COURSE_NAME));
         courseStart.setText(LocalDate.ofEpochDay(
                 intent.getLongExtra(CourseAddEditActivity.EXTRA_ALERT_COURSE_START, 0))
