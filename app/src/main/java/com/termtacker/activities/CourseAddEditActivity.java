@@ -47,7 +47,7 @@ public class CourseAddEditActivity extends AppCompatActivity
     public static final int VIEW_NOTES_REQUEST = 23;
     private static final int ADD_ASSESSMENT_REQUEST = 31;
     public static final int EDIT_ASSESSMENT_REQUEST = 32;
-    public static final int ADD_ALERT_REQUEST = 34;
+    public static final int ADD_COURSE_ALERT_REQUEST = 34;
     //endregion
     //region assessment extras
     public static final String EXTRA_ASSESSMENT_ID =
@@ -351,7 +351,7 @@ public class CourseAddEditActivity extends AppCompatActivity
             intent.putExtra(EXTRA_ALERT_COURSE_END,
                     Utils.convertStringDate(editTextCourseEnd.getText().toString()).toEpochDay());
 
-            startActivityForResult(intent, ADD_ALERT_REQUEST);
+            startActivityForResult(intent, ADD_COURSE_ALERT_REQUEST);
         });
 
     }
@@ -723,7 +723,7 @@ public class CourseAddEditActivity extends AppCompatActivity
                 intent.putExtra(CourseAddEditActivity.EXTRA_ALERT_COURSE_END,
                         Utils.convertStringDate(editTextCourseEnd.getText().toString()).toEpochDay());
 
-                startActivityForResult(intent, ADD_ALERT_REQUEST);
+                startActivityForResult(intent, ADD_COURSE_ALERT_REQUEST);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

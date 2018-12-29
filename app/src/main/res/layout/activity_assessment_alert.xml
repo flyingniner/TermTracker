@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.AssessmentAlertActivity">
+
+    <TextView
+        android:id="@+id/assessment_alert_course_name"
+        style="@style/TextAppearance.AppCompat.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:paddingVertical="16dp"
+        android:text="course name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/assessment_type_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Aessessment type:"
+        style="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
+        app:layout_constraintTop_toBottomOf="@id/assessment_alert_course_name"/>
+
+    <TextView
+        android:id="@+id/assessment_alert_assessmenttype"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pre-assessment"
+        app:layout_constraintTop_toBottomOf="@id/assessment_alert_course_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginHorizontal="8dp"
+        style="@style/TextAppearance.AppCompat.Medium"/>
+
+
+    <TextView
+        android:id="@+id/assessment_alert_scheduled_label"
+        style="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginTop="16dp"
+        android:gravity="left"
+        android:text="Start"
+        app:layout_constraintTop_toBottomOf="@id/assessment_type_label" />
+
+    <TextView
+        android:id="@+id/assessment_alert_scheduled"
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:text="01/20/2018"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/assessment_alert_scheduled_label" />
+    <TextView
+        android:id="@+id/assessment_alert_setreminder_label"
+        style="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:text="Set Reminder?"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/assessment_alert_scheduled_label" />
+
+    <CheckBox
+        android:id="@+id/assessment_alert_reminder"
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@id/assessment_alert_setreminder_label"
+        app:layout_constraintStart_toStartOf="@id/assessment_alert_setreminder_label"
+        app:layout_constraintTop_toTopOf="@id/assessment_alert_scheduled" />
+
+    <Button
+        android:id="@+id/assessment_alert_button_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="16dp"
+        android:text="Save"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

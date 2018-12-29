@@ -8,6 +8,10 @@
         app:showAsAction="collapseActionView"
         />
 
+    <item
+        android:id="@+id/go_to_assessment_reminder"
+        android:title="Set Assessment Reminder"
+        />
 
     <item
         android:id="@+id/go_to_courses"

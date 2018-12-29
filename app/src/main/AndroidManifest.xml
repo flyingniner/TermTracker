@@ -46,7 +46,9 @@
         <receiver
             android:name=".utilities.TermReceiver"
             android:enabled="true"
-            android:exported="true"></receiver>
+            android:exported="true" />
+
+        <activity android:name=".activities.AssessmentAlertActivity"></activity>
     </application>
 
 </manifest>

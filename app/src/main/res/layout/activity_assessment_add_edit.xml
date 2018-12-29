@@ -142,6 +142,16 @@
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
         android:layout_marginTop="8dp"
         />
+
+    <!--<CheckBox-->
+        <!--android:id="@+id/assessment_add_edit_reminder"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@id/assessment_add_edit_not_passed"-->
+        <!--android:text="Set Reminder Notification"-->
+        <!--android:layout_alignBottom="@+id/assessment_add_edit_save"-->
+        <!--android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"/>-->
+
     <Button
         android:id="@+id/assessment_add_edit_save"
         android:layout_width="wrap_content"
@@ -149,6 +159,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="16dp"
         android:text="Save"/>
 
 </RelativeLayout>

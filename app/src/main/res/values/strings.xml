@@ -22,7 +22,7 @@
     <string name="spinner_assessment_type">Select an assessment type...</string>
     <string name="spinner_course_name">Select a course...</string>
 
-  <!--Menu-->
+    <!--Menu-->
     <string name="home">Home</string>
     <string name="set_course_reminders">Set Course Reminders</string>
     <string name="go_to_terms">Terms</string>

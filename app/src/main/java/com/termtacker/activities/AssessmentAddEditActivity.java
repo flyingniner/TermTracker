@@ -6,6 +6,9 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.icu.util.Calendar;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -28,6 +31,12 @@ import java.util.List;
 
 public class AssessmentAddEditActivity extends AppCompatActivity
 {
+    public static final String EXTRA_ASSESSMENT_ID = "com.termtracker.AssessmentsAddEditActivity_EXTRA_ASSESSMENT_ID";
+    public static final String EXTRA_ASSESSMENT_TITLE = "com.termtracker.AssessmentsAddEditActivity_EXTRA_ASSESSMENT_TITLE";
+    public static final String EXTRA_ASSESSMENT_TYPE = "com.termtracker.AssessmentsAddEditActivity_EXTRA_ASSESSMENT_TYPE";
+    public static final String EXTRA_ASSESSMENT_DATE = "com.termtracker.AssessmentsAddEditActivity_EXTRA_ASSESSMENT_DATE";
+
+    public static final int ADD_ASSESSMENT_ALERT_REQUEST = 38;
 
     //region activity elements
     private EditText editTextAssessmentCode;
@@ -38,6 +47,7 @@ public class AssessmentAddEditActivity extends AppCompatActivity
     private Spinner courseNameSpinner;
     private CheckBox checkBoxResultPassed;
     private CheckBox checkBoxResultApproaching;
+    private CheckBox checkBoxSetReminder;
     private Button buttonSave;
     //endregion
 
@@ -63,32 +73,30 @@ public class AssessmentAddEditActivity extends AppCompatActivity
 
         intentFromCaller = getIntent();
 
-        if (intentFromCaller.hasExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_COURSE_ID))
-        {
+        if (intentFromCaller.hasExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_COURSE_ID)) {
             isCourseAddEditActivityCaller = true;
         }
 
         loadAssessmentTypeSpinner();
         loadCoursesSpinner();
 
-        editTextAssessmentCode = findViewById(
-                R.id.assessment_add_edit_assessment_code);
-        datePicker = findViewById(R.id.assessment_add_edit_date_picker);
-        editTextScheduled = findViewById(R.id.assessment_add_edit_date);
-        checkBoxResultPassed = findViewById(R.id.assessment_add_edit_passed);
-        checkBoxResultApproaching = findViewById(R.id.assessment_add_edit_not_passed);
-        buttonSave = findViewById(R.id.assessment_add_edit_save);
+        getUIReferences();
 
+        setButtonListerners();
+
+        loadFieldValues();
+    }
+
+    private void setButtonListerners()
+    {
         checkBoxResultPassed.setOnClickListener(listener -> {
-            if (checkBoxResultPassed.isChecked())
-            {
+            if (checkBoxResultPassed.isChecked()) {
                 checkBoxResultApproaching.setChecked(false);
             }
         });
 
         checkBoxResultApproaching.setOnClickListener(listener -> {
-            if (checkBoxResultApproaching.isChecked())
-            {
+            if (checkBoxResultApproaching.isChecked()) {
                 checkBoxResultPassed.setChecked(false);
             }
         });
@@ -120,13 +128,22 @@ public class AssessmentAddEditActivity extends AppCompatActivity
         });
 
 
-        loadFieldValues();
-
         buttonSave.setOnClickListener(listener -> {
             saveAssessment(intentFromCaller);
         });
     }
 
+    private void getUIReferences()
+    {
+        editTextAssessmentCode = findViewById(
+                R.id.assessment_add_edit_assessment_code);
+        datePicker = findViewById(R.id.assessment_add_edit_date_picker);
+        editTextScheduled = findViewById(R.id.assessment_add_edit_date);
+        checkBoxResultPassed = findViewById(R.id.assessment_add_edit_passed);
+        checkBoxResultApproaching = findViewById(R.id.assessment_add_edit_not_passed);
+        buttonSave = findViewById(R.id.assessment_add_edit_save);
+//        checkBoxSetReminder = findViewById(R.id.assessment_add_edit_reminder);
+    }
 
 
     /**
@@ -139,30 +156,22 @@ public class AssessmentAddEditActivity extends AppCompatActivity
         {
             assessmentId = intentFromCaller.getIntExtra(AssessmentsActivity.EXTRA_ID, 0);
             String passedResult;
-            if (assessmentId == 0)
-            {
+            if (assessmentId == 0) {
                 passedResult = Status.PENDING;
-            }
-            else
-            {
+            } else {
                 passedResult = intentFromCaller.getStringExtra(AssessmentsActivity.EXTRA_ASSESSMENT_RESULT);
 
                 editTextAssessmentCode.setText(intentFromCaller
-                    .getStringExtra(AssessmentsActivity.EXTRA_ASSESSMENT_CODE));
+                        .getStringExtra(AssessmentsActivity.EXTRA_ASSESSMENT_CODE));
                 editTextScheduled.setText(intentFromCaller
-                    .getStringExtra(AssessmentsActivity.EXTRA_ASSESSMENT_SCHEDULED));
+                        .getStringExtra(AssessmentsActivity.EXTRA_ASSESSMENT_SCHEDULED));
             }
 
-            if (passedResult.equals(Status.PASSED))
-            {
+            if (passedResult.equals(Status.PASSED)) {
                 checkBoxResultPassed.setChecked(true);
-            }
-            else if (passedResult.equals(Status.APPROACHING))
-            {
+            } else if (passedResult.equals(Status.APPROACHING)) {
                 checkBoxResultApproaching.setChecked(true);
-            }
-            else
-            {
+            } else {
                 checkBoxResultPassed.setChecked(false);
                 checkBoxResultApproaching.setChecked(false);
             }
@@ -172,12 +181,9 @@ public class AssessmentAddEditActivity extends AppCompatActivity
         {
             assessmentId = intentFromCaller.getIntExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_ID, 0);
             String passedResult;
-            if (assessmentId == 0)
-            {
+            if (assessmentId == 0) {
                 passedResult = Status.PENDING;
-            }
-            else
-            {
+            } else {
                 passedResult = intentFromCaller.getStringExtra(
                         CourseAddEditActivity.EXTRA_ASSESSMENT_RESULT);
 
@@ -188,22 +194,16 @@ public class AssessmentAddEditActivity extends AppCompatActivity
 
             }
 
-            if (passedResult.equals(Status.PASSED))
-            {
+            if (passedResult.equals(Status.PASSED)) {
                 checkBoxResultPassed.setChecked(true);
-            }
-            else if (passedResult.equals(Status.APPROACHING))
-            {
+            } else if (passedResult.equals(Status.APPROACHING)) {
                 checkBoxResultApproaching.setChecked(true);
-            }
-            else
-            {
+            } else {
                 checkBoxResultPassed.setChecked(false);
                 checkBoxResultApproaching.setChecked(false);
             }
         }
     }
-
 
 
     /**
@@ -258,14 +258,13 @@ public class AssessmentAddEditActivity extends AppCompatActivity
     }
 
 
-
     /**
      * Loads the course name spinner. If this is an existing assessment,
      * the Course Name is displayed.
      */
     private void loadCoursesSpinner()
     {
-        courseNameSpinner= findViewById(R.id.assessment_add_edit_parent_course_spinner);
+        courseNameSpinner = findViewById(R.id.assessment_add_edit_parent_course_spinner);
 
         CourseRepository repository = new CourseRepository(this.getApplication());
         List<String> courseNames = repository.getTitlesForNonCompletedCourses();
@@ -274,7 +273,7 @@ public class AssessmentAddEditActivity extends AppCompatActivity
                 this,
                 R.layout.support_simple_spinner_dropdown_item,
                 courseNames
-                );
+        );
 
         dataAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         courseNameSpinner.setAdapter(dataAdapter);
@@ -310,7 +309,6 @@ public class AssessmentAddEditActivity extends AppCompatActivity
     }
 
 
-
     /**
      * Validates the user's input and submits the result to the
      * calling activity
@@ -320,8 +318,7 @@ public class AssessmentAddEditActivity extends AppCompatActivity
         String code = editTextAssessmentCode.getText().toString();
 
         String type = assessmentTypeSpinner.getSelectedItem().toString();
-        if (type.equals(""))
-        {
+        if (type.equals("")) {
             Toast.makeText(this,
                     "Please select an assessment type!",
                     Toast.LENGTH_LONG).show();
@@ -329,21 +326,17 @@ public class AssessmentAddEditActivity extends AppCompatActivity
         }
 
         String courseName = courseNameSpinner.getSelectedItem().toString();
-        if(courseName.equals(""))
-        {
+        if (courseName.equals("")) {
             Toast.makeText(this,
                     "Please select a course name!",
                     Toast.LENGTH_LONG).show();
             return;
         }
 
-        try
-        {
+        try {
             scheduled = Utils.convertStringDate(
-                editTextScheduled.getText().toString());
-        }
-        catch (NullPointerException np)
-        {
+                    editTextScheduled.getText().toString());
+        } catch (NullPointerException np) {
             Toast.makeText(this,
                     "Date Format use use \"MM/DD/YYYY\"",
                     Toast.LENGTH_LONG).show();
@@ -357,7 +350,7 @@ public class AssessmentAddEditActivity extends AppCompatActivity
         if (!isCourseAddEditActivityCaller) //the caller was AssessmentsActivity
         {
             if (assessmentId > 0)
-                data.putExtra(AssessmentsActivity.EXTRA_ID,assessmentId);
+                data.putExtra(AssessmentsActivity.EXTRA_ID, assessmentId);
 
             data.putExtra(AssessmentsActivity.EXTRA_ASSESSMENT_CODE, code);
             data.putExtra(AssessmentsActivity.EXTRA_ASSESSMENT_TYPE, type);
@@ -365,7 +358,6 @@ public class AssessmentAddEditActivity extends AppCompatActivity
             data.putExtra(AssessmentsActivity.EXTRA_ASSESSMENT_RESULT, result);
             data.putExtra(AssessmentsActivity.EXTRA_ASSESSMENT_SCHEDULED, scheduled.toEpochDay());
         }
-
         else //the caller was CoursesAddEditActivity
         {
             if (assessmentId > 0)
@@ -373,18 +365,20 @@ public class AssessmentAddEditActivity extends AppCompatActivity
 
             data.putExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_CODE, code);
             data.putExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_TYPE, type);
-//            data.putExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_COURSE_NAME, courseName);
             data.putExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_RESULT, result);
             data.putExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_SCHEDULED, scheduled.toEpochDay());
         }
 
+
         setResult(RESULT_OK, data);
+
         finish();
     }
 
     /**
      * Determines the status that should be marked for the current
      * assessment when being saved.
+     *
      * @param scheduled
      * @return
      */
@@ -403,4 +397,72 @@ public class AssessmentAddEditActivity extends AppCompatActivity
         return result;
     }
 
+
+    /**
+     * Creates the menu in the activity bar
+     *
+     * @param menu
+     * @return
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.assessment_menu, menu);
+        return true;
+    }
+
+    /**
+     * Handler for when the menu item is selected
+     *
+     * @param item
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+
+        Intent intent;
+        switch (item.getItemId()) {
+            case R.id.go_to_assessments:
+//                intent = new Intent(this, AssessmentsActivity.class);
+//                startActivityForResult(intent,0);
+//          saveCourse();
+                return true;
+            case R.id.go_to_mentors:
+//                intent = new Intent(this, MentorActivity.class);
+//                startActivityForResult(intent, 0)
+                return true;
+            case R.id.go_to_home:
+                intent = new Intent(this, MainActivity.class);
+                startActivityForResult(intent, 0);
+                return true;
+            case R.id.go_to_terms:
+                intent = new Intent(this, TermActivity.class);
+                startActivityForResult(intent, 0);
+                return true;
+            case R.id.go_to_assessment_reminder:
+                intent = new Intent(this, AssessmentAlertActivity.class);
+                intent.putExtra(AssessmentAddEditActivity.EXTRA_ASSESSMENT_ID, assessmentId);
+                intent.putExtra(AssessmentAddEditActivity.EXTRA_ASSESSMENT_TITLE, courseName);
+                intent.putExtra(AssessmentAddEditActivity.EXTRA_ASSESSMENT_TYPE, assessmentType);
+
+                try {
+                    scheduled = Utils.convertStringDate(editTextScheduled.getText().toString());
+                }
+                catch (NullPointerException np)
+                {
+                    Toast.makeText(this, "Date Format use use \"MM/DD/YYYY\"",
+                            Toast.LENGTH_LONG).show();
+                    return false;
+                }
+                intent.putExtra(AssessmentAddEditActivity.EXTRA_ASSESSMENT_DATE,
+                        scheduled.toEpochDay());
+
+                startActivityForResult(intent, ADD_ASSESSMENT_ALERT_REQUEST);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 }
