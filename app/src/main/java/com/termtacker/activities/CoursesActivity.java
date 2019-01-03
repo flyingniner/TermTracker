@@ -1,10 +1,9 @@
 package com.termtacker.activities;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,12 +15,14 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.termtacker.data.AssessmentRepository;
 import com.termtacker.models.CourseAdapter;
 import com.termtacker.R;
-import com.termtacker.models.Status;
 import com.termtacker.models.Course;
 import com.termtacker.utilities.CourseViewModel;
+import com.termtacker.utilities.CoursesViewModelFactory;
 
+import java.time.DateTimeException;
 import java.time.LocalDate;
 
 public class CoursesActivity extends AppCompatActivity
@@ -32,7 +33,7 @@ public class CoursesActivity extends AppCompatActivity
     public static final int EDIT_COURSE_REQUEST = 6;
 
 
-
+    public static final String EXTRA_IS_NEW_COURSE = "com.termtracker.CourseActivity.EXTRA_IS_NEW_COURSE";
     public static final String EXTRA_ID = "com.termtracker.CoursesActivity.EXTRA_ID";
     public static final String EXTRA_TITLE = "com.termtracker.CoursesActivity.EXTRA_TITLE";
     public static final String EXTRA_START = "com.termtracker.CoursesActivity.EXTRA_START";
@@ -40,7 +41,14 @@ public class CoursesActivity extends AppCompatActivity
     public static final String EXTRA_STATUS = "com.termtracker.CoursesActivity.EXTRA_STATUS";
     public static final String EXTRA_TERMID = "com.termtracker.CoursesActivity.EXTRA_TERMID";
     public static final String EXTRA_MENTORID = "com.termtracker.CoursesActivity.EXTRA_MENTORID";
+    public static final String EXTRA_TERM_START = "com.termtracker.CoursesActivity.EXTRA_TERM_START";
     public static final String EXTRA_TERM_END = "com.termtracker.CoursesActivity.EXTRA_TERM_END";
+    private RecyclerView recyclerView;
+    private CourseAdapter courseAdapter;
+    private boolean isTermAddEditActivityCaller = false;
+    private Intent intentFromCaller;
+    private int termId = 0;
+    boolean showOnlyAvailableCourses = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -48,69 +56,133 @@ public class CoursesActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_courses);
 
-        setTitle("Courses");
+        intentFromCaller = getIntent();
+        if (intentFromCaller.hasExtra(TermAddEditActivity.EXTRA_TERM_ID))
+        {
+            isTermAddEditActivityCaller = true;
+            setTitle("Select a Course");
+            termId = intentFromCaller.getIntExtra(TermAddEditActivity.EXTRA_TERM_ID, 0);
+            showOnlyAvailableCourses = true;
+        }
+        else
+        {
+            setTitle("Courses");
+        }
 
-        FloatingActionButton buttonAddCourse = findViewById(R.id.courses_add_course);
-        buttonAddCourse.setOnClickListener(v -> {
-            Intent intent = new Intent(this, CourseAddEditActivity.class);
-            startActivityForResult(intent, ADD_COURSE_REQUEST);
-        });
+        setupButtonListeners();
 
-        RecyclerView recyclerView = findViewById(R.id.courses_recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setHasFixedSize(true);
+        setupRecyclerView();
 
-        final CourseAdapter courseAdapter = new CourseAdapter();
-        recyclerView.setAdapter(courseAdapter);
-
-        courseViewModel = ViewModelProviders.of(this).get(CourseViewModel.class);
+        CoursesViewModelFactory factory = new CoursesViewModelFactory(getApplication(), termId, showOnlyAvailableCourses);
+        courseViewModel = ViewModelProviders.of(this, factory).get(CourseViewModel.class);
         courseViewModel.getAllCourses().observe(this, list -> courseAdapter.submitList(list)
         );
 
 
+        setupAdapterListeners();
 
+    }
+
+    private void setupAdapterListeners()
+    {
         courseAdapter.setOnItemClickListener(course -> {
-            Intent intent = new Intent(this, CourseAddEditActivity.class);
-            intent.putExtra(EXTRA_ID, course.getCourseId());
-            intent.putExtra(EXTRA_TITLE, course.getTitle());
-            intent.putExtra(EXTRA_START, course.getStartDate().toEpochDay());
-            intent.putExtra(EXTRA_END, course.getEndDate().toEpochDay());
-            intent.putExtra(EXTRA_STATUS, course.getStatus());
-            intent.putExtra(EXTRA_TERMID, course.getTermId());
-            intent.putExtra(EXTRA_MENTORID, course.getCourseMentorId());
-            intent.putExtra(EXTRA_TERM_END, courseViewModel.getTermEndDate(course.getTermId()).toEpochDay());
 
-            startActivityForResult(intent, EDIT_COURSE_REQUEST);
+            if (isTermAddEditActivityCaller) {
+
+                course.setTermId(intentFromCaller.getIntExtra(TermAddEditActivity.EXTRA_TERM_ID, 0));
+                courseViewModel.updateCourse(course);
+
+                Intent data = new Intent();
+                data.putExtra(EXTRA_ID, course.getCourseId());
+                setResult(RESULT_OK, data);
+                finish();
+            } else {
+
+                Intent intent = new Intent(this, CourseAddEditActivity.class);
+                intent.putExtra(EXTRA_ID, course.getCourseId());
+                intent.putExtra(EXTRA_TITLE, course.getTitle());
+                intent.putExtra(EXTRA_START, course.getStartDate().toEpochDay());
+                intent.putExtra(EXTRA_END, course.getEndDate().toEpochDay());
+                intent.putExtra(EXTRA_STATUS, course.getStatus());
+                intent.putExtra(EXTRA_TERMID, course.getTermId());
+                intent.putExtra(EXTRA_MENTORID, course.getCourseMentorId());
+
+                long start = 0;
+                long end = 0;
+                try {
+                    start = courseViewModel.getTermStartDate(course.getCourseId()).toEpochDay();
+                }
+                catch (NullPointerException npe) {
+                    start = 0;
+                }
+                catch (DateTimeException dte) {
+                    start = 0;
+                }try {
+                    end = courseViewModel.getTermEndDate(course.getCourseId()).toEpochDay();
+                }
+                catch (NullPointerException npe) {
+                    end = 0;
+                }
+                catch (DateTimeException dte) {
+                    end = 0;
+                }
+
+                intent.putExtra(EXTRA_TERM_START, start);
+                intent.putExtra(EXTRA_TERM_END, end);
+
+
+
+                startActivityForResult(intent, EDIT_COURSE_REQUEST);
+            }
         });
 
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT)
-        {
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView
-                    .ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target)
-            {
-                return false;
+        courseAdapter.setOnLongItemClickListener(course -> {
+            AssessmentRepository assessmentRepository = new AssessmentRepository(getApplication());
+            int assessmentCount = assessmentRepository.getAssessmentCountForCourse(course.getCourseId());
+
+            if (assessmentCount > 0) {
+                new AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.error_title))
+                        .setMessage(getString(R.string.course_has_assessments_error))
+                        .setIcon(R.drawable.ic_incomplete_72dp)
+                        .setNeutralButton(R.string.ok, null)
+                        .show();
+            } else {
+                new AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.delete_course_title))
+                        .setMessage(getString(R.string.course_confirm_delete_msg))
+                        .setIcon(R.drawable.ic_incomplete_72dp)
+                        .setPositiveButton(R.string.yes, (dialog, which) -> {
+                            courseViewModel.deleteCourse(course);
+                            Toast.makeText(this, getString(R.string.delete_successful), Toast.LENGTH_LONG).show();
+                        })
+                        .setNegativeButton(R.string.no, null)
+                        .show();
             }
 
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
-            {
+        });
+    }
 
-                Course swipedCourse = courseAdapter.getCourseAt(viewHolder.getAdapterPosition());
+    private void setupRecyclerView()
+    {
+        recyclerView = findViewById(R.id.courses_recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(true);
 
-                if (swipedCourse.getStatus() == Status.PENDING &&
-                        swipedCourse.getTermId() == 0) {
-                    courseViewModel.deleteCourse(swipedCourse);
-                    Toast.makeText(CoursesActivity.this,
-                                   "Course Deleted!", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Toast.makeText(CoursesActivity.this,
-                                   "Course can't be deleted because it's associated to a Term",
-                                   Toast.LENGTH_LONG).show();
-                }
+        courseAdapter = new CourseAdapter();
+        recyclerView.setAdapter(courseAdapter);
+    }
 
-            }
+    /**
+     * Listens for the on-click
+     */
+    private void setupButtonListeners()
+    {
+        FloatingActionButton buttonAddCourse = findViewById(R.id.courses_add_course);
+        buttonAddCourse.setOnClickListener(v -> {
+            Intent intent = new Intent(this, CourseAddEditActivity.class);
+            intent.putExtra(EXTRA_IS_NEW_COURSE, true);
+            startActivityForResult(intent, ADD_COURSE_REQUEST);
         });
     }
 
@@ -134,20 +206,18 @@ public class CoursesActivity extends AppCompatActivity
                 course = new Course(title, start, end, status, mentorId, termId);
                 courseViewModel.insertCourse(course);
                 Toast.makeText(CoursesActivity.this,
-                               "Coursed Added!", Toast.LENGTH_SHORT).show();
-            }
-            else if (requestCode == EDIT_COURSE_REQUEST) {
+                        "Coursed Added!", Toast.LENGTH_SHORT).show();
+            } else if (requestCode == EDIT_COURSE_REQUEST) {
                 int courseId = data.getIntExtra(EXTRA_ID, -1);
                 course = new Course(courseId, title, start, end, status, mentorId, termId);
                 courseViewModel.updateCourse(course);
                 Toast.makeText(CoursesActivity.this,
-                               "Coursed Updated!", Toast.LENGTH_SHORT).show();
+                        "Coursed Updated!", Toast.LENGTH_SHORT).show();
             }
 
-        }
-        else {
+        } else {
             Toast.makeText(CoursesActivity.this,
-                           "Course was not able to be saved!", Toast.LENGTH_SHORT).show();
+                    "Course was not able to be saved!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -155,7 +225,10 @@ public class CoursesActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu)
     {
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.course_menu, menu);
+        if (isTermAddEditActivityCaller)
+            menuInflater.inflate(R.menu.select_a_course, menu);
+        else
+            menuInflater.inflate(R.menu.course_menu, menu);
 
         return true;
     }
@@ -165,26 +238,22 @@ public class CoursesActivity extends AppCompatActivity
     {
         Intent intent;
         //TODO: figure out how to move between screens from the menu?
-        switch (item.getItemId())
-        {
+        switch (item.getItemId()) {
             case R.id.go_to_assessments:
-//                intent = new Intent(this, CoursesActivity.class); //TODO: change to AssessmentActivity.class
-//                startActivityForResult(intent,0);
-                return true;
-            case R.id.go_to_mentors:
-//                intent = new Intent(this, CoursesActivity.class); //TODO: change to MentorActivity.class
-//                startActivityForResult(intent,0);
+                intentFromCaller = new Intent(this, AssessmentsActivity.class); //TODO: change to AssessmentActivity.class
+                startActivity(intentFromCaller);
                 return true;
             case R.id.go_to_terms:
                 intent = new Intent(this, TermActivity.class);
-                startActivityForResult(intent,0);
+                startActivityForResult(intent, 0);
                 return true;
             case R.id.go_to_home:
                 intent = new Intent(this, MainActivity.class);
-                startActivityForResult(intent,0);
+                startActivityForResult(intent, 0);
                 return true;
 
-            default: return super.onOptionsItemSelected(item);
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }

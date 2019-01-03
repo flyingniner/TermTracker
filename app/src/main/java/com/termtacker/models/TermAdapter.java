@@ -17,8 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 public class TermAdapter extends ListAdapter<Term, TermAdapter.TermHolder>
 {
     private TermAdapter.onItemClickListener listener;
-//    private List<Term> terms;
-    int termDetailIntentId = 8;
+    private TermAdapter.onLongItemClickListener longListener;
 
     public TermAdapter()
     {
@@ -103,6 +102,14 @@ public class TermAdapter extends ListAdapter<Term, TermAdapter.TermHolder>
                 if (listener != null && position != RecyclerView.NO_POSITION)
                     listener.onItemClick(getItem(position));
             });
+
+            itemView.setLongClickable(true);
+            itemView.setOnLongClickListener(v -> {
+                int position = getAdapterPosition();
+                if (longListener != null && position != RecyclerView.NO_POSITION)
+                    longListener.onItemLongClick(getItem(position));
+                return true;
+            });
         }
     }
 
@@ -114,5 +121,15 @@ public class TermAdapter extends ListAdapter<Term, TermAdapter.TermHolder>
     public void setOnItemClickListener(TermAdapter.onItemClickListener listener)
     {
         this.listener = listener;
+    }
+
+    public interface onLongItemClickListener
+    {
+        void onItemLongClick(Term term);
+    }
+
+    public void setOnLongItemClickListener(TermAdapter.onLongItemClickListener longListener)
+    {
+        this.longListener = longListener;
     }
 }

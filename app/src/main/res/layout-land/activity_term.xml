@@ -4,17 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.NotesActivity">
+    tools:context=".activities.TermActivity">
+
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/notes_recyler_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:listitem="@layout/note_item"
-        app:layout_constraintBottom_toTopOf="@id/notes_add_note"/>
+        android:id="@+id/term_recycler_view"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:layout_constraintEnd_toStartOf="@id/term_activity_floating_add_term"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:listitem="@layout/term_item"/>
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/notes_add_note"
+        android:id="@+id/term_activity_floating_add_term"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_add_transparent_72dp"
@@ -22,10 +25,7 @@
         android:layout_marginBottom="16dp"
         android:backgroundTint="@color/colorButtonBackground"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        />
-
-
-
+        android:layout_marginHorizontal="16dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

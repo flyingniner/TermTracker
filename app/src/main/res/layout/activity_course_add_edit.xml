@@ -39,7 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/course_add_edit_start_label"
-            android:hint="01/01/2018"
+            android:hint="@string/date_format_hint"
             android:inputType="date"
             android:layout_marginHorizontal="8dp"/>
 
@@ -66,7 +66,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/course_add_edit_end_label"
-            android:hint="02/15/2018"
+            android:hint="@string/date_format_hint"
             android:inputType="date"
             android:layout_marginHorizontal="8dp"/>
 

@@ -1,6 +1,7 @@
 package com.termtacker.activities;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -20,12 +21,17 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.termtacker.R;
+import com.termtacker.data.AssessmentRepository;
 import com.termtacker.models.Course;
 import com.termtacker.models.CourseAdapter;
+import com.termtacker.utilities.AssessmentViewModel;
 import com.termtacker.utilities.CourseViewModel;
+import com.termtacker.utilities.CoursesViewModelFactory;
 import com.termtacker.utilities.Utils;
 
+import java.time.DateTimeException;
 import java.time.LocalDate;
 
 public class TermAddEditActivity extends AppCompatActivity
@@ -46,7 +52,7 @@ public class TermAddEditActivity extends AppCompatActivity
 
     private Calendar calendar;
     private DatePickerDialog datePickerDialog;
-//    private TermViewModel termViewModel;
+    //    private TermViewModel termViewModel;
     private CourseViewModel courseViewModel;
     private int termId;
     private LocalDate termEndDate;
@@ -62,7 +68,10 @@ public class TermAddEditActivity extends AppCompatActivity
     public static final String EXTRA_START = "com.termtracker.TermAddEditActivity_EXTRA_START";
     public static final String EXTRA_COURSE_END = "com.termtracker.TermAddEditActivity_EXTRA_COURSE_END";
     public static final String EXTRA_STATUS = "com.termtracker.TermAddEditActivity_EXTRA_STATUS";
+    public static final String EXTRA_NOTES = "com.termtracker.TermAddEditActivity_EXTRA_NOTES";
 
+    private RecyclerView recyclerView;
+    private CourseAdapter courseAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -70,6 +79,108 @@ public class TermAddEditActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_term_add_edit);
 
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_cancel_black_24dp);
+
+        getUIFieldReferences();
+
+
+        //Check if this is an existing term that is to be edited
+        Intent intent = getIntent();
+        if (intent.hasExtra(TermActivity.EXTRA_ID)) {
+            loadFieldValues(intent);
+
+            setupRecyclerView();
+            int termId = intent.getIntExtra(TermActivity.EXTRA_ID, 0);
+            CoursesViewModelFactory factory = new CoursesViewModelFactory(getApplication(), termId, false);
+            courseViewModel = ViewModelProviders.of(this, factory).get(CourseViewModel.class);
+            courseViewModel.getAllCourses()
+                    .observe(this, list -> courseAdapter.submitList(list));
+
+            setupAdapterListeners();
+
+        } else {
+            setTitle("Add Term");
+        }
+
+        setButtonListeners();
+
+    }
+
+    private void setupAdapterListeners()
+    {
+        courseAdapter.setOnItemClickListener(course -> {
+            Intent courseDataIntent = new Intent(
+                    TermAddEditActivity.this,
+                    CourseAddEditActivity.class);
+
+            courseDataIntent.putExtra(EXTRA_TERM_ID, course.getTermId());
+            courseDataIntent.putExtra(EXTRA_TERM_END, termEndDate.toEpochDay());
+            courseDataIntent.putExtra(EXTRA_TERM_START, termStartDate.toEpochDay());
+            courseDataIntent.putExtra(EXTRA_COURSE_ID, course.getCourseId());
+            courseDataIntent.putExtra(EXTRA_START, course.getStartDate().toEpochDay());
+            courseDataIntent.putExtra(EXTRA_COURSE_END, course.getEndDate().toEpochDay());
+            courseDataIntent.putExtra(EXTRA_MENTOR_ID, course.getCourseMentorId());
+            courseDataIntent.putExtra(EXTRA_TITLE, course.getTitle());
+            courseDataIntent.putExtra(EXTRA_STATUS, course.getStatus());
+            courseDataIntent.putExtra(EXTRA_NOTES, course.getNotes());
+
+            startActivityForResult(courseDataIntent, TERM_ADDEDIT_EDITCOURSEREQUEST);
+        });
+
+        courseAdapter.setOnLongItemClickListener(course -> {
+            AssessmentRepository assessmentRepository = new AssessmentRepository(getApplication());
+            int assessmentCount = assessmentRepository.getAssessmentCountForCourse(course.getCourseId());
+
+            if (assessmentCount > 0) //display error b/c course has assessments and can't be deleted
+            {
+                new AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.error_title))
+                        .setMessage(getString(R.string.course_has_assessments_error))
+                        .setIcon(R.drawable.ic_incomplete_72dp)
+                        .setNeutralButton(R.string.ok, null)
+                        .show();
+            } else {
+                new AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.remove_course_title))
+                        .setMessage(getString(R.string.remove_course_confirmation))
+                        .setIcon(R.drawable.ic_incomplete_72dp)
+                        .setPositiveButton(R.string.yes, (dialog, which) -> {
+                            course.setTermId(0);
+                            courseViewModel.updateCourse(course);
+                            Toast.makeText(this, getString(R.string.course_removed_success), Toast.LENGTH_LONG).show();
+                        })
+                        .setNegativeButton(R.string.no, null)
+                        .show();
+            }
+
+        });
+    }
+
+    private void setupRecyclerView()
+    {
+        recyclerView = findViewById(R.id.edit_term_course_list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(true);
+
+        courseAdapter = new CourseAdapter();
+        recyclerView.setAdapter(courseAdapter);
+    }
+
+    private void loadFieldValues(Intent intent)
+    {
+        setTitle("Edit Term");
+        editTextTitle.setText(intent.getStringExtra(TermActivity.EXTRA_TITLE));
+        termId = intent.getIntExtra(TermActivity.EXTRA_ID, 0);
+        termStartDate = LocalDate.ofEpochDay(intent.getLongExtra(TermActivity.EXTRA_START, 0));
+        termEndDate = LocalDate.ofEpochDay(intent.getLongExtra(TermActivity.EXTRA_END, 0));
+        editTextStart.setText(termStartDate.format(Utils.dateFormatter_MMddyyyy));
+        editTextEnd.setText(termEndDate.format(Utils.dateFormatter_MMddyyyy));
+    }
+
+    private void getUIFieldReferences()
+    {
         editTextTitle = findViewById(R.id.edit_term_title);
         editTextStart = findViewById(R.id.edit_term_start);
         editTextEnd = findViewById(R.id.edit_term_end);
@@ -77,60 +188,6 @@ public class TermAddEditActivity extends AppCompatActivity
         endDatePicker = findViewById(R.id.end_date_picker);
         buttonSave = findViewById(R.id.save_term);
         buttonAddCourse = findViewById(R.id.add_course);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_cancel_black_24dp);
-
-
-        //Check if this is an existing term that is to be edited
-        Intent intent = getIntent();
-        if (intent.hasExtra(TermActivity.EXTRA_ID))
-        {
-            setTitle("Edit Term");
-            editTextTitle.setText(intent.getStringExtra(TermActivity.EXTRA_TITLE));
-            termId = intent.getIntExtra(TermActivity.EXTRA_ID , 0);
-            termStartDate = LocalDate.ofEpochDay(intent.getLongExtra(TermActivity.EXTRA_START, 0));
-            termEndDate = LocalDate.ofEpochDay(intent.getLongExtra(TermActivity.EXTRA_END,0));
-            editTextStart.setText(termStartDate.format(Utils.dateFormatter_MMddyyyy));
-            editTextEnd.setText(termEndDate.format(Utils.dateFormatter_MMddyyyy));
-
-            RecyclerView recyclerView = findViewById(R.id.edit_term_course_list);
-            recyclerView.setLayoutManager(new LinearLayoutManager(this));
-            recyclerView.setHasFixedSize(true);
-
-            final CourseAdapter courseAdapter = new CourseAdapter();
-            recyclerView.setAdapter(courseAdapter);
-
-            courseViewModel = ViewModelProviders.of(this).get(CourseViewModel.class);
-            courseViewModel.getFilteredCourses(intent.getIntExtra(TermActivity.EXTRA_ID,0))
-                    .observe(this, list -> courseAdapter.submitList(list));
-
-            courseAdapter.setOnItemClickListener(course -> {
-                Intent courseDataIntent = new Intent(
-                        TermAddEditActivity.this,
-                        CourseAddEditActivity.class);
-
-                courseDataIntent.putExtra(EXTRA_TERM_ID, course.getTermId());
-                courseDataIntent.putExtra(EXTRA_TERM_END, termEndDate.toEpochDay());
-                courseDataIntent.putExtra(EXTRA_TERM_START, termStartDate.toEpochDay());
-                courseDataIntent.putExtra(EXTRA_COURSE_ID, course.getCourseId());
-                courseDataIntent.putExtra(EXTRA_START, course.getStartDate().toEpochDay());
-                courseDataIntent.putExtra(EXTRA_COURSE_END, course.getEndDate().toEpochDay());
-                courseDataIntent.putExtra(EXTRA_MENTOR_ID, course.getCourseMentorId());
-                courseDataIntent.putExtra(EXTRA_TITLE, course.getTitle());
-                courseDataIntent.putExtra(EXTRA_STATUS, course.getStatus());
-
-                startActivityForResult(courseDataIntent, TERM_ADDEDIT_EDITCOURSEREQUEST);
-            });
-
-        }
-        else
-        {
-            setTitle("Add Term");
-        }
-
-        setButtonListeners();
-
     }
 
     private void setButtonListeners()
@@ -190,49 +247,69 @@ public class TermAddEditActivity extends AppCompatActivity
 
         buttonAddCourse.setOnClickListener(listener -> {
 
-            Intent intent = new Intent(
-                    TermAddEditActivity.this, CourseAddEditActivity.class);
-            intent.putExtra(EXTRA_TERM_ID, termId);
-            intent.putExtra(EXTRA_TERM_START, termStartDate.toEpochDay());
-            intent.putExtra(EXTRA_TERM_END, termEndDate.toEpochDay());
+            if (termId == 0) {
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.error_title)
+                        .setMessage(R.string.term_needs_saving)
+                        .setIcon(R.drawable.ic_incomplete_72dp)
+                        .setNegativeButton(R.string.ok, null)
+                        .show();
+                return;
+            } else {
+                Intent intent = new Intent(
+                        TermAddEditActivity.this, CoursesActivity.class);
+                intent.putExtra(EXTRA_TERM_ID, termId);
+//                intent.putExtra(EXTRA_TERM_START, termStartDate.toEpochDay());
+//                intent.putExtra(EXTRA_TERM_END, termEndDate.toEpochDay());
 
-            startActivityForResult(intent, TERM_ADDEDIT_ADDCOURSEREQUEST);
+                startActivityForResult(intent, TERM_ADDEDIT_ADDCOURSEREQUEST);
+            }
         });
     }
 
     private void saveTerm()
     {
-        String title = editTextTitle.getText().toString().trim();
-        if (title.isEmpty())
-        {
-            Toast.makeText(this,"A title is required",Toast.LENGTH_LONG);
+        String title = null;
+        LocalDate start = null;
+        LocalDate end = null;
+        try {
+
+            title = editTextTitle.getText().toString().trim();
+            if (title.isEmpty()) {
+                Toast.makeText(this, "A title is required", Toast.LENGTH_LONG);
+                return;
+            }
+
+            String startStr = editTextStart.getText().toString();
+            if (startStr.isEmpty()) {
+                Toast.makeText(this, "A start date is required", Toast.LENGTH_LONG);
+                return;
+            }
+            String[] s = startStr.split("/");
+            start = LocalDate.of(Integer.parseInt(s[2]), Integer.parseInt(s[0]), Integer.parseInt(s[1]));
+
+
+            String endStr = editTextEnd.getText().toString();
+            if (endStr.isEmpty()) {
+                Toast.makeText(this, "An end date is required", Toast.LENGTH_LONG);
+                return;
+            }
+            String[] e = endStr.split("/");
+            end = LocalDate.of(Integer.parseInt(e[2]), Integer.parseInt(e[0]), Integer.parseInt(e[1]));
+
+            if (start.isAfter(end)) {
+                Toast.makeText(this, "Term Start must come before End", Toast.LENGTH_LONG);
+                return;
+            }
+
+        } catch (NullPointerException npe) {
+            Toast.makeText(this, "A required field was left blank. Please correct", Toast.LENGTH_LONG).show();
+            return;
+        } catch (DateTimeException dte) {
+            Toast.makeText(this, "Invalid date entered. Format mm/dd/yyyy", Toast.LENGTH_LONG).show();
             return;
         }
 
-        String startStr = editTextStart.getText().toString();
-        if (startStr.isEmpty())
-        {
-            Toast.makeText(this,"A start date is required",Toast.LENGTH_LONG);
-            return;
-        }
-        String[] s = startStr.split("/");
-        LocalDate start = LocalDate.of(Integer.parseInt(s[2]),Integer.parseInt(s[0]),Integer.parseInt(s[1]));
-
-
-        String endStr = editTextEnd.getText().toString();
-        if (endStr.isEmpty())
-        {
-            Toast.makeText(this,"An end date is required",Toast.LENGTH_LONG);
-            return;
-        }
-        String[] e = endStr.split("/");
-        LocalDate end = LocalDate.of(Integer.parseInt(e[2]),Integer.parseInt(e[0]),Integer.parseInt(e[1]));
-
-        if(start.isAfter(end))
-        {
-            Toast.makeText(this,"Term Start must come before End",Toast.LENGTH_LONG);
-            return;
-        }
 
         Intent data = new Intent();
         data.putExtra(TermActivity.EXTRA_TITLE, title);
@@ -240,8 +317,7 @@ public class TermAddEditActivity extends AppCompatActivity
         data.putExtra(TermActivity.EXTRA_END, end.toEpochDay());
 
         int id = getIntent().getIntExtra(TermActivity.EXTRA_ID, -1);
-        if (id != -1)
-        {
+        if (id != -1) {
             data.putExtra(TermActivity.EXTRA_ID, id);
         }
 
@@ -258,38 +334,39 @@ public class TermAddEditActivity extends AppCompatActivity
         if (resultCode != RESULT_OK)
             return;
 
-        if (requestCode == TERM_ADDEDIT_EDITCOURSEREQUEST)
-        {
+        if (requestCode == TERM_ADDEDIT_EDITCOURSEREQUEST) {
             Course c = new Course();
             c.setTermId(termId);
-            c.setCourseId(data.getIntExtra(EXTRA_COURSE_ID, 0));
-            c.setTitle(data.getStringExtra(EXTRA_TITLE));
-            c.setStartDate(LocalDate.ofEpochDay(data.getLongExtra(EXTRA_START,0)));
-            c.setEndDate(LocalDate.ofEpochDay(data.getLongExtra(EXTRA_COURSE_END, 0)));
-            c.setCourseMentorId(data.getIntExtra(EXTRA_MENTOR_ID, 0));
-            c.setStatus(data.getStringExtra(EXTRA_STATUS));
+            c.setCourseId(data.getIntExtra(CoursesActivity.EXTRA_ID, 0));
+            c.setTitle(data.getStringExtra(CoursesActivity.EXTRA_TITLE));
+            c.setStartDate(LocalDate.ofEpochDay(data.getLongExtra(CoursesActivity.EXTRA_START, 0)));
+            c.setEndDate(LocalDate.ofEpochDay(data.getLongExtra(CoursesActivity.EXTRA_END, 0)));
+            c.setCourseMentorId(data.getIntExtra(CoursesActivity.EXTRA_MENTORID, 0));
+            c.setStatus(data.getStringExtra(CoursesActivity.EXTRA_STATUS));
 
             courseViewModel.updateCourse(c);
-        }
+        } else if (requestCode == TERM_ADDEDIT_ADDCOURSEREQUEST) {
+            Course c = courseViewModel.getCourseById(data.getIntExtra(CoursesActivity.EXTRA_ID, 0));
+            AssessmentViewModel avm = new AssessmentViewModel(getApplication(), c.getCourseId());
 
-        else if (requestCode == TERM_ADDEDIT_ADDCOURSEREQUEST)
-        {
-            Course c = new Course();
+            c.setStatus(CourseAddEditActivity.determineCourseStatus(c.getTermId(), c.getCourseId(), avm, termEndDate));
 
-            c.setTermId(termId);
-            c.setTitle(data.getStringExtra(EXTRA_TITLE));
-            c.setStartDate(LocalDate.ofEpochDay(data.getLongExtra(EXTRA_START,0)));
-            c.setEndDate(LocalDate.ofEpochDay(data.getLongExtra(EXTRA_COURSE_END, 0)));
-            c.setCourseMentorId(data.getIntExtra(EXTRA_MENTOR_ID, 0));
-            c.setStatus(data.getStringExtra(EXTRA_STATUS));
-
-            courseViewModel.insertCourse(c);
+            courseViewModel.updateCourse(c);
+//            c.setTermId(termId);
+//            c.setTitle(data.getStringExtra(EXTRA_TITLE));
+//            c.setStartDate(LocalDate.ofEpochDay(data.getLongExtra(EXTRA_START, 0)));
+//            c.setEndDate(LocalDate.ofEpochDay(data.getLongExtra(EXTRA_COURSE_END, 0)));
+//            c.setCourseMentorId(data.getIntExtra(EXTRA_MENTOR_ID, 0));
+//            c.setStatus(data.getStringExtra(EXTRA_STATUS));
+//
+//            courseViewModel.insertCourse(c);
         }
 
     }
 
     /**
      * Creates the menu in the activity bar
+     *
      * @param menu
      * @return
      */
@@ -303,6 +380,7 @@ public class TermAddEditActivity extends AppCompatActivity
 
     /**
      * Handler for when the menu item is selected
+     *
      * @param item
      * @return
      */
@@ -313,16 +391,12 @@ public class TermAddEditActivity extends AppCompatActivity
 
         switch (item.getItemId()) {
             case R.id.go_to_assessments:
-//                intent = new Intent(this, AssessmentActivity.class);
-//                startActivityForResult(intent, 0);
+//                intentFromCaller = new Intent(this, AssessmentActivity.class);
+//                startActivityForResult(intentFromCaller, 0);
                 return true;
             case R.id.go_to_courses:
                 intent = new Intent(this, CoursesActivity.class);
                 startActivityForResult(intent, 0);
-                return true;
-            case R.id.go_to_mentors:
-//                intent = new Intent(this, MentorsActivity.class);
-//                startActivityForResult(intent, 0);
                 return true;
             case R.id.go_to_home:
                 intent = new Intent(this, MainActivity.class);

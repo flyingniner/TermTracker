@@ -11,12 +11,19 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".activities.MainActivity"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            >
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SENDTO"/>
+                <data android:scheme="mailto"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+
         </activity>
         <activity
             android:name=".activities.TermActivity"
@@ -39,9 +46,11 @@
         <activity
             android:name=".activities.AssessmentsActivity"
             android:parentActivityName=".activities.MainActivity" />
-        <activity android:name=".activities.NotesActivity" />
-        <activity android:name=".activities.NoteAddEditActivity" />
-        <activity android:name=".activities.CourseAlertActivity" />
+        <activity android:name=".activities.NoteAddEditActivity"
+            android:parentActivityName=".activities.CourseAddEditActivity"/>
+        <activity android:name=".activities.CourseAlertActivity"
+            android:parentActivityName=".activities.CourseAddEditActivity"/>
+
 
         <receiver
             android:name=".utilities.TermReceiver"

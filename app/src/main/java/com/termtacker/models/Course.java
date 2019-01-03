@@ -45,9 +45,8 @@ public class Course
     @ColumnInfo(name = "COURSE_STATUS")
     private String status;
 
-//    @ColumnInfo(name = "COURSE_GOAL_DATE")
-//    @TypeConverters(Converters.class)
-//    private LocalDate goalDate;
+    @ColumnInfo(name = "COURSE_NOTES")
+    private String notes;
 
     @ColumnInfo(name = "FK_MENTOR_ID", index = true)
     private int courseMentorId;
@@ -131,15 +130,15 @@ public class Course
         this.endDate = endDate;
     }
 
-//    public LocalDate getGoalDate()
-//    {
-//        return goalDate;
-//    }
-//
-//    public void setGoalDate(LocalDate goalDate)
-//    {
-//        this.goalDate = goalDate;
-//    }
+    public String getNotes()
+    {
+        return notes;
+    }
+
+    public void setNotes(String notes)
+    {
+        this.notes = notes;
+    }
 
     public String getStatus() { return status; }
 

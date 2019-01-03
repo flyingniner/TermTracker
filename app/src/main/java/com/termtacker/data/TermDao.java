@@ -33,6 +33,9 @@ public interface TermDao
     @Query("SELECT COUNT(*) FROM TERMS")
     int countTerms();
 
+    @Query("SELECT TERM_START_DATE FROM TERMS WHERE TERM_ID = :termId")
+    LocalDate getTermStartDate(int termId);
+
     @Query("SELECT TERM_END_DATE FROM TERMS WHERE TERM_ID = :termId")
     LocalDate getTermEndDate(int termId);
 }

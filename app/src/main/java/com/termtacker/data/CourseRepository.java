@@ -47,6 +47,7 @@ public class CourseRepository
         return courses;
     }
 
+    public Course getCourseById(int courseId) { return courseDao.getCourseById(courseId); }
     /**
      * Gets the list of course titles where the course has not been
      * marked as "complete".
@@ -73,9 +74,6 @@ public class CourseRepository
         );
 
         return filtered;
-
-
-
     }
 
     public LiveData<List<Course>> getCoursesForTerm(int termId)
@@ -103,6 +101,18 @@ public class CourseRepository
     {
         return courseDao.getCourseId(courseName);
     }
+
+    public String getCourseNotes(int courseId)
+    {
+        String note  = courseDao.getCourseNotes(courseId);
+        return note;
+    }
+
+    public void updateCourseNotes(int courseId, String note)
+    {
+        courseDao.updateCourseNotes(courseId, note);
+    }
+
 
 
 //region AsyncCalls

@@ -75,6 +75,11 @@ public class AssessmentRepository
     {
         return allAssessments;
     }
+
+    public int getAssessmentCountForCourse(int courseId)
+    {
+        return assessmentDao.getAssessmentCountForCourse(courseId);
+    }
 //endregion
 
 //region AsyncCalls

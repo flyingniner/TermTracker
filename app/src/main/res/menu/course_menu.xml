@@ -9,19 +9,8 @@
         />
 
     <item
-        android:id="@+id/go_to_course_reminder"
-        android:title="@string/set_course_reminders"
-        />
-    
-    <item
         android:id="@+id/go_to_assessments"
         android:title="@string/go_to_assessments"
-        />
-
-
-    <item
-        android:id="@+id/go_to_mentors"
-        android:title="@string/go_to_mentors"
         />
 
     <item

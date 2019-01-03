@@ -28,4 +28,7 @@ public interface AssessmentDao
 
     @Delete()
     int deleteAssessment(Assessment assessment);
+
+    @Query("SELECT COUNT(*) FROM ASSESSMENTS WHERE FK_COURSE_ID =:courseId")
+    int getAssessmentCountForCourse(int courseId);
 }

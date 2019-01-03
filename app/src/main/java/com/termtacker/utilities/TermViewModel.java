@@ -24,17 +24,17 @@ public class TermViewModel extends AndroidViewModel
         allterms = repository.getTerms();
     }
 
-    public void insert(Term term)
+    public void insertTerm(Term term)
     {
         repository.insertTerm(term);
     }
 
-    public void update(Term term)
+    public void updateTerm(Term term)
     {
         repository.updateTerm(term);
     }
 
-    public void delete(Term term)
+    public void deleteTerm(Term term)
     {
         repository.deleteTerm(term);
     }

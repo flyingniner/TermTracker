@@ -1,6 +1,7 @@
 package com.termtacker.activities;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,11 +17,13 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.termtacker.R;
+import com.termtacker.data.TermRepository;
 import com.termtacker.models.Course;
 import com.termtacker.models.Status;
 import com.termtacker.models.Term;
 import com.termtacker.models.TermAdapter;
 import com.termtacker.utilities.CourseViewModel;
+import com.termtacker.utilities.CoursesViewModelFactory;
 import com.termtacker.utilities.TermViewModel;
 
 import java.time.LocalDate;
@@ -39,6 +42,10 @@ public class TermActivity extends AppCompatActivity
     public static final String EXTRA_START = "com.termtracker.TermActivity.EXTRA_START";
     public static final String EXTRA_END = "com.termtracker.TermActivity.EXTRA_END";
     public static final String EXTRA_STATUS = "com.termtracker.TermActivity.EXTRA_STATUS";
+
+    private RecyclerView recyclerView;
+    private TermAdapter termAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -47,18 +54,9 @@ public class TermActivity extends AppCompatActivity
 
         setTitle("Terms");
 
-        FloatingActionButton buttonAddTerm = findViewById(R.id.term_activity_floating_add_term);
-        buttonAddTerm.setOnClickListener(v -> {
-            Intent intent = new Intent(TermActivity.this, TermAddEditActivity.class);
-            startActivityForResult(intent, ADD_TERM_REQUEST);
-        });
+        setupButtonListeners();
 
-        RecyclerView recyclerView = findViewById(R.id.term_recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setHasFixedSize(true);
-
-        final TermAdapter termAdapter = new TermAdapter();
-        recyclerView.setAdapter(termAdapter);
+        setupRecyclerView();
 
         termViewModel = ViewModelProviders.of(this).get(TermViewModel.class);
         termViewModel.getAllterms().observe(this, terms -> {
@@ -66,6 +64,11 @@ public class TermActivity extends AppCompatActivity
             termAdapter.submitList(terms);
         });
 
+        setupAdapterListeners();
+    }
+
+    private void setupAdapterListeners()
+    {
         termAdapter.setOnItemClickListener(new TermAdapter.onItemClickListener()
         {
             @Override
@@ -81,7 +84,53 @@ public class TermActivity extends AppCompatActivity
             }
         });
 
-        //TODO: add itemTouchHelper (see MainActivity.OnCreate from example project
+        termAdapter.setOnLongItemClickListener(term -> {
+            TermRepository termRepository = new TermRepository(getApplication());
+            int courseCount = termRepository.getCourseCountForTerm(term.getTermId());
+
+            if (courseCount > 0) //display error b/c course has assessments and can't be deleted
+            {
+                new AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.error_title))
+                        .setMessage(getString(R.string.term_has_courses_error))
+                        .setIcon(R.drawable.ic_incomplete_72dp)
+                        .setNeutralButton(R.string.ok, null)
+                        .show();
+            }
+            else
+            {
+                new AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.delete_term_title))
+                        .setMessage(getString(R.string.term_confirm_delete_msg))
+                        .setIcon(R.drawable.ic_incomplete_72dp)
+                        .setPositiveButton(R.string.yes, (dialog, which) -> {
+                            termViewModel.deleteTerm(term);
+                            Toast.makeText(this, getString(R.string.delete_successful), Toast.LENGTH_LONG).show();
+                        })
+                        .setNegativeButton(R.string.no, null)
+                        .show();
+            }
+
+        });
+    }
+
+    private void setupButtonListeners()
+    {
+        FloatingActionButton buttonAddTerm = findViewById(R.id.term_activity_floating_add_term);
+        buttonAddTerm.setOnClickListener(v -> {
+            Intent intent = new Intent(TermActivity.this, TermAddEditActivity.class);
+            startActivityForResult(intent, ADD_TERM_REQUEST);
+        });
+    }
+
+    private void setupRecyclerView()
+    {
+        recyclerView = findViewById(R.id.term_recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(true);
+
+        termAdapter = new TermAdapter();
+        recyclerView.setAdapter(termAdapter);
     }
 
     @Override
@@ -104,10 +153,6 @@ public class TermActivity extends AppCompatActivity
                 intent = new Intent(this, AssessmentsActivity.class);
                 startActivityForResult(intent,0);
                 return true;
-//            case R.id.go_to_mentors:
-//                intent = new Intent(this, MentorsActivity.class); //TODO: change to MentorActivity.class
-//                startActivityForResult(intent,0);
-//                return true;
             case R.id.go_to_courses:
                 intent = new Intent(this, CoursesActivity.class);
                 startActivityForResult(intent,0);
@@ -147,11 +192,11 @@ public class TermActivity extends AppCompatActivity
             if (requestCode == EDIT_TERM_REQUEST) {
                 id = data.getIntExtra(EXTRA_ID, -1);
                 Term term = new Term(id, title, start, end, status);
-                termViewModel.update(term);
+                termViewModel.updateTerm(term);
                 Toast.makeText(this, "Term updated", Toast.LENGTH_SHORT);
             } else {
                 Term term = new Term(title, start, end, status);
-                termViewModel.insert(term);
+                termViewModel.insertTerm(term);
                 Toast.makeText(this, "Term added", Toast.LENGTH_SHORT);
             }
         }
@@ -160,7 +205,8 @@ public class TermActivity extends AppCompatActivity
 
     private String determineStatusForTerm(LocalDate start, LocalDate end, int termId)
     {
-        CourseViewModel courseViewModel = ViewModelProviders.of(TermActivity.this).get(CourseViewModel.class);
+        CoursesViewModelFactory factory = new CoursesViewModelFactory(getApplication(), termId, false);
+        CourseViewModel courseViewModel = ViewModelProviders.of(TermActivity.this, factory).get(CourseViewModel.class);
         List<Course> courseList = courseViewModel.getStaticFilteredCourses(termId);
         LocalDate now = LocalDate.now();
 

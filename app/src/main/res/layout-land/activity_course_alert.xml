@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.CourseAlertActivity">
+
+    <TextView
+        android:id="@+id/course_alert_course_name"
+        style="@style/TextAppearance.AppCompat.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:paddingVertical="16dp"
+        android:text="course name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <TextView
+        android:id="@+id/course_alert_start_label"
+        style="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:gravity="left"
+        android:text="Start"
+        app:layout_constraintTop_toBottomOf="@id/course_alert_course_name" />
+
+    <TextView
+        android:id="@+id/course_alert_setreminder_label"
+        style="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:text="Set Reminder?"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/course_alert_start_label" />
+
+    <TextView
+        android:id="@+id/course_alert_start"
+        style="@style/TextAppearance.AppCompat.SearchResult.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:hint="01/01/2018"
+        android:inputType="date"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/course_alert_start_label" />
+
+    <CheckBox
+        android:id="@+id/course_alert_start_reminder"
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@id/course_alert_setreminder_label"
+        app:layout_constraintStart_toStartOf="@id/course_alert_setreminder_label"
+        app:layout_constraintTop_toTopOf="@id/course_alert_start" />
+
+
+    <TextView
+        android:id="@+id/course_alert_end_label"
+        style="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="32dp"
+        android:gravity="left"
+        android:text="End"
+        app:layout_constraintTop_toBottomOf="@id/course_alert_start" />
+
+    <TextView
+        android:id="@+id/course_alert_end"
+        style="@style/TextAppearance.AppCompat.SearchResult.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:hint="02/15/2018"
+        android:inputType="date"
+        app:layout_constraintTop_toBottomOf="@id/course_alert_end_label" />
+
+    <CheckBox
+        android:id="@+id/course_alert_end_reminder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@id/course_alert_setreminder_label"
+        app:layout_constraintStart_toStartOf="@id/course_alert_setreminder_label"
+        app:layout_constraintTop_toTopOf="@id/course_alert_end" />
+
+
+    <Button
+        android:id="@+id/course_alert_button_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="16dp"
+        android:text="Save"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

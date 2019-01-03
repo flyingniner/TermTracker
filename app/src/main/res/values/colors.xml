@@ -7,4 +7,5 @@
     <color name="colorPrimaryDark">#1d4ac6</color>
     <color name="colorAccent">#558f45</color>
     <color name="colorButtonBackground">#ffcc5b</color>
+    <color name="colorBackgroundTextFields">#eeeeee</color>
 </resources>

@@ -46,7 +46,8 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-                    android:text="MTH 101"
+                    android:text="i.e. MTH 101"
+                    android:ellipsize="end"
                     />
 
             </RelativeLayout>

@@ -14,6 +14,7 @@ import com.termtacker.utilities.Converters;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.room.Database;
@@ -27,7 +28,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
         Assessment.class, Course.class,
         Note.class, Mentor.class,
         Term.class},
-        version = 14)
+        version = 1)
 @TypeConverters(Converters.class)
 public abstract class AppDatabase extends RoomDatabase
 {
@@ -62,19 +63,26 @@ public abstract class AppDatabase extends RoomDatabase
             super.onOpen(db);
 
             Mentor[] mentors = getMentorsForPrePop();
-            Course[] courses = getCoursesForPrePop();
-            Term[] terms = getTermsForPrePop();
+//            Course[] courses = getCoursesForPrePop();
+//            Term[] terms = getTermsForPrePop();
 
             new PopuplateMentorTableAsync(INSTANCE.mentorDao()).execute(mentors);
-            new PopulateTermTableAsync(INSTANCE.termDao()).execute(terms);
-            new PopulateCourseTableAsync(INSTANCE.courseDao()).execute(courses);
+//            new PopulateTermTableAsync(INSTANCE.termDao()).execute(terms);
+//            new PopulateCourseTableAsync(INSTANCE.courseDao()).execute(courses);
 
         }
 
         @Override
         public void onOpen(@NonNull SupportSQLiteDatabase db)
         {
-
+//            List<Course> courses = INSTANCE.courseDao().getAllCourses().getValue();
+//            for (Course c : courses)
+//            {
+//                if (c.getStatus() == null || c.getStatus().isEmpty())
+//                    c.setStatus(Status.PENDING);
+//            }
+//            Mentor[] mentors = getMentorsForPrePop();
+//            new PopuplateMentorTableAsync(INSTANCE.mentorDao()).execute(mentors);
         }
     };
 
@@ -99,13 +107,13 @@ public abstract class AppDatabase extends RoomDatabase
                 new Course("Intro to Programming",
                            LocalDate.of(2018, Month.MARCH, 1),
                            LocalDate.of(2018, Month.APRIL, 30),
-                           Status.COMPLETED,
+                           Status.PENDING,
                            2,
                            1),
                 new Course("Intro to Databases",
                            LocalDate.of(2018, Month.MAY, 1),
                            LocalDate.of(2018, Month.JUNE, 30),
-                           Status.COMPLETED,
+                           Status.PENDING,
                            3,
                            1),
                 new Course("Programming for the Web",
@@ -136,11 +144,11 @@ public abstract class AppDatabase extends RoomDatabase
                  LocalDate.of(2018,Month.JANUARY,1),
                  LocalDate.of(2018,Month.JUNE,30),
                  Status.COMPLETED),
-        new Term("Spring 2018",
+        new Term("FALL 2018",
                  LocalDate.of(2018,Month.JULY,1),
                  LocalDate.of(2018,Month.DECEMBER,31),
                  Status.IN_PROGRESS),
-        new Term("Spring 2018",
+        new Term("Spring 2019",
                  LocalDate.of(2019,Month.JANUARY,1),
                  LocalDate.of(2019,Month.JUNE,30),
                  Status.PENDING)

@@ -42,4 +42,17 @@ public interface CourseDao
 
     @Query("SELECT * FROM COURSES")
     List<Course> getStaticCourses();
+
+    @Query("SELECT COURSE_NOTES FROM COURSES WHERE COURSE_ID = :courseId")
+    String getCourseNotes(int courseId);
+
+    @Query("UPDATE COURSES SET COURSE_NOTES = :note WHERE COURSE_ID = :courseId")
+    void updateCourseNotes(int courseId, String note);
+
+    @Query("SELECT COUNT(*) FROM COURSES WHERE FK_TERM_ID = :termId")
+    int getCourseCountForTerm(int termId);
+
+    @Query("SELECT * FROM COURSES WHERE COURSE_ID = :courseId")
+    Course getCourseById(int courseId);
+
 }

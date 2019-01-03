@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -18,7 +20,9 @@ import com.termtacker.models.AssessmentAdapter;
 import com.termtacker.R;
 import com.termtacker.models.Assessment;
 import com.termtacker.utilities.AssessmentViewModel;
+import com.termtacker.utilities.AssessmentsViewModelFactory;
 import com.termtacker.utilities.CourseViewModel;
+import com.termtacker.utilities.CoursesViewModelFactory;
 import com.termtacker.utilities.Utils;
 
 import java.time.LocalDate;
@@ -34,6 +38,8 @@ public class AssessmentsActivity extends AppCompatActivity
     private FloatingActionButton buttonAddAssessment;
     private AssessmentViewModel assessmentViewModel;
     private CourseViewModel courseViewModel;
+    private RecyclerView recyclerView;
+    private AssessmentAdapter assessmentAdapter;
 
     private int ADD_ASSESSMENT_REQUEST = 15;
     private static final int EDIT_ASSESSMENT_REQUEST = 16;
@@ -46,31 +52,41 @@ public class AssessmentsActivity extends AppCompatActivity
 
         setTitle("Assessments");
 
-        buttonAddAssessment = findViewById(R.id.assessments_activity_floating_add_assessment);
-        buttonAddAssessment.setOnClickListener(v -> {
-            Intent intent = new Intent(AssessmentsActivity.this, AssessmentAddEditActivity.class);
-            startActivityForResult(intent, ADD_ASSESSMENT_REQUEST);
-        });
+        setupButtonListeners();
 
-        RecyclerView recyclerView = findViewById(R.id.assessments_recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        setUpRecyclerView();
 
-        final AssessmentAdapter assessmentAdapter = new AssessmentAdapter();
-        recyclerView.setAdapter(assessmentAdapter);
+        AssessmentsViewModelFactory assessmentsFactory = new AssessmentsViewModelFactory(getApplication(), 0);
+        assessmentViewModel = ViewModelProviders.of(this, assessmentsFactory).get(AssessmentViewModel.class);
 
-        courseViewModel = ViewModelProviders.of(this).get(CourseViewModel.class);
-        assessmentViewModel = ViewModelProviders.of(this).get(AssessmentViewModel.class);
+        CoursesViewModelFactory coursesFactory = new CoursesViewModelFactory(getApplication(), 0, false);
+        courseViewModel = ViewModelProviders.of(this, coursesFactory).get(CourseViewModel.class);
+
 
         assessmentViewModel.getAllAssessments().observe(this, assessments -> {
             assessmentAdapter.submitList(assessments);
         });
 
-        assessmentAdapter.setOnItemClickListener(new AssessmentAdapter.onItemClickListener()
-        {
+        setupAdapterListeners();
 
-            @Override
-            public void onItemClick(Assessment assessment)
-            {
+    }
+
+    private void setupButtonListeners()
+    {
+        buttonAddAssessment = findViewById(R.id.assessments_activity_floating_add_assessment);
+        buttonAddAssessment.setOnClickListener(v -> {
+            Intent intent = new Intent(AssessmentsActivity.this, AssessmentAddEditActivity.class);
+            startActivityForResult(intent, ADD_ASSESSMENT_REQUEST);
+        });
+    }
+
+    /**
+     * Sets up the listeners for the AssessmentAadapter to respond to either a "tap" or a
+     * "long press"
+     */
+    private void setupAdapterListeners()
+    {
+        assessmentAdapter.setOnItemClickListener(assessment -> {
 
                 Intent intent = new Intent(AssessmentsActivity.this, AssessmentAddEditActivity.class);
 
@@ -84,9 +100,43 @@ public class AssessmentsActivity extends AppCompatActivity
 
                 intent.putExtra(EXTRA_ID, assessment.getAssessmentId());
                 startActivityForResult(intent, EDIT_ASSESSMENT_REQUEST);
-            }
+
         });
 
+        assessmentAdapter.setOnLongItemClickListener(assessment -> {
+            requestDeleteConfirmation(assessment);
+        });
+    }
+
+    private void setUpRecyclerView()
+    {
+        recyclerView = findViewById(R.id.assessments_recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+//        recyclerView.setHasFixedSize(true);
+
+        assessmentAdapter = new AssessmentAdapter();
+        recyclerView.setAdapter(assessmentAdapter);
+    }
+
+
+    private void requestDeleteConfirmation(Assessment assessment)
+    {
+        boolean response =  false;
+
+        new AlertDialog.Builder(this)
+                .setTitle("Delete Assessment?")
+                .setMessage("Are you sure you want to deleteTerm this assessment?")
+                .setIcon(R.drawable.ic_incomplete_72dp)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        assessmentViewModel.deleteAssessment(assessment);
+                        Toast.makeText(AssessmentsActivity.this, "Delete successful!", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton(R.string.no, null).show();
     }
 
     /**
@@ -98,7 +148,7 @@ public class AssessmentsActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu)
     {
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.assessment_menu, menu);
+        menuInflater.inflate(R.menu.assessments_menu, menu);
         return true;
     }
 

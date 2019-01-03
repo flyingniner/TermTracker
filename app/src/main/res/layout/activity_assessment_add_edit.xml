@@ -1,165 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.AssessmentAddEditActivity"
-    android:layout_marginHorizontal="16dp">
+    android:layout_marginHorizontal="16dp"
+    tools:context=".activities.AssessmentAddEditActivity">
 
     <TextView
         android:id="@+id/assessment_add_edit_assessment_type_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="Assessment Type"
-        android:layout_marginTop="8dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:minLines="1"
-        android:gravity="center"
         android:textStyle="bold"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <Spinner
         android:id="@+id/assessment_type_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@id/assessment_add_edit_assessment_type_label"
         android:minHeight="32dp"
-        android:backgroundTint="@color/colorPrimary"
         android:prompt="@string/spinner_assessment_type"
-        />
-
+        app:layout_constraintTop_toBottomOf="@id/assessment_add_edit_assessment_type_label" />
 
 
     <TextView
         android:id="@+id/assessment_add_edit_assessment_code_label"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/assessment_type_spinner"
         android:layout_marginTop="16dp"
-        android:text="Course Code"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:gravity="center"
+        android:labelFor="@id/assessment_add_edit_assessment_code"
+        android:text="Assessment Code"
         android:textStyle="bold"
-        />
+        app:layout_constraintTop_toBottomOf="@id/assessment_type_spinner" />
 
     <EditText
         android:id="@+id/assessment_add_edit_assessment_code"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/assessment_type_spinner"
-        android:hint="MTH101"
-        android:layout_marginTop="16dp"
-        />
+        android:hint="i.e. Math Pre"
+        android:inputType="text"
+        app:layout_constraintTop_toBottomOf="@id/assessment_add_edit_assessment_code_label" />
+
 
     <TextView
         android:id="@+id/assessment_add_edit_course_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Course"
-        android:layout_below="@id/assessment_add_edit_assessment_code"
         android:layout_marginTop="16dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
         android:minLines="1"
-        android:gravity="center"
-        android:textStyle="bold"/>
+        android:text="Course"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/assessment_add_edit_assessment_code" />
 
     <Spinner
         android:id="@+id/assessment_add_edit_parent_course_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/assessment_add_edit_course_label"
         android:backgroundTint="@color/colorPrimary"
         android:minHeight="32dp"
-        android:prompt="@string/spinner_course_name"/>
+        android:prompt="@string/spinner_course_name"
+        app:layout_constraintTop_toBottomOf="@id/assessment_add_edit_course_label" />
 
     <TextView
         android:id="@+id/assessment_add_edit_date_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Scheduled"
-        android:gravity="center"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@id/assessment_add_edit_parent_course_spinner"
+        android:layout_alignParentEnd="true"
         android:layout_marginTop="16dp"
+        android:text="Scheduled"
         android:textStyle="bold"
-        />
+        app:layout_constraintTop_toBottomOf="@id/assessment_add_edit_parent_course_spinner" />
 
     <EditText
         android:id="@+id/assessment_add_edit_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="02/15/2018"
+        android:hint="@string/date_format_hint"
         android:inputType="date"
-        android:layout_below="@id/assessment_add_edit_date_label"/>
+        app:layout_constraintTop_toBottomOf="@id/assessment_add_edit_date_label" />
 
     <ImageButton
         android:id="@+id/assessment_add_edit_date_picker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_event_black_24dp"
-        android:layout_alignTop="@id/assessment_add_edit_date_label"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="16dp"
         android:layout_marginTop="12dp"
-        android:maxHeight="24dp"/>
+        android:layout_marginRight="16dp"
+        android:maxHeight="24dp"
+        android:src="@drawable/ic_event_black_24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/assessment_add_edit_date_label" />
 
     <TextView
-        android:id="@+id/assessment_add_edit_result"
+        android:id="@+id/assessment_add_edit_result_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/assessment_add_edit_date"
+        android:layout_marginTop="16dp"
         android:text="Assessment Result"
-        android:gravity="center"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/assessment_add_edit_date" />
+
     <CheckBox
         android:id="@+id/assessment_add_edit_passed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Passed"
-        android:layout_below="@id/assessment_add_edit_result"
+        android:layout_below="@id/assessment_add_edit_result_label"
         android:layout_alignParentStart="true"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
         android:layout_marginTop="8dp"
-        />
+        android:text="Passed"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+        app:layout_constraintBottom_toTopOf="@id/assessment_add_edit_not_passed"
+        app:layout_constraintTop_toBottomOf="@id/assessment_add_edit_result_label" />
+
     <CheckBox
         android:id="@+id/assessment_add_edit_not_passed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Approaching Competence"
         android:layout_below="@id/assessment_add_edit_passed"
         android:layout_alignParentStart="true"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
         android:layout_marginTop="8dp"
-        />
-
-    <!--<CheckBox-->
-        <!--android:id="@+id/assessment_add_edit_reminder"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_below="@id/assessment_add_edit_not_passed"-->
-        <!--android:text="Set Reminder Notification"-->
-        <!--android:layout_alignBottom="@+id/assessment_add_edit_save"-->
-        <!--android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"/>-->
+        android:text="Approaching Competence"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+        app:layout_constraintTop_toBottomOf="@id/assessment_add_edit_passed" />
 
     <Button
         android:id="@+id/assessment_add_edit_save"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
+        android:layout_marginHorizontal="16dp"
         android:layout_marginBottom="16dp"
-        android:text="Save"/>
+        android:text="Save"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

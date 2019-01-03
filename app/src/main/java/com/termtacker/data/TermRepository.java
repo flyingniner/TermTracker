@@ -16,6 +16,7 @@ public class TermRepository
 {
     private LiveData<List<Term>> terms;
     private TermDao termDao;
+    private CourseDao courseDao;
     private CardView cardView;
 
     public TermRepository(Application application)
@@ -23,6 +24,7 @@ public class TermRepository
         AppDatabase database = AppDatabase.getInstance(application.getApplicationContext());
 
         termDao = database.termDao();
+        courseDao = database.courseDao();
         terms = termDao.getTerms();
         cardView = new CardView(application.getApplicationContext());
     }
@@ -42,13 +44,20 @@ public class TermRepository
         new DeleteTermAsync(termDao).execute(term);
     }
 
+    public LocalDate getTermStartDate(int termId) { return termDao.getTermStartDate(termId);}
+
     public LocalDate getTermEndDate(int termId) { return termDao.getTermEndDate(termId);}
 
-
-
     public LiveData<List<Term>> getTerms()
+
+
     {
         return terms;
+    }
+
+    public int getCourseCountForTerm(int termId)
+    {
+        return courseDao.getCourseCountForTerm(termId);
     }
 
     public static class InsertTermAsync extends AsyncTask<Term, Void, Void>
@@ -68,7 +77,7 @@ public class TermRepository
         {
             Log.d(TAG, "Background thread started");
             Log.d(TAG, "terms[] has X terms: " + terms.length);
-            Log.d(TAG, "Attempting to insert term now");
+            Log.d(TAG, "Attempting to insertTerm term now");
             try
             {
                 termDao.insertTerm(terms[0]);
@@ -76,7 +85,7 @@ public class TermRepository
             }
             catch (Exception e)
             {
-                Log.d(TAG, "term failed to insert");
+                Log.d(TAG, "term failed to insertTerm");
                 throw e;
             }
             return null;

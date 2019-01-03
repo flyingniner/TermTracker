@@ -1,16 +1,24 @@
 package com.termtacker.activities;
 
 import android.content.Intent;
-import androidx.appcompat.app.AppCompatActivity;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.OrientationEventListener;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
 import android.widget.RelativeLayout;
 
 import com.termtacker.data.AppDatabase;
@@ -33,7 +41,9 @@ public class MainActivity extends AppCompatActivity
     int _48dp;
     //endregion
 
-    LinearLayout linearLayout;
+    LinearLayoutCompat linearLayout;
+//    LinearLayout linearLayout;
+//    LinearLayoutCompat buttonLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -43,30 +53,91 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        int orientation = getResources().getConfiguration().orientation;
 
+
+        if (orientation == Configuration.ORIENTATION_PORTRAIT)
+        {
+//            if (linearLayout != null)
+//                linearLayout.removeAllViews();
+            createPortraitView();
+        }
+        else
+        {
+//            if (linearLayout != null)
+//                linearLayout.removeAllViews();
+//            if (buttonLayout != null)
+//                buttonLayout.removeAllViews();
+            createLandscapeView();
+        }
+
+    }
+
+
+
+    private void createPortraitView()
+    {
         RelativeLayout relativeLayout = new RelativeLayout(this);
         RelativeLayout.LayoutParams relativeParams = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT,
                 RelativeLayout.LayoutParams.MATCH_PARENT);
 
         relativeLayout.setLayoutParams(relativeParams);
+        relativeLayout.removeAllViews();
         setContentView(relativeLayout);
 
-        linearLayout = new LinearLayout(this);
+
+        linearLayout = new LinearLayoutCompat(MainActivity.this);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
 
         linearLayout.setLayoutParams(params);
-        linearLayout.setOrientation(LinearLayout.VERTICAL);
+
+        linearLayout.setOrientation(LinearLayoutCompat.VERTICAL);
+//        linearLayout.removeAllViews();
 
         addLogo();
-        loadButtons();
+        loadButtons(false);
 
-//        AppDatabase db = AppDatabase.getInstance(getApplicationContext());
-        
         relativeLayout.addView(linearLayout);
+    }
 
+    private void createLandscapeView()
+    {
+        RelativeLayout relativeLayout = new RelativeLayout(this);
+        RelativeLayout.LayoutParams relativeParams = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.MATCH_PARENT);
+
+        relativeLayout.setLayoutParams(relativeParams);
+
+        setContentView(relativeLayout);
+
+
+        linearLayout = new LinearLayoutCompat(MainActivity.this);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+        linearLayout.setLayoutParams(params);
+
+        linearLayout.setOrientation(LinearLayoutCompat.VERTICAL);
+//        buttonLayout = new LinearLayout(MainActivity.this);
+//        RelativeLayout.LayoutParams buttonParams = new RelativeLayout.LayoutParams(
+//                RelativeLayout.LayoutParams.WRAP_CONTENT,
+//                RelativeLayout.LayoutParams.WRAP_CONTENT
+//        );
+//
+//        buttonLayout.setLayoutParams(buttonParams);
+//        buttonLayout.setOrientation(LinearLayout.VERTICAL);
+
+//        linearLayout.removeAllViews();
+        loadButtons(true);
+
+        addLogo();
+
+        relativeLayout.addView(linearLayout);
     }
 
     /**
@@ -75,10 +146,10 @@ public class MainActivity extends AppCompatActivity
     private void setDpSettings()
     {
         dpi = getResources().getDisplayMetrics().density;
-        _8dp = (int) (8 * (dpi/ 160));
-        _16dp = (int)(16 * (dpi / 160));
-        _24dp = (int)(24 * (dpi / 160));
-        _48dp = (int)(48 * (dpi / 160));
+        _8dp = (int) (8 * (dpi / 160));
+        _16dp = (int) (16 * (dpi / 160));
+        _24dp = (int) (24 * (dpi / 160));
+        _48dp = (int) (48 * (dpi / 160));
     }
 
     /**
@@ -98,6 +169,8 @@ public class MainActivity extends AppCompatActivity
                         R.drawable.owl,
                         getApplicationContext().getTheme()));
 
+
+
         linearLayout.addView(imageView);
     }
 
@@ -105,17 +178,18 @@ public class MainActivity extends AppCompatActivity
      * Creates the buttons for the Main activity and
      * adds them to the linearLayout.
      */
-    private void loadButtons()
+    private void loadButtons(boolean isLandscape)
     {
-        int[] buttonLabels = new int[] {
-                R.string.btnAssessments,
+        int[] buttonLabels = new int[]{
+                R.string.btnTerms,
                 R.string.btnCourses,
-                R.string.btnTerms
+                R.string.btnAssessments
         };
 
+//        buttonLayout.removeAllViews();
+
         //create a button for each of the main areas and set their onClickListener()
-        for (int label : buttonLabels)
-        {
+        for (int label : buttonLabels) {
             Button button = new Button(this);
             RelativeLayout.LayoutParams buttonParams =
                     new RelativeLayout.LayoutParams(
@@ -124,20 +198,19 @@ public class MainActivity extends AppCompatActivity
 
             buttonParams.setMargins(_16dp, _8dp, _16dp, _48dp);
             button.setLayoutParams(buttonParams);
-            button.setPadding(_8dp,_48dp,_8dp,_48dp);
+            button.setPadding(_8dp, _48dp, _8dp, _48dp);
             button.setText(label);
             button.setTextSize(32);
 
-            switch (label)
-            {
-                case R.string.btnAssessments:
-                    button.setId(R.id.btnAssessments);
+            switch (label) {
+                case R.string.btnTerms:
+                    button.setId(R.id.btnTerms);
                     break;
                 case R.string.btnCourses:
                     button.setId(R.id.btnCourses);
                     break;
-                case R.string.btnTerms:
-                    button.setId(R.id.btnTerms);
+                case R.string.btnAssessments:
+                    button.setId(R.id.btnAssessments);
                     break;
             }
 
@@ -146,25 +219,34 @@ public class MainActivity extends AppCompatActivity
                 Intent intent;
 
                 switch (id) {
-                    case R.id.btnAssessments:
-                        loadAssessmentActivity(v);
+                    case R.id.btnTerms:
+                        loadTermsActivity(v);
                         break;
                     case R.id.btnCourses:
                         loadCoursesActivity(v);
                         break;
-                    case R.id.btnTerms:
-                        loadTermsActivity(v);
+                    case R.id.btnAssessments:
+                        loadAssessmentActivity(v);
                         break;
                 }
             });
 
             linearLayout.addView(button);
+//            if (isLandscape) {
+//                buttonLayout.addView(button);
+////                linearLayout.addView(buttonLayout);
+//            }
+//            else {
+//
+//                linearLayout.addView(button);
+//            }
         }
     }
 
     /**
      * This method is called when the onClick event is fired for the
      * Assessments button.
+     *
      * @param view
      */
     private void loadAssessmentActivity(View view)
@@ -176,6 +258,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * This method is called when the onClick event is fired for the
      * Courses button.
+     *
      * @param view
      */
     private void loadCoursesActivity(View view)
@@ -187,6 +270,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * This method is called when the onClick event is fired for the
      * Terms button.
+     *
      * @param view
      */
     private void loadTermsActivity(View view)
@@ -207,23 +291,18 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item)
     {
         Intent intent;
-        switch (item.getItemId())
-        {
-//            case R.id.go_to_assessments:
-//                intent = new Intent(this, AssessmentActivity.class);
-//                startActivityForResult(intent,ASSESSMENT_REQUEST);
-//                return true;
+        switch (item.getItemId()) {
+            case R.id.go_to_assessments:
+                intent = new Intent(this, AssessmentsActivity.class);
+                startActivity(intent);
+                return true;
             case R.id.go_to_courses:
                 intent = new Intent(this, CoursesActivity.class);
-                startActivityForResult(intent,COURSE_REQUEST);
+                startActivity(intent);
                 return true;
-//            case R.id.go_to_Mentor:
-//                intent = new Intent(this, MentorActivity.class);
-//                startActivityForResult(intent,MENTOR_REQUEST);
-//                return true;
             case R.id.go_to_terms:
                 intent = new Intent(this, TermActivity.class);
-                startActivityForResult(intent,TERMS_REQUEST);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

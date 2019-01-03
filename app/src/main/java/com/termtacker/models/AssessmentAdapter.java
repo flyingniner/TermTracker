@@ -16,14 +16,34 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class AssessmentAdapter extends ListAdapter<Assessment, AssessmentAdapter.AssessmentHolder>
 {
+    private AssessmentAdapter.onItemClickListener listener;
+    private AssessmentAdapter.onLongItemClickListener longListener;
 
-
-    private onItemClickListener listener;
 
     public AssessmentAdapter()
     {
         super(DIFF_CALLBACK);
     }
+
+    private static final DiffUtil.ItemCallback<Assessment> DIFF_CALLBACK = new DiffUtil.ItemCallback<Assessment>()
+    {
+        @Override
+        public boolean areItemsTheSame(@NonNull Assessment oldItem, @NonNull Assessment newItem)
+        {
+            return oldItem.getAssessmentId() == newItem.getAssessmentId();
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull Assessment oldItem, @NonNull Assessment newItem)
+        {
+            return oldItem.getAssessmentType() == newItem.getAssessmentType() &&
+                    oldItem.getAssessmentDate() == newItem.getAssessmentDate() &&
+                    oldItem.getAssessmentCode() == newItem.getAssessmentCode() &&
+                    oldItem.getCourseId() == newItem.getCourseId() &&
+                    oldItem.getResult() == newItem.getResult();
+        }
+    };
+
 
     @NonNull
     @Override
@@ -48,29 +68,9 @@ public class AssessmentAdapter extends ListAdapter<Assessment, AssessmentAdapter
             holder.assessmentProgressIcon.setImageResource(R.drawable.ic_pending_72dp);
         else
             holder.assessmentProgressIcon.setImageResource(R.drawable.ic_incomplete_72dp);
-
-
-
     }
 
-    private static final DiffUtil.ItemCallback<Assessment> DIFF_CALLBACK = new DiffUtil.ItemCallback<Assessment>()
-    {
-        @Override
-        public boolean areItemsTheSame(@NonNull Assessment oldItem, @NonNull Assessment newItem)
-        {
-            return oldItem.getAssessmentId() == newItem.getAssessmentId();
-        }
 
-        @Override
-        public boolean areContentsTheSame(@NonNull Assessment oldItem, @NonNull Assessment newItem)
-        {
-            return oldItem.getAssessmentType() == newItem.getAssessmentType() &&
-                    oldItem.getAssessmentDate() == newItem.getAssessmentDate() &&
-                    oldItem.getAssessmentCode() == newItem.getAssessmentCode() &&
-                    oldItem.getCourseId() == newItem.getCourseId() &&
-                    oldItem.getResult() == newItem.getResult();
-        }
-    };
 
 
     private Assessment getAssessmentAt(int position)
@@ -94,10 +94,19 @@ public class AssessmentAdapter extends ListAdapter<Assessment, AssessmentAdapter
             assessmentProgressIcon = itemView.findViewById(R.id.assessment_item_progressIcon);
             assessmentScheduledDate = itemView.findViewById(R.id.assessment_item_scheduled);
 
+
             itemView.setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 if (listener != null && position != RecyclerView.NO_POSITION)
                     listener.onItemClick(getItem(position));
+            });
+
+            itemView.setLongClickable(true);
+            itemView.setOnLongClickListener(v -> {
+               int position = getAdapterPosition();
+                if (longListener != null && position != RecyclerView.NO_POSITION)
+                    longListener.onItemLongClick(getItem(position));
+                return true;
             });
         }
     }
@@ -110,5 +119,15 @@ public class AssessmentAdapter extends ListAdapter<Assessment, AssessmentAdapter
     public void setOnItemClickListener(AssessmentAdapter.onItemClickListener listener)
     {
         this.listener = listener;
+    }
+
+    public interface onLongItemClickListener
+    {
+        void onItemLongClick(Assessment assessment);
+    }
+
+    public void setOnLongItemClickListener(AssessmentAdapter.onLongItemClickListener longListener)
+    {
+        this.longListener = longListener;
     }
 }

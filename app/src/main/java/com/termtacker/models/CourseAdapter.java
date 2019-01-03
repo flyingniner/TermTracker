@@ -19,7 +19,8 @@ public class CourseAdapter extends ListAdapter<Course, CourseAdapter.CourseHolde
 {
     public static final String TAG = CourseAdapter.class.getCanonicalName();
     private CourseAdapter.onItemClickListener listener;
-    int courseTermIntentID = 7;
+    private onLongItemClickListener longListener;
+//    int courseTermIntentID = 7;
 
     public CourseAdapter() {
         super(DIFF_CALLBACK);
@@ -114,6 +115,14 @@ public class CourseAdapter extends ListAdapter<Course, CourseAdapter.CourseHolde
                 if(listener != null && position != RecyclerView.NO_POSITION)
                     listener.onItemClick(getItem(position));
             });
+
+            itemView.setLongClickable(true);
+            itemView.setOnLongClickListener(v -> {
+                int position = getAdapterPosition();
+                if (longListener != null && position != RecyclerView.NO_POSITION)
+                    longListener.onItemLongClick(getItem(position));
+                return true;
+            });
         }
 
 
@@ -127,5 +136,15 @@ public class CourseAdapter extends ListAdapter<Course, CourseAdapter.CourseHolde
     public void setOnItemClickListener(CourseAdapter.onItemClickListener listener)
     {
         this.listener = listener;
+    }
+
+    public interface onLongItemClickListener
+    {
+        void onItemLongClick(Course course);
+    }
+
+    public void setOnLongItemClickListener(CourseAdapter.onLongItemClickListener longListener)
+    {
+        this.longListener = longListener;
     }
 }
