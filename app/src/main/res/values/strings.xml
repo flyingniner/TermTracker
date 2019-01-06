@@ -7,6 +7,7 @@
 
     <!--AlertDialogs and Toast Messages-->
     <string name="error_title">ERROR</string>
+    <string name="warning_title">WARNING</string>
     <string name="assessment_confirm_delete_message">Are you sure you want to delete this assessment?</string>
     <string name="delete_assessment_title">Delete Assessment?</string>
     <string name="course_has_assessments_error">This course has one or more assessments associated to it. You must delete the associated assessments before the course can be removed or deleted.</string>
@@ -27,6 +28,8 @@
     <string name="course_removed_success">Course removed!</string>
     <string name="course_reminder_error">You must save the course before you can add a reminder.</string>
     <string name="course_add_note_error">You must save the course before you can add notes.</string>
+    <string name="missing_field">A required field was left blank</string>
+    <string name="course_import_with_bad_dates">The course you added has starting and/or ending dates that do not fall within the current term. \n\nClick on the course to edit the starting and ending dates.</string>
 
     <!--Activity Field & View Labels-->
     <string name="startLabel">Start</string>
@@ -62,6 +65,7 @@
     <string name="course_start_date_error"><![CDATA[The starting date for the course must be >=]]></string>
     <string name="date_format_hint">mm/dd/yyyy</string>
     <string name="course_add_assessment_error">You must save the course before you can add assessements.</string>
+    <string name="missing_assessment_type">Please select an assessment type!</string>
 
 
 </resources>

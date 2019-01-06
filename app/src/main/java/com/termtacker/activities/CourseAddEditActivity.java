@@ -28,6 +28,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.termtacker.data.CourseRepository;
 import com.termtacker.models.AssessmentAdapter;
 import com.termtacker.data.MentorRepository;
 import com.termtacker.R;
@@ -48,7 +49,6 @@ import java.util.List;
 
 public class CourseAddEditActivity extends AppCompatActivity
 {
-    private static final String TAG = TermAddEditActivity.class.getCanonicalName();
     //region requests
     public static final int SELECT_MENTOR_REQUEST = 7;
     public static final int VIEW_NOTES_REQUEST = 23;
@@ -106,25 +106,24 @@ public class CourseAddEditActivity extends AppCompatActivity
     private Button assessmentsButton;
     private Button addNoteButton;
     //endregion
-
-    private Course course;
+    //region fields
     private Calendar calendar;
     private DatePickerDialog datePickerDialog;
     private CourseViewModel courseViewModel;
     private AssessmentViewModel assessmentViewModel;
-
     private boolean isExistingCourse = false;
-    private static int courseId;
+    private int courseId;
     private int mentorId;
     private int termId;
     private LocalDate termStartDate;
     private LocalDate termEndDate;
     private Intent intentFromCaller;
-    //    private boolean isCoursesActivityCaller = false;
     private boolean isTermAddEditActivityCaller = false;
     private AssessmentAdapter assessmentAdapter;
     RecyclerView assessmentsRecyclerView;
     private boolean isNewCourseRequest;
+    //endregion
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -140,19 +139,22 @@ public class CourseAddEditActivity extends AppCompatActivity
 
         intentFromCaller = getIntent();
 
-
         isNewCourseRequest = intentFromCaller.hasExtra(CoursesActivity.EXTRA_IS_NEW_COURSE) ? true : false;
-//        isCoursesActivityCaller = intentFromCaller.hasExtra(CoursesActivity.EXTRA_ID) ? true : false;
         isTermAddEditActivityCaller = intentFromCaller.hasExtra(TermAddEditActivity.EXTRA_TERM_ID) ? true : false;
 
         loadExistingCourseDetails(intentFromCaller);
 
         setUpAssessmentRecyclerView();
 
-        AssessmentsViewModelFactory assessmentsFactory = new AssessmentsViewModelFactory(getApplication(), courseId);
-        assessmentViewModel = ViewModelProviders.of(this, assessmentsFactory).get(AssessmentViewModel.class);
-        CoursesViewModelFactory coursesFactory = new CoursesViewModelFactory(getApplication(), termId, false);
-        courseViewModel = ViewModelProviders.of(this, coursesFactory).get(CourseViewModel.class);
+        AssessmentsViewModelFactory assessmentsFactory =
+                new AssessmentsViewModelFactory(getApplication(), courseId);
+        assessmentViewModel = ViewModelProviders.of(this, assessmentsFactory)
+                .get(AssessmentViewModel.class);
+
+        CoursesViewModelFactory coursesFactory =
+                new CoursesViewModelFactory(getApplication(), termId, false);
+        courseViewModel = ViewModelProviders.of(this, coursesFactory)
+                .get(CourseViewModel.class);
 
         if (courseId > 0) { //only calls for data if it's an existing course
             assessmentViewModel.getAllAssessments().observe(this, list -> assessmentAdapter.submitList(list));
@@ -183,8 +185,7 @@ public class CourseAddEditActivity extends AppCompatActivity
             assessmentDataIntent.putExtra(EXTRA_ASSESSMENT_TYPE, assessment.getAssessmentType());
             assessmentDataIntent.putExtra(EXTRA_ASSESSMENT_SCHEDULED, assessment.getAssessmentDate()
                     .format(Utils.dateFormatter_MMddyyyy));
-            courseId = assessment.getCourseId();
-            assessmentDataIntent.putExtra(EXTRA_ASSESSMENT_COURSE_ID, courseId);
+            assessmentDataIntent.putExtra(EXTRA_ASSESSMENT_COURSE_ID, assessment.getCourseId());
             assessmentDataIntent.putExtra(EXTRA_ASSESSMENT_RESULT, assessment.getResult());
             assessmentDataIntent.putExtra(EXTRA_ASSESSMENT_COURSE_NAME, courseViewModel.getCourseName(courseId));
 
@@ -192,6 +193,10 @@ public class CourseAddEditActivity extends AppCompatActivity
         });
     }
 
+
+    /**
+     * Initializes the Assessment Recycler
+     */
     private void setUpAssessmentRecyclerView()
     {
         assessmentsRecyclerView = findViewById(R.id.course_add_edit_recycler_view);
@@ -202,6 +207,12 @@ public class CourseAddEditActivity extends AppCompatActivity
         assessmentsRecyclerView.setAdapter(assessmentAdapter);
     }
 
+
+    /**
+     * Presents the user with a confirmation dialog when a delete assessment request is initiated.
+     *
+     * @param assessment
+     */
     private void requestDeleteConfirmation(Assessment assessment)
     {
         boolean response = false;
@@ -215,12 +226,17 @@ public class CourseAddEditActivity extends AppCompatActivity
                     public void onClick(DialogInterface dialog, int which)
                     {
                         assessmentViewModel.deleteAssessment(assessment);
-                        Toast.makeText(CourseAddEditActivity.this, getString(R.string.delete_successful), Toast.LENGTH_LONG).show();
+                        Toast.makeText(CourseAddEditActivity.this,
+                                getString(R.string.delete_successful), Toast.LENGTH_LONG).show();
                     }
                 })
                 .setNegativeButton(R.string.no, null).show();
     }
 
+
+    /**
+     * Initializes the UI elements
+     */
     private void getUIFieldReferences()
     {
         editTextCourseTitle = findViewById(R.id.course_add_edit_title);
@@ -235,6 +251,7 @@ public class CourseAddEditActivity extends AppCompatActivity
         addNoteButton = findViewById(R.id.course_add_edit_notes);
     }
 
+
     /**
      * Prefills the form elements with the existing course details and
      * sets some global fields used in other methods
@@ -243,74 +260,114 @@ public class CourseAddEditActivity extends AppCompatActivity
      */
     private void loadExistingCourseDetails(Intent intent)
     {
-        if (!isNewCourseRequest && !isTermAddEditActivityCaller)
-        {
+        if (!isNewCourseRequest) {
+            if (!isTermAddEditActivityCaller) { //Caller is CoursesActivity
+
+                loadDetailsForCoursesActivityCaller(intent);
+
+            } else if (isTermAddEditActivityCaller) { //Caller is TermAddEditActivity
+
+                loadDetailsForTermAddEditActivityCaller(intent);
+
+            }
+        } else { //This is new course so nothing to load
+
+            setTitle("Add Course");
+            contactCourseMentor.setText("Select a Mentor");
+            courseId = 0;
+        }
+
+    }
+
+
+    /**
+     * Initializes UI field elements with values
+     *
+     * @param intent
+     */
+    private void loadDetailsForTermAddEditActivityCaller(Intent intent)
+    {
+        if (intent.getIntExtra(TermAddEditActivity.EXTRA_COURSE_ID, 0) > 0) {
             setTitle("Edit Course");
             isExistingCourse = true;
-            courseId = intent.getIntExtra(CoursesActivity.EXTRA_ID, 0);
-            mentorId = intent.getIntExtra(CoursesActivity.EXTRA_MENTORID, 0);
-            termId = intent.getIntExtra(CoursesActivity.EXTRA_TERMID, 0);
 
-            if (termId > 0) {
-                termStartDate = LocalDate.ofEpochDay(intent.getLongExtra(CoursesActivity.EXTRA_TERM_START, 0));
-                termEndDate = LocalDate.ofEpochDay(intent.getLongExtra(CoursesActivity.EXTRA_TERM_END, 0));
-            }
+            courseId = intent.getIntExtra(TermAddEditActivity.EXTRA_COURSE_ID, 0);
+            mentorId = intent.getIntExtra(TermAddEditActivity.EXTRA_MENTOR_ID, 0);
+            termId = intent.getIntExtra(TermAddEditActivity.EXTRA_TERM_ID, 0);
 
+            editTextCourseTitle.setText(intent.getStringExtra(TermAddEditActivity.EXTRA_TITLE));
+            editTextCourseStart.setText(
+                    LocalDate.ofEpochDay(
+                            intent.getLongExtra(TermAddEditActivity.EXTRA_START, 0))
+                            .format(Utils.dateFormatter_MMddyyyy));
 
-            editTextCourseTitle.setText(intent.getStringExtra(CoursesActivity.EXTRA_TITLE));
-            editTextCourseStart.setText(LocalDate.ofEpochDay(
-                    intent.getLongExtra(CoursesActivity.EXTRA_START, 0))
-                    .format(Utils.dateFormatter_MMddyyyy));
-            editTextCourseEnd.setText(LocalDate.ofEpochDay(
-                    intent.getLongExtra(CoursesActivity.EXTRA_END, 0))
-                    .format(Utils.dateFormatter_MMddyyyy));
+            editTextCourseEnd.setText(
+                    LocalDate.ofEpochDay(
+                            intent.getLongExtra(TermAddEditActivity.EXTRA_COURSE_END, 0))
+                            .format(Utils.dateFormatter_MMddyyyy));
+
             contactCourseMentor.setText("Contact Course Mentor");
 
-            String status = intent.getStringExtra(CoursesActivity.EXTRA_STATUS);
+            String status = intent.getStringExtra(TermAddEditActivity.EXTRA_STATUS);
             if (status == null)
                 textViewCourseEndLabel.setText("Goal");
             else
                 textViewCourseEndLabel.setText("Completed");
 
+            termStartDate = LocalDate.ofEpochDay(
+                    intent.getLongExtra(CoursesActivity.EXTRA_TERM_START, 0));
+
+            termEndDate = LocalDate.ofEpochDay(
+                    intent.getLongExtra(TermAddEditActivity.EXTRA_TERM_END, 0));
         }
-        else if (isTermAddEditActivityCaller)
-        {
-
-            if (intent.getIntExtra(TermAddEditActivity.EXTRA_COURSE_ID, 0) > 0) {
-                setTitle("Edit Course");
-                isExistingCourse = true;
-
-                courseId = intent.getIntExtra(TermAddEditActivity.EXTRA_COURSE_ID, 0);
-                mentorId = intent.getIntExtra(TermAddEditActivity.EXTRA_MENTOR_ID, 0);
-                termId = intent.getIntExtra(TermAddEditActivity.EXTRA_TERM_ID, 0);
-
-                editTextCourseTitle.setText(intent.getStringExtra(TermAddEditActivity.EXTRA_TITLE));
-                editTextCourseStart.setText(LocalDate.ofEpochDay(
-                        intent.getLongExtra(TermAddEditActivity.EXTRA_START, 0))
-                        .format(Utils.dateFormatter_MMddyyyy));
-                editTextCourseEnd.setText(LocalDate.ofEpochDay(
-                        intent.getLongExtra(TermAddEditActivity.EXTRA_COURSE_END, 0))
-                        .format(Utils.dateFormatter_MMddyyyy));
-                contactCourseMentor.setText("Contact Course Mentor");
-
-                String status = intent.getStringExtra(TermAddEditActivity.EXTRA_STATUS);
-                if (status == null)
-                    textViewCourseEndLabel.setText("Goal");
-                else
-                    textViewCourseEndLabel.setText("Completed");
-
-                termStartDate = LocalDate.ofEpochDay(intent.getLongExtra(CoursesActivity.EXTRA_TERM_START, 0));
-                termEndDate = LocalDate.ofEpochDay(intent.getLongExtra(TermAddEditActivity.EXTRA_TERM_END, 0));
-            }
-
-        }
-        else
-        {
-            setTitle("Add Course");
-            contactCourseMentor.setText("Select a Mentor");
-        }
-
     }
+
+
+    /**
+     * Initializes UI field elements with values
+     *
+     * @param intent
+     */
+    private void loadDetailsForCoursesActivityCaller(Intent intent)
+    {
+        setTitle("Edit Course");
+        isExistingCourse = true;
+        courseId = intent.getIntExtra(CoursesActivity.EXTRA_ID, 0);
+        mentorId = intent.getIntExtra(CoursesActivity.EXTRA_MENTORID, 0);
+        termId = intent.getIntExtra(CoursesActivity.EXTRA_TERMID, 0);
+
+        if (termId > 0) {
+            termStartDate = LocalDate.ofEpochDay(
+                    intent.getLongExtra(CoursesActivity.EXTRA_TERM_START, 0));
+
+            termEndDate = LocalDate.ofEpochDay(
+                    intent.getLongExtra(CoursesActivity.EXTRA_TERM_END, 0));
+        }
+
+
+        editTextCourseTitle.setText(intent.getStringExtra(CoursesActivity.EXTRA_TITLE));
+        editTextCourseStart.setText(
+                LocalDate.ofEpochDay(
+                        intent.getLongExtra(CoursesActivity.EXTRA_START, 0))
+                        .format(Utils.dateFormatter_MMddyyyy));
+
+        editTextCourseEnd.setText(
+                LocalDate.ofEpochDay(
+                        intent.getLongExtra(CoursesActivity.EXTRA_END, 0))
+                        .format(Utils.dateFormatter_MMddyyyy));
+
+        contactCourseMentor.setText("Contact Course Mentor");
+
+        String status = intent.getStringExtra(CoursesActivity.EXTRA_STATUS);
+        if (status == null) {
+
+            textViewCourseEndLabel.setText("Goal");
+        } else {
+
+            textViewCourseEndLabel.setText("Completed");
+        }
+    }
+
 
     /**
      * Creates the listeners the the date pickers, save button,
@@ -319,7 +376,148 @@ public class CourseAddEditActivity extends AppCompatActivity
      */
     private void setButtonListeners()
     {
-        //region StartDate DatePicker
+        setupStartDatePicker();
+
+        setupEndDatePicker();
+
+        setupSaveButtonListener();
+
+        setupAssessmentListener();
+
+        setupCourseMentorListener();
+
+        setupNotesListener();
+
+    }
+
+
+    /**
+     * Initializes the Notes button listener
+     */
+    private void setupNotesListener()
+    {
+        addNoteButton.setOnClickListener(listener -> {
+
+            if (courseId < 1) {
+
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.error_title)
+                        .setMessage(R.string.course_add_note_error)
+                        .setIcon(R.drawable.ic_incomplete_72dp)
+                        .setNeutralButton(R.string.ok, null)
+                        .show();
+            } else {
+
+                Intent data = new Intent(CourseAddEditActivity.this, NoteAddEditActivity.class);
+                data.putExtra(EXTRA_NOTES_COURSE_ID, courseId);
+                data.putExtra(EXTRA_NOTES_COURSE_NAME, editTextCourseTitle.getText().toString());
+
+                CourseRepository courseRepository = new CourseRepository(getApplication());
+                String notes = courseRepository.getCourseNotes(courseId);
+
+                if (notes != null && !notes.isEmpty()) {
+
+                    data.putExtra(EXTRA_NOTES_COURSE_NOTETEXT, notes);
+                }
+
+                startActivityForResult(data, VIEW_NOTES_REQUEST);
+            }
+        });
+    }
+
+
+    /**
+     * Initializes the Course Mentor button listener
+     */
+    private void setupCourseMentorListener()
+    {
+        contactCourseMentor.setOnClickListener(listener -> {
+
+            if (contactCourseMentor.getText().toString().equals("Select a Mentor"))
+                onButtonSelectAMentorClick();
+            else
+                onButtonViewMentorContactClick(new View(this));
+        });
+    }
+
+
+    /**
+     * Initializes the Save button listener
+     */
+    private void setupSaveButtonListener()
+    {
+        saveButton.setOnClickListener(listener ->
+        {
+            saveCourse();
+        });
+    }
+
+
+    /**
+     * Initializes the Assessments button listener
+     */
+    private void setupAssessmentListener()
+    {
+        assessmentsButton.setOnClickListener(listener -> {
+
+            if (isExistingCourse) {
+
+                Intent data = new Intent(CourseAddEditActivity.this,
+                        AssessmentAddEditActivity.class);
+                data.putExtra(EXTRA_ASSESSMENT_COURSE_ID, courseId);
+                data.putExtra(EXTRA_ASSESSMENT_COURSE_NAME, editTextCourseTitle.getText().toString());
+
+                startActivityForResult(data, ADD_ASSESSMENT_REQUEST);
+            } else {
+
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.error_title)
+                        .setMessage(R.string.course_add_assessment_error)
+                        .setIcon(R.drawable.ic_incomplete_72dp)
+                        .setNeutralButton(R.string.ok, null)
+                        .show();
+                return;
+            }
+        });
+    }
+
+
+    /**
+     * Initializes the End Date datepicker
+     */
+    private void setupEndDatePicker()
+    {
+        endDatePicker.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                calendar = Calendar.getInstance();
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+                datePickerDialog = new DatePickerDialog(
+                        CourseAddEditActivity.this, new DatePickerDialog.OnDateSetListener()
+                {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth)
+                    {
+                        editTextCourseEnd.setText(
+                                (monthOfYear + 1) + "/" + dayOfMonth + "/" + year);
+                    }
+                }, year, month, day);
+                datePickerDialog.show();
+            }
+        });
+    }
+
+
+    /**
+     * Initializes the Start date datepicker
+     */
+    private void setupStartDatePicker()
+    {
         startDatePicker.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -345,92 +543,6 @@ public class CourseAddEditActivity extends AppCompatActivity
                 datePickerDialog.show();
             }
         });
-
-        //region EndDate DatePicker
-        endDatePicker.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                calendar = Calendar.getInstance();
-                int year = calendar.get(Calendar.YEAR);
-                int month = calendar.get(Calendar.MONTH);
-                int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-                datePickerDialog = new DatePickerDialog(
-                        CourseAddEditActivity.this, new DatePickerDialog.OnDateSetListener()
-                {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth)
-                    {
-                        editTextCourseEnd.setText(
-                                (monthOfYear + 1) + "/" + dayOfMonth + "/" + year);
-                    }
-                }, year, month, day);
-                datePickerDialog.show();
-            }
-        });
-
-        saveButton.setOnClickListener(listener ->
-        {
-            saveCourse();
-        });
-
-        assessmentsButton.setOnClickListener(listener -> {
-
-            if (isExistingCourse) {
-                Intent data = new Intent(CourseAddEditActivity.this, AssessmentAddEditActivity.class);
-
-                //TODO: try to add a new assessment to Intro to Programming, check
-                //that the courseId is getting added.
-                data.putExtra(EXTRA_ASSESSMENT_COURSE_ID, courseId);
-                data.putExtra(EXTRA_ASSESSMENT_COURSE_NAME, editTextCourseTitle.getText().toString());
-
-                startActivityForResult(data, ADD_ASSESSMENT_REQUEST);
-            } else {
-                new AlertDialog.Builder(this)
-                        .setTitle(R.string.error_title)
-                        .setMessage(R.string.course_add_assessment_error)
-                        .setIcon(R.drawable.ic_incomplete_72dp)
-                        .setNeutralButton(R.string.ok,null)
-                        .show();
-                return;
-            }
-        });
-
-
-        contactCourseMentor.setOnClickListener(listener -> {
-
-            if (contactCourseMentor.getText().toString().equals("Select a Mentor"))
-                onButtonSelectAMentorClick();
-            else
-                onButtonViewMentorContactClick(new View(this));
-        });
-
-
-        addNoteButton.setOnClickListener(listener -> {
-
-            if (courseId < 1) {
-                new AlertDialog.Builder(this)
-                        .setTitle(R.string.error_title)
-                        .setMessage(R.string.course_add_note_error)
-                        .setIcon(R.drawable.ic_incomplete_72dp)
-                        .setNeutralButton(R.string.ok,null)
-                        .show();
-                } else {
-                Intent data = new Intent(CourseAddEditActivity.this, NoteAddEditActivity.class);
-                data.putExtra(EXTRA_NOTES_COURSE_ID, courseId);
-                data.putExtra(EXTRA_NOTES_COURSE_NAME, editTextCourseTitle.getText().toString());
-
-                //TODO: call the db to get notes, if available and pass them onto the data intentFromCaller.
-                String notes = courseViewModel.getCourseNotes(courseId);
-                if (notes != null && !notes.isEmpty())
-                    data.putExtra(EXTRA_NOTES_COURSE_NOTETEXT, notes);
-
-                startActivityForResult(data, VIEW_NOTES_REQUEST);
-            }
-        });
-
     }
 
     /**
@@ -485,10 +597,13 @@ public class CourseAddEditActivity extends AppCompatActivity
                         .show();
                 return null;
             }
+
+
             String[] e = endStr.split("/");
             end = LocalDate.of(Integer.parseInt(e[2]), Integer.parseInt(e[0]), Integer
                     .parseInt(e[1]));
         } catch (NullPointerException npe) {
+
             new AlertDialog.Builder(this)
                     .setTitle(R.string.error_title)
                     .setMessage(getString(R.string.null_field_value))
@@ -497,6 +612,7 @@ public class CourseAddEditActivity extends AppCompatActivity
                     .show();
             return null;
         } catch (DateTimeException dte) {
+
             new AlertDialog.Builder(this)
                     .setTitle(R.string.error_title)
                     .setMessage(getString(R.string.invalid_date_format))
@@ -595,9 +711,7 @@ public class CourseAddEditActivity extends AppCompatActivity
             List<Assessment> assessments;
             try {
                 assessments = assessmentViewModel.getNonObservableAssessmentsForCourse(courseId);
-            }
-            catch (NullPointerException npe)
-            {
+            } catch (NullPointerException npe) {
                 assessments = new ArrayList<>();
             }
             if (assessments.size() > 0) {
@@ -681,9 +795,12 @@ public class CourseAddEditActivity extends AppCompatActivity
     private void onButtonViewMentorContactClick(View view)
     {
         if (courseId == 0) {
-            Toast.makeText(this,
-                    "You must save the course first before you can see the assigned mentor",
-                    Toast.LENGTH_SHORT).show();
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.error_title)
+                    .setMessage("You must save the course first before you can see the assigned mentor")
+                    .setIcon(R.drawable.ic_incomplete_72dp)
+                    .setNeutralButton(R.string.ok, null)
+                    .show();
             return;
         }
 
@@ -736,6 +853,7 @@ public class CourseAddEditActivity extends AppCompatActivity
         startActivityForResult(intent, SELECT_MENTOR_REQUEST);
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
@@ -748,6 +866,10 @@ public class CourseAddEditActivity extends AppCompatActivity
         if (requestCode == SELECT_MENTOR_REQUEST) {
             this.mentorId = data.getIntExtra(SelectMentorActivity.EXTRA_MENTOR_ID, 0);
             contactCourseMentor.setText("Contact Course Mentor");
+        }
+        if (requestCode == VIEW_NOTES_REQUEST) {
+//            courseId = data.getIntExtra(NoteAddEditActivity.EXTRA_COURSE_ID, 0);
+            return;
         }
 
         Assessment assessment = new Assessment();
@@ -773,6 +895,7 @@ public class CourseAddEditActivity extends AppCompatActivity
             assessment.setAssessmentId(data.getIntExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_ID, 0));
             assessmentViewModel.deleteAssessment(assessment);
         }
+
 
     }
 
@@ -815,8 +938,7 @@ public class CourseAddEditActivity extends AppCompatActivity
                 startActivity(intent);
                 return true;
             case R.id.go_to_course_reminder:
-                if (courseId == 0)
-                {
+                if (courseId == 0) {
                     new AlertDialog.Builder(this)
                             .setTitle(R.string.error_title)
                             .setMessage(R.string.course_reminder_error)
@@ -826,7 +948,8 @@ public class CourseAddEditActivity extends AppCompatActivity
                     return false;
                 }
                 intent = new Intent(this, CourseAlertActivity.class);
-                intent.putExtra(CourseAddEditActivity.EXTRA_ALERT_COURSE_NAME, editTextCourseTitle.getText().toString());
+                intent.putExtra(CourseAddEditActivity.EXTRA_ALERT_COURSE_NAME,
+                        editTextCourseTitle.getText().toString());
                 intent.putExtra(CourseAddEditActivity.EXTRA_ALERT_COURSE_START,
                         Utils.convertStringDate(editTextCourseStart.getText().toString()).toEpochDay());
                 intent.putExtra(CourseAddEditActivity.EXTRA_ALERT_COURSE_END,

@@ -21,7 +21,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.termtacker.R;
 import com.termtacker.data.AssessmentRepository;
 import com.termtacker.models.Course;
@@ -36,6 +35,7 @@ import java.time.LocalDate;
 
 public class TermAddEditActivity extends AppCompatActivity
 {
+    //region UI Elements
     private EditText editTextTitle;
     private EditText editTextStart;
     private EditText editTextEnd;
@@ -43,22 +43,12 @@ public class TermAddEditActivity extends AppCompatActivity
     private ImageButton endDatePicker;
     private Button buttonSave;
     private Button buttonAddCourse;
-
-    private static final String TAG = TermAddEditActivity.class.getCanonicalName();
-
-    public static final String EXTRA_CURRENT_TERM_ID = "com.termtracker.EXTRA_CURRENT_TERM_ID";
-    public static final int TERM_ADDEDIT_EDITCOURSEREQUEST = 432;
-    public static final int TERM_ADDEDIT_ADDCOURSEREQUEST = 543;
-
-    private Calendar calendar;
-    private DatePickerDialog datePickerDialog;
-    //    private TermViewModel termViewModel;
-    private CourseViewModel courseViewModel;
-    private int termId;
-    private LocalDate termEndDate;
-    private LocalDate termStartDate;
-
-
+    //endregion
+    //region requests
+    public static final int EDIT_COURSE_REQUEST = 432;
+    public static final int ADD_COURSE_REQUEST = 543;
+    //endregion
+    //region EXTRAS
     public static final String EXTRA_TERM_ID = "com.termtracker.TermAddEditActivity_EXTRA_TERM_ID";
     public static final String EXTRA_TERM_END = "com.termtracker.TermAddEditActivity_EXTRA_TERM_END";
     public static final String EXTRA_TERM_START = "com.termtracker.TermAddEditActivity_EXTRA_TERM_START";
@@ -69,9 +59,17 @@ public class TermAddEditActivity extends AppCompatActivity
     public static final String EXTRA_COURSE_END = "com.termtracker.TermAddEditActivity_EXTRA_COURSE_END";
     public static final String EXTRA_STATUS = "com.termtracker.TermAddEditActivity_EXTRA_STATUS";
     public static final String EXTRA_NOTES = "com.termtracker.TermAddEditActivity_EXTRA_NOTES";
+    //endregion
 
+    private Calendar calendar;
+    private DatePickerDialog datePickerDialog;
+    private CourseViewModel courseViewModel;
+    private int termId;
+    private LocalDate termEndDate;
+    private LocalDate termStartDate;
     private RecyclerView recyclerView;
     private CourseAdapter courseAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -93,7 +91,9 @@ public class TermAddEditActivity extends AppCompatActivity
 
             setupRecyclerView();
             int termId = intent.getIntExtra(TermActivity.EXTRA_ID, 0);
-            CoursesViewModelFactory factory = new CoursesViewModelFactory(getApplication(), termId, false);
+
+            CoursesViewModelFactory factory =
+                    new CoursesViewModelFactory(getApplication(), termId, false);
             courseViewModel = ViewModelProviders.of(this, factory).get(CourseViewModel.class);
             courseViewModel.getAllCourses()
                     .observe(this, list -> courseAdapter.submitList(list));
@@ -108,6 +108,10 @@ public class TermAddEditActivity extends AppCompatActivity
 
     }
 
+
+    /**
+     * Sets up the Course adapter listeners to handle click events
+     */
     private void setupAdapterListeners()
     {
         courseAdapter.setOnItemClickListener(course -> {
@@ -126,7 +130,7 @@ public class TermAddEditActivity extends AppCompatActivity
             courseDataIntent.putExtra(EXTRA_STATUS, course.getStatus());
             courseDataIntent.putExtra(EXTRA_NOTES, course.getNotes());
 
-            startActivityForResult(courseDataIntent, TERM_ADDEDIT_EDITCOURSEREQUEST);
+            startActivityForResult(courseDataIntent, EDIT_COURSE_REQUEST);
         });
 
         courseAdapter.setOnLongItemClickListener(course -> {
@@ -158,6 +162,10 @@ public class TermAddEditActivity extends AppCompatActivity
         });
     }
 
+
+    /**
+     * Sets up the Courses recycler view
+     */
     private void setupRecyclerView()
     {
         recyclerView = findViewById(R.id.edit_term_course_list);
@@ -168,6 +176,11 @@ public class TermAddEditActivity extends AppCompatActivity
         recyclerView.setAdapter(courseAdapter);
     }
 
+
+    /**
+     * Initializes UI elements with values
+     * @param intent
+     */
     private void loadFieldValues(Intent intent)
     {
         setTitle("Edit Term");
@@ -179,6 +192,10 @@ public class TermAddEditActivity extends AppCompatActivity
         editTextEnd.setText(termEndDate.format(Utils.dateFormatter_MMddyyyy));
     }
 
+
+    /**
+     * Binds UI Field elements with their id.
+     */
     private void getUIFieldReferences()
     {
         editTextTitle = findViewById(R.id.edit_term_title);
@@ -190,6 +207,10 @@ public class TermAddEditActivity extends AppCompatActivity
         buttonAddCourse = findViewById(R.id.add_course);
     }
 
+
+    /**
+     * Set up button listeners
+     */
     private void setButtonListeners()
     {
         //region StartDate DatePicker
@@ -259,19 +280,21 @@ public class TermAddEditActivity extends AppCompatActivity
                 Intent intent = new Intent(
                         TermAddEditActivity.this, CoursesActivity.class);
                 intent.putExtra(EXTRA_TERM_ID, termId);
-//                intent.putExtra(EXTRA_TERM_START, termStartDate.toEpochDay());
-//                intent.putExtra(EXTRA_TERM_END, termEndDate.toEpochDay());
 
-                startActivityForResult(intent, TERM_ADDEDIT_ADDCOURSEREQUEST);
+                startActivityForResult(intent, ADD_COURSE_REQUEST);
             }
         });
     }
 
+
+    /**
+     * Handles saving a term object
+     */
     private void saveTerm()
     {
         String title = null;
-        LocalDate start = null;
-        LocalDate end = null;
+        LocalDate start = null, end = null;
+
         try {
 
             title = editTextTitle.getText().toString().trim();
@@ -282,7 +305,12 @@ public class TermAddEditActivity extends AppCompatActivity
 
             String startStr = editTextStart.getText().toString();
             if (startStr.isEmpty()) {
-                Toast.makeText(this, "A start date is required", Toast.LENGTH_LONG);
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.error_title)
+                        .setMessage(R.string.missing_date_value)
+                        .setIcon(R.drawable.ic_incomplete_72dp)
+                        .setNeutralButton(R.string.ok, null)
+                        .show();
                 return;
             }
             String[] s = startStr.split("/");
@@ -291,7 +319,12 @@ public class TermAddEditActivity extends AppCompatActivity
 
             String endStr = editTextEnd.getText().toString();
             if (endStr.isEmpty()) {
-                Toast.makeText(this, "An end date is required", Toast.LENGTH_LONG);
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.error_title)
+                        .setMessage(R.string.missing_date_value)
+                        .setIcon(R.drawable.ic_incomplete_72dp)
+                        .setNeutralButton(R.string.ok, null)
+                        .show();
                 return;
             }
             String[] e = endStr.split("/");
@@ -303,10 +336,20 @@ public class TermAddEditActivity extends AppCompatActivity
             }
 
         } catch (NullPointerException npe) {
-            Toast.makeText(this, "A required field was left blank. Please correct", Toast.LENGTH_LONG).show();
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.error_title)
+                    .setMessage(getString(R.string.missing_field))
+                    .setIcon(R.drawable.ic_incomplete_72dp)
+                    .setNeutralButton(R.string.ok, null)
+                    .show();
             return;
         } catch (DateTimeException dte) {
-            Toast.makeText(this, "Invalid date entered. Format mm/dd/yyyy", Toast.LENGTH_LONG).show();
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.error_title)
+                    .setMessage(R.string.invalid_date_format)
+                    .setIcon(R.drawable.ic_incomplete_72dp)
+                    .setNeutralButton(R.string.ok, null)
+                    .show();
             return;
         }
 
@@ -334,7 +377,7 @@ public class TermAddEditActivity extends AppCompatActivity
         if (resultCode != RESULT_OK)
             return;
 
-        if (requestCode == TERM_ADDEDIT_EDITCOURSEREQUEST) {
+        if (requestCode == EDIT_COURSE_REQUEST) { //This is an existing course
             Course c = new Course();
             c.setTermId(termId);
             c.setCourseId(data.getIntExtra(CoursesActivity.EXTRA_ID, 0));
@@ -345,21 +388,28 @@ public class TermAddEditActivity extends AppCompatActivity
             c.setStatus(data.getStringExtra(CoursesActivity.EXTRA_STATUS));
 
             courseViewModel.updateCourse(c);
-        } else if (requestCode == TERM_ADDEDIT_ADDCOURSEREQUEST) {
+        } else if (requestCode == ADD_COURSE_REQUEST) { //This is a new course
             Course c = courseViewModel.getCourseById(data.getIntExtra(CoursesActivity.EXTRA_ID, 0));
             AssessmentViewModel avm = new AssessmentViewModel(getApplication(), c.getCourseId());
 
-            c.setStatus(CourseAddEditActivity.determineCourseStatus(c.getTermId(), c.getCourseId(), avm, termEndDate));
+            c.setStatus(CourseAddEditActivity.determineCourseStatus(
+                    c.getTermId(),
+                    c.getCourseId(),
+                    avm,
+                    termEndDate));
 
             courseViewModel.updateCourse(c);
-//            c.setTermId(termId);
-//            c.setTitle(data.getStringExtra(EXTRA_TITLE));
-//            c.setStartDate(LocalDate.ofEpochDay(data.getLongExtra(EXTRA_START, 0)));
-//            c.setEndDate(LocalDate.ofEpochDay(data.getLongExtra(EXTRA_COURSE_END, 0)));
-//            c.setCourseMentorId(data.getIntExtra(EXTRA_MENTOR_ID, 0));
-//            c.setStatus(data.getStringExtra(EXTRA_STATUS));
-//
-//            courseViewModel.insertCourse(c);
+
+            if (c.getStartDate().isBefore(termStartDate) ||
+                    c.getStartDate().isAfter(termEndDate) ||
+                    c.getEndDate().isBefore(termStartDate) ||
+                    c.getEndDate().isAfter(termEndDate))
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.warning_title)
+                        .setMessage(getString(R.string.course_import_with_bad_dates))
+                .setIcon(R.drawable.ic_incomplete_72dp)
+                .setNeutralButton(R.string.ok, null)
+                .show();
         }
 
     }
@@ -391,16 +441,16 @@ public class TermAddEditActivity extends AppCompatActivity
 
         switch (item.getItemId()) {
             case R.id.go_to_assessments:
-//                intentFromCaller = new Intent(this, AssessmentActivity.class);
-//                startActivityForResult(intentFromCaller, 0);
+                intent = new Intent(this, AssessmentsActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.go_to_courses:
                 intent = new Intent(this, CoursesActivity.class);
-                startActivityForResult(intent, 0);
+                startActivity(intent);
                 return true;
             case R.id.go_to_home:
                 intent = new Intent(this, MainActivity.class);
-                startActivityForResult(intent, 0);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

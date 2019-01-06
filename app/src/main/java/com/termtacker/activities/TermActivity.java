@@ -31,7 +31,6 @@ import java.util.List;
 
 public class TermActivity extends AppCompatActivity
 {
-    public static final String TAG = TermActivity.class.getCanonicalName();
     private TermViewModel termViewModel;
     public static final int ADD_TERM_REQUEST = 1;
     public static final int EDIT_TERM_REQUEST = 2;
@@ -67,6 +66,10 @@ public class TermActivity extends AppCompatActivity
         setupAdapterListeners();
     }
 
+
+    /**
+     * Sets up the listeners for term objects
+     */
     private void setupAdapterListeners()
     {
         termAdapter.setOnItemClickListener(new TermAdapter.onItemClickListener()
@@ -114,6 +117,10 @@ public class TermActivity extends AppCompatActivity
         });
     }
 
+
+    /**
+     * Sets up listeners for buttons
+     */
     private void setupButtonListeners()
     {
         FloatingActionButton buttonAddTerm = findViewById(R.id.term_activity_floating_add_term);
@@ -123,6 +130,10 @@ public class TermActivity extends AppCompatActivity
         });
     }
 
+
+    /**
+     * Sets up the Terms recycler view
+     */
     private void setupRecyclerView()
     {
         recyclerView = findViewById(R.id.term_recycler_view);
@@ -133,6 +144,7 @@ public class TermActivity extends AppCompatActivity
         recyclerView.setAdapter(termAdapter);
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -141,6 +153,7 @@ public class TermActivity extends AppCompatActivity
 
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
@@ -165,6 +178,7 @@ public class TermActivity extends AppCompatActivity
             default: return super.onOptionsItemSelected(item);
         }
     }
+
 
     /**
      * Handles the result from TermAddEditActivity
@@ -203,10 +217,21 @@ public class TermActivity extends AppCompatActivity
 
     }
 
+
+    /**
+     * Determines the status to set for the term based on assigned course statuses
+     * @param start
+     * @param end
+     * @param termId
+     * @return
+     */
     private String determineStatusForTerm(LocalDate start, LocalDate end, int termId)
     {
-        CoursesViewModelFactory factory = new CoursesViewModelFactory(getApplication(), termId, false);
-        CourseViewModel courseViewModel = ViewModelProviders.of(TermActivity.this, factory).get(CourseViewModel.class);
+        CoursesViewModelFactory factory =
+                new CoursesViewModelFactory(getApplication(), termId, false);
+        CourseViewModel courseViewModel = ViewModelProviders.of(TermActivity.this, factory)
+                .get(CourseViewModel.class);
+
         List<Course> courseList = courseViewModel.getStaticFilteredCourses(termId);
         LocalDate now = LocalDate.now();
 
@@ -231,26 +256,5 @@ public class TermActivity extends AppCompatActivity
         }
 
         return Status.COMPLETED;
-//
-//
-//
-//
-//        String status = Status.PASSED;
-//        for (Course c : courseList)
-//        {
-//
-//
-//        }
-//
-//        LocalDate now = LocalDate.now();
-//        if (start.isAfter(now)) {
-//            status = Status.PENDING;
-//        } else if ((start.isEqual(now) || start.isBefore(now)) && end.isAfter(now)) {
-//            status = Status.IN_PROGRESS;
-//
-//        } else {
-//            status = Status.COMPLETED;
-//        }
-//        return status;
     }
 }

@@ -1,35 +1,26 @@
 package com.termtacker.activities;
 
 import android.content.Intent;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.LinearLayoutCompat;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.OrientationEventListener;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-
 import android.widget.RelativeLayout;
 
-import com.termtacker.data.AppDatabase;
 import com.termtacker.R;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.LinearLayoutCompat;
 
 public class MainActivity extends AppCompatActivity
 {
     //region intentIds
     public static final int ASSESSMENT_REQUEST = 1;
     public static final int COURSE_REQUEST = 2;
-    public static final int MENTOR_REQUEST = 3;
     public static final int TERMS_REQUEST = 4;
     //endregion
     //region conversions
@@ -42,8 +33,6 @@ public class MainActivity extends AppCompatActivity
     //endregion
 
     LinearLayoutCompat linearLayout;
-//    LinearLayout linearLayout;
-//    LinearLayoutCompat buttonLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -58,23 +47,19 @@ public class MainActivity extends AppCompatActivity
 
         if (orientation == Configuration.ORIENTATION_PORTRAIT)
         {
-//            if (linearLayout != null)
-//                linearLayout.removeAllViews();
             createPortraitView();
         }
         else
         {
-//            if (linearLayout != null)
-//                linearLayout.removeAllViews();
-//            if (buttonLayout != null)
-//                buttonLayout.removeAllViews();
             createLandscapeView();
         }
 
     }
 
 
-
+    /**
+     * Creates the portrait view for the launcher screen
+     */
     private void createPortraitView()
     {
         RelativeLayout relativeLayout = new RelativeLayout(this);
@@ -103,6 +88,10 @@ public class MainActivity extends AppCompatActivity
         relativeLayout.addView(linearLayout);
     }
 
+
+    /**
+     * Creates the landscape view for the launcher screen
+     */
     private void createLandscapeView()
     {
         RelativeLayout relativeLayout = new RelativeLayout(this);
@@ -123,22 +112,14 @@ public class MainActivity extends AppCompatActivity
         linearLayout.setLayoutParams(params);
 
         linearLayout.setOrientation(LinearLayoutCompat.VERTICAL);
-//        buttonLayout = new LinearLayout(MainActivity.this);
-//        RelativeLayout.LayoutParams buttonParams = new RelativeLayout.LayoutParams(
-//                RelativeLayout.LayoutParams.WRAP_CONTENT,
-//                RelativeLayout.LayoutParams.WRAP_CONTENT
-//        );
-//
-//        buttonLayout.setLayoutParams(buttonParams);
-//        buttonLayout.setOrientation(LinearLayout.VERTICAL);
 
-//        linearLayout.removeAllViews();
         loadButtons(true);
 
         addLogo();
 
         relativeLayout.addView(linearLayout);
     }
+
 
     /**
      * Sets the DP settings for use in the application
@@ -151,6 +132,7 @@ public class MainActivity extends AppCompatActivity
         _24dp = (int) (24 * (dpi / 160));
         _48dp = (int) (48 * (dpi / 160));
     }
+
 
     /**
      * Adds the app image to the layout.
@@ -186,9 +168,6 @@ public class MainActivity extends AppCompatActivity
                 R.string.btnAssessments
         };
 
-//        buttonLayout.removeAllViews();
-
-        //create a button for each of the main areas and set their onClickListener()
         for (int label : buttonLabels) {
             Button button = new Button(this);
             RelativeLayout.LayoutParams buttonParams =
@@ -232,16 +211,9 @@ public class MainActivity extends AppCompatActivity
             });
 
             linearLayout.addView(button);
-//            if (isLandscape) {
-//                buttonLayout.addView(button);
-////                linearLayout.addView(buttonLayout);
-//            }
-//            else {
-//
-//                linearLayout.addView(button);
-//            }
         }
     }
+
 
     /**
      * This method is called when the onClick event is fired for the
@@ -255,6 +227,7 @@ public class MainActivity extends AppCompatActivity
         startActivityForResult(intent, ASSESSMENT_REQUEST);
     }
 
+
     /**
      * This method is called when the onClick event is fired for the
      * Courses button.
@@ -266,6 +239,7 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(this, CoursesActivity.class);
         startActivityForResult(intent, COURSE_REQUEST);
     }
+
 
     /**
      * This method is called when the onClick event is fired for the
@@ -279,6 +253,7 @@ public class MainActivity extends AppCompatActivity
         startActivityForResult(intent, TERMS_REQUEST);
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -286,6 +261,7 @@ public class MainActivity extends AppCompatActivity
         menuInflater.inflate(R.menu.main_menu, menu);
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)

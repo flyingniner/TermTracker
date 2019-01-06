@@ -75,7 +75,7 @@ public class Course
     }
 
     @Ignore
-    public Course(int courseId, String title, LocalDate startDate, LocalDate endDate, String status,int courseMentorId, int termId)
+    public Course(int courseId, String title, LocalDate startDate, LocalDate endDate, String status,int courseMentorId, int termId, String notes)
     {
         this.courseId = courseId;
         this.title = title;
@@ -85,6 +85,7 @@ public class Course
         this.courseMentorId = courseMentorId;
         this.termId = termId;
         this.status = status;
+        this.notes = notes;
     }
 
 

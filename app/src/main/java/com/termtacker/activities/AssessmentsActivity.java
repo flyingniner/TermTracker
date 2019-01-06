@@ -35,14 +35,15 @@ public class AssessmentsActivity extends AppCompatActivity
     public static final String EXTRA_ASSESSMENT_TYPE = "com.termtracker.AssessmentActivity.EXTRA_TYPE";
     public static final String EXTRA_ASSESSMENT_RESULT = "com.termtracker.AssessmentActivity.EXTRA_RESULT";
     public static final String EXTRA_ASSESSMENT_COURSE_NAME = "com.termtracker.AssessmentActivity.EXTRA_NAME";
-    private FloatingActionButton buttonAddAssessment;
+
+    private int ADD_ASSESSMENT_REQUEST = 15;
+    private static final int EDIT_ASSESSMENT_REQUEST = 16;
+
     private AssessmentViewModel assessmentViewModel;
     private CourseViewModel courseViewModel;
     private RecyclerView recyclerView;
     private AssessmentAdapter assessmentAdapter;
 
-    private int ADD_ASSESSMENT_REQUEST = 15;
-    private static final int EDIT_ASSESSMENT_REQUEST = 16;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -50,16 +51,18 @@ public class AssessmentsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_assessments);
 
-        setTitle("Assessments");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        setupButtonListeners();
+        setTitle("Assessments");
 
         setUpRecyclerView();
 
-        AssessmentsViewModelFactory assessmentsFactory = new AssessmentsViewModelFactory(getApplication(), 0);
+        AssessmentsViewModelFactory assessmentsFactory =
+                new AssessmentsViewModelFactory(getApplication(), 0);
         assessmentViewModel = ViewModelProviders.of(this, assessmentsFactory).get(AssessmentViewModel.class);
 
-        CoursesViewModelFactory coursesFactory = new CoursesViewModelFactory(getApplication(), 0, false);
+        CoursesViewModelFactory coursesFactory =
+                new CoursesViewModelFactory(getApplication(), 0, false);
         courseViewModel = ViewModelProviders.of(this, coursesFactory).get(CourseViewModel.class);
 
 
@@ -71,14 +74,6 @@ public class AssessmentsActivity extends AppCompatActivity
 
     }
 
-    private void setupButtonListeners()
-    {
-        buttonAddAssessment = findViewById(R.id.assessments_activity_floating_add_assessment);
-        buttonAddAssessment.setOnClickListener(v -> {
-            Intent intent = new Intent(AssessmentsActivity.this, AssessmentAddEditActivity.class);
-            startActivityForResult(intent, ADD_ASSESSMENT_REQUEST);
-        });
-    }
 
     /**
      * Sets up the listeners for the AssessmentAadapter to respond to either a "tap" or a
@@ -92,15 +87,14 @@ public class AssessmentsActivity extends AppCompatActivity
 
                 intent.putExtra(EXTRA_ASSESSMENT_CODE, assessment.getAssessmentCode());
                 intent.putExtra(EXTRA_ASSESSMENT_TYPE, assessment.getAssessmentType());
-                intent.putExtra(EXTRA_ASSESSMENT_SCHEDULED, assessment.getAssessmentDate().format(Utils.dateFormatter_MMddyyyy).toString());
-                //TODO: need a way to get the name of the course
+                intent.putExtra(EXTRA_ASSESSMENT_SCHEDULED, assessment.getAssessmentDate().format(Utils.dateFormatter_MMddyyyy));
+
                 int courseId = assessment.getCourseId();
                 intent.putExtra(EXTRA_ASSESSMENT_COURSE_NAME, courseViewModel.getCourseName(courseId));
                 intent.putExtra(EXTRA_ASSESSMENT_RESULT, assessment.getResult());
 
                 intent.putExtra(EXTRA_ID, assessment.getAssessmentId());
                 startActivityForResult(intent, EDIT_ASSESSMENT_REQUEST);
-
         });
 
         assessmentAdapter.setOnLongItemClickListener(assessment -> {
@@ -108,6 +102,10 @@ public class AssessmentsActivity extends AppCompatActivity
         });
     }
 
+
+    /**
+     * Sets up the Assessment recycler view
+     */
     private void setUpRecyclerView()
     {
         recyclerView = findViewById(R.id.assessments_recycler_view);
@@ -119,6 +117,10 @@ public class AssessmentsActivity extends AppCompatActivity
     }
 
 
+    /**
+     * Presents the user with alert to confirm deletion of an assessment.
+     * @param assessment
+     */
     private void requestDeleteConfirmation(Assessment assessment)
     {
         boolean response =  false;
@@ -133,7 +135,8 @@ public class AssessmentsActivity extends AppCompatActivity
                     public void onClick(DialogInterface dialog, int which)
                     {
                         assessmentViewModel.deleteAssessment(assessment);
-                        Toast.makeText(AssessmentsActivity.this, "Delete successful!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AssessmentsActivity.this,
+                                "Delete successful!", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .setNegativeButton(R.string.no, null).show();
@@ -199,7 +202,9 @@ public class AssessmentsActivity extends AppCompatActivity
             if (requestCode == EDIT_ASSESSMENT_REQUEST)
             {
                 assessment.setAssessmentId(data.getIntExtra(EXTRA_ID,0));
-                assessment.setCourseId(courseViewModel.getCourseId(data.getStringExtra(EXTRA_ASSESSMENT_COURSE_NAME)));
+                assessment.setCourseId(courseViewModel.getCourseId(
+                        data.getStringExtra(EXTRA_ASSESSMENT_COURSE_NAME)));
+
                 assessmentViewModel.updateAssessment(assessment);
                 Toast.makeText(this,"Assessment updated",Toast.LENGTH_LONG).show();
             }

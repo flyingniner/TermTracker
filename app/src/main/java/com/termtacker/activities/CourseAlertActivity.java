@@ -13,16 +13,10 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.termtacker.R;
-import com.termtacker.data.CourseRepository;
-import com.termtacker.models.Course;
-import com.termtacker.utilities.CourseViewModel;
 import com.termtacker.utilities.TermReceiver;
 import com.termtacker.utilities.Utils;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,12 +40,18 @@ public class CourseAlertActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course_alert);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
         getUIReferences();
-        setFieldValues();
+        loadUIElementValues();
         setupSaveButton();
     }
 
+
+    /**
+     * Sets up the Save button listener and creates a notification that will fire on the
+     * reminder date
+     */
     private void setupSaveButton()
     {
         saveButton.setOnClickListener(new View.OnClickListener()
@@ -70,27 +70,24 @@ public class CourseAlertActivity extends AppCompatActivity
 
                     PendingIntent sender;
 
-//                    //TODO: set the correct reminder date/time...d
-//                    LocalDateTime start = Utils.convertStringDate(courseStart.getText().toString()).atStartOfDay().plusHours(8);
-//                    LocalDateTime end = Utils.convertStringDate(courseEnd.getText().toString()).atStartOfDay().plusHours(8);
-
-
-
                     if (s.contains("starts"))
                     {
-                        sender = PendingIntent.getBroadcast(CourseAlertActivity.this, 0, data, 0);
+                        sender = PendingIntent.getBroadcast(
+                                CourseAlertActivity.this, 0, data, 0);
+
                         alarmManager.setExact(AlarmManager.RTC_WAKEUP,
                                 Utils.convertStringDateToMillis(courseStart.getText().toString()),
                                 sender);
                     }
                     else
                     {
-                        sender = PendingIntent.getBroadcast(CourseAlertActivity.this, 1, data, 0);
+                        sender = PendingIntent.getBroadcast(
+                                CourseAlertActivity.this, 1, data, 0);
+
                         alarmManager.setExact(AlarmManager.RTC_WAKEUP,
                                 Utils.convertStringDateToMillis(courseEnd.getText().toString()),
                                 sender);
                     }
-
                 }
 
                 setResult(RESULT_OK, data);
@@ -99,6 +96,13 @@ public class CourseAlertActivity extends AppCompatActivity
         });
     }
 
+
+    /**
+     * Returns the appropriate message for the notification
+     *
+     * @param s
+     * @return
+     */
     private String createAlertDesc(String s)
     {
         if (s.contains("starts"))
@@ -107,6 +111,11 @@ public class CourseAlertActivity extends AppCompatActivity
         return "Your class is scheduled to end today.";
     }
 
+
+    /**
+     * Creates the appropriate title for the notification
+     * @return
+     */
     private List<String> createAlertTitle()
     {
         List<String> alertTitles = new ArrayList<>();
@@ -119,7 +128,11 @@ public class CourseAlertActivity extends AppCompatActivity
         return alertTitles;
     }
 
-    private void setFieldValues()
+
+    /**
+     * Loads UI elements with values
+     */
+    private void loadUIElementValues()
     {
         Intent intent = getIntent();
 
@@ -134,6 +147,10 @@ public class CourseAlertActivity extends AppCompatActivity
                 .format(Utils.dateFormatter_MMddyyyy));
     }
 
+
+    /**
+     * Binds the UI elements to their respective IDs
+     */
     private void getUIReferences()
     {
         courseName = findViewById(R.id.course_alert_course_name);

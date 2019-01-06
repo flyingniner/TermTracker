@@ -33,11 +33,12 @@ import java.util.List;
 
 public class AssessmentAddEditActivity extends AppCompatActivity
 {
+    //region EXTRAS
     public static final String EXTRA_ASSESSMENT_ID = "com.termtracker.AssessmentsAddEditActivity_EXTRA_ASSESSMENT_ID";
     public static final String EXTRA_ASSESSMENT_TITLE = "com.termtracker.AssessmentsAddEditActivity_EXTRA_ASSESSMENT_TITLE";
     public static final String EXTRA_ASSESSMENT_TYPE = "com.termtracker.AssessmentsAddEditActivity_EXTRA_ASSESSMENT_TYPE";
     public static final String EXTRA_ASSESSMENT_DATE = "com.termtracker.AssessmentsAddEditActivity_EXTRA_ASSESSMENT_DATE";
-
+    //endregion
     public static final int ADD_ASSESSMENT_ALERT_REQUEST = 38;
 
     //region activity elements
@@ -52,7 +53,6 @@ public class AssessmentAddEditActivity extends AppCompatActivity
     private CheckBox checkBoxSetReminder;
     private Button buttonSave;
     //endregion
-
     //region fields
     private int assessmentId;
     private String assessmentType;
@@ -89,6 +89,10 @@ public class AssessmentAddEditActivity extends AppCompatActivity
         loadFieldValues();
     }
 
+
+    /**
+     * Sets up button listeners
+     */
     private void setButtonListerners()
     {
         checkBoxResultPassed.setOnClickListener(listener -> {
@@ -135,6 +139,10 @@ public class AssessmentAddEditActivity extends AppCompatActivity
         });
     }
 
+
+    /**
+     * Binds UI elements with their ids
+     */
     private void getUIReferences()
     {
         editTextAssessmentCode = findViewById(
@@ -144,7 +152,6 @@ public class AssessmentAddEditActivity extends AppCompatActivity
         checkBoxResultPassed = findViewById(R.id.assessment_add_edit_passed);
         checkBoxResultApproaching = findViewById(R.id.assessment_add_edit_not_passed);
         buttonSave = findViewById(R.id.assessment_add_edit_save);
-//        checkBoxSetReminder = findViewById(R.id.assessment_add_edit_reminder);
     }
 
 
@@ -318,20 +325,8 @@ public class AssessmentAddEditActivity extends AppCompatActivity
     private void saveAssessment(Intent intentFromCaller)
     {
         String type = assessmentTypeSpinner.getSelectedItem().toString();
-        if (type.equals("")) {
-            Toast.makeText(this,
-                    "Please select an assessment type!",
-                    Toast.LENGTH_LONG).show();
-            return;
-        }
 
         String courseName = courseNameSpinner.getSelectedItem().toString();
-        if (courseName.equals("")) {
-            Toast.makeText(this,
-                    "Please select a course name!",
-                    Toast.LENGTH_LONG).show();
-            return;
-        }
 
         try {
             scheduled = Utils.convertStringDate(
@@ -373,10 +368,11 @@ public class AssessmentAddEditActivity extends AppCompatActivity
             data.putExtra(AssessmentsActivity.EXTRA_ASSESSMENT_COURSE_NAME, courseName);
             data.putExtra(AssessmentsActivity.EXTRA_ASSESSMENT_RESULT, result);
             data.putExtra(AssessmentsActivity.EXTRA_ASSESSMENT_SCHEDULED, scheduled.toEpochDay());
-        } else //the caller was CoursesAddEditActivity
-        {
-            if (assessmentId > 0)
+        } else { //the caller was CoursesAddEditActivity
+
+            if (assessmentId > 0) {
                 data.putExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_ID, assessmentId);
+            }
 
             data.putExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_CODE, editTextAssessmentCode.getText().toString());
             data.putExtra(CourseAddEditActivity.EXTRA_ASSESSMENT_TYPE, type);

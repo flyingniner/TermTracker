@@ -32,7 +32,7 @@ public class CoursesActivity extends AppCompatActivity
     public static final int ADD_COURSE_REQUEST = 5;
     public static final int EDIT_COURSE_REQUEST = 6;
 
-
+    //region EXTRAS
     public static final String EXTRA_IS_NEW_COURSE = "com.termtracker.CourseActivity.EXTRA_IS_NEW_COURSE";
     public static final String EXTRA_ID = "com.termtracker.CoursesActivity.EXTRA_ID";
     public static final String EXTRA_TITLE = "com.termtracker.CoursesActivity.EXTRA_TITLE";
@@ -43,6 +43,8 @@ public class CoursesActivity extends AppCompatActivity
     public static final String EXTRA_MENTORID = "com.termtracker.CoursesActivity.EXTRA_MENTORID";
     public static final String EXTRA_TERM_START = "com.termtracker.CoursesActivity.EXTRA_TERM_START";
     public static final String EXTRA_TERM_END = "com.termtracker.CoursesActivity.EXTRA_TERM_END";
+    //endregion
+
     private RecyclerView recyclerView;
     private CourseAdapter courseAdapter;
     private boolean isTermAddEditActivityCaller = false;
@@ -57,15 +59,15 @@ public class CoursesActivity extends AppCompatActivity
         setContentView(R.layout.activity_courses);
 
         intentFromCaller = getIntent();
-        if (intentFromCaller.hasExtra(TermAddEditActivity.EXTRA_TERM_ID))
-        {
+
+        if (intentFromCaller.hasExtra(TermAddEditActivity.EXTRA_TERM_ID)) {
+
             isTermAddEditActivityCaller = true;
             setTitle("Select a Course");
             termId = intentFromCaller.getIntExtra(TermAddEditActivity.EXTRA_TERM_ID, 0);
             showOnlyAvailableCourses = true;
-        }
-        else
-        {
+        } else {
+
             setTitle("Courses");
         }
 
@@ -73,16 +75,20 @@ public class CoursesActivity extends AppCompatActivity
 
         setupRecyclerView();
 
-        CoursesViewModelFactory factory = new CoursesViewModelFactory(getApplication(), termId, showOnlyAvailableCourses);
+        CoursesViewModelFactory factory =
+                new CoursesViewModelFactory(getApplication(), termId, showOnlyAvailableCourses);
         courseViewModel = ViewModelProviders.of(this, factory).get(CourseViewModel.class);
+
         courseViewModel.getAllCourses().observe(this, list -> courseAdapter.submitList(list)
         );
 
-
         setupAdapterListeners();
-
     }
 
+
+    /**
+     * Sets up listeners for the tap and longpress on courses
+     */
     private void setupAdapterListeners()
     {
         courseAdapter.setOnItemClickListener(course -> {
@@ -107,30 +113,15 @@ public class CoursesActivity extends AppCompatActivity
                 intent.putExtra(EXTRA_TERMID, course.getTermId());
                 intent.putExtra(EXTRA_MENTORID, course.getCourseMentorId());
 
-                long start = 0;
-                long end = 0;
-                try {
-                    start = courseViewModel.getTermStartDate(course.getCourseId()).toEpochDay();
-                }
-                catch (NullPointerException npe) {
-                    start = 0;
-                }
-                catch (DateTimeException dte) {
-                    start = 0;
-                }try {
-                    end = courseViewModel.getTermEndDate(course.getCourseId()).toEpochDay();
-                }
-                catch (NullPointerException npe) {
-                    end = 0;
-                }
-                catch (DateTimeException dte) {
-                    end = 0;
-                }
+                LocalDate termStart = courseViewModel.getTermStartDate(course.getTermId());
+                LocalDate termEnd = courseViewModel.getTermEndDate(course.getTermId());
 
-                intent.putExtra(EXTRA_TERM_START, start);
-                intent.putExtra(EXTRA_TERM_END, end);
-
-
+                if (termStart != null) {
+                    intent.putExtra(EXTRA_TERM_START, termStart.toEpochDay());
+                }
+                if (termEnd != null) {
+                    intent.putExtra(EXTRA_TERM_END, termEnd.toEpochDay());
+                }
 
                 startActivityForResult(intent, EDIT_COURSE_REQUEST);
             }
@@ -163,6 +154,10 @@ public class CoursesActivity extends AppCompatActivity
         });
     }
 
+
+    /**
+     * Sets up the Courses recycler
+     */
     private void setupRecyclerView()
     {
         recyclerView = findViewById(R.id.courses_recycler_view);
@@ -173,18 +168,22 @@ public class CoursesActivity extends AppCompatActivity
         recyclerView.setAdapter(courseAdapter);
     }
 
+
     /**
-     * Listens for the on-click
+     * Listens for the on-click event for the floating action button to add a new course
      */
     private void setupButtonListeners()
     {
         FloatingActionButton buttonAddCourse = findViewById(R.id.courses_add_course);
+
         buttonAddCourse.setOnClickListener(v -> {
             Intent intent = new Intent(this, CourseAddEditActivity.class);
             intent.putExtra(EXTRA_IS_NEW_COURSE, true);
             startActivityForResult(intent, ADD_COURSE_REQUEST);
         });
     }
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
@@ -203,13 +202,16 @@ public class CoursesActivity extends AppCompatActivity
             int mentorId = data.getIntExtra(EXTRA_MENTORID, -1);
 
             if (requestCode == ADD_COURSE_REQUEST) {
+
                 course = new Course(title, start, end, status, mentorId, termId);
                 courseViewModel.insertCourse(course);
                 Toast.makeText(CoursesActivity.this,
                         "Coursed Added!", Toast.LENGTH_SHORT).show();
             } else if (requestCode == EDIT_COURSE_REQUEST) {
+
                 int courseId = data.getIntExtra(EXTRA_ID, -1);
-                course = new Course(courseId, title, start, end, status, mentorId, termId);
+                String notes = courseViewModel.getCourseNotes(courseId);
+                course = new Course(courseId, title, start, end, status, mentorId, termId, notes);
                 courseViewModel.updateCourse(course);
                 Toast.makeText(CoursesActivity.this,
                         "Coursed Updated!", Toast.LENGTH_SHORT).show();
@@ -220,6 +222,8 @@ public class CoursesActivity extends AppCompatActivity
                     "Course was not able to be saved!", Toast.LENGTH_SHORT).show();
         }
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
@@ -233,14 +237,17 @@ public class CoursesActivity extends AppCompatActivity
         return true;
     }
 
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
         Intent intent;
-        //TODO: figure out how to move between screens from the menu?
+
         switch (item.getItemId()) {
             case R.id.go_to_assessments:
-                intentFromCaller = new Intent(this, AssessmentsActivity.class); //TODO: change to AssessmentActivity.class
+                intentFromCaller = new Intent(this,
+                        AssessmentsActivity.class);
                 startActivity(intentFromCaller);
                 return true;
             case R.id.go_to_terms:

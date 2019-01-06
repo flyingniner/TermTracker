@@ -23,10 +23,7 @@ public class AssessmentAlertActivity extends AppCompatActivity
     private int assessmentId;
     private String assessmentName;
     private String assessmentType;
-//    private String assessmentDesc;
     private LocalDate assessmentDate;
-
-
 
     private TextView textViewCourseName;
     private TextView textViewAssessmentType;
@@ -56,7 +53,6 @@ public class AssessmentAlertActivity extends AppCompatActivity
                 if (checkBoxReminder.isChecked())
                 {
                     Intent alertData = new Intent(AssessmentAlertActivity.this, TermReceiver.class);
-
 
                     alertData.putExtra(EXTRA_ASSESSMENT_ID, assessmentId);
                     alertData.putExtra(EXTRA_ASSESSMENT_TITLE, assessmentName + " Assessment today");
@@ -101,7 +97,5 @@ public class AssessmentAlertActivity extends AppCompatActivity
         textViewCourseName.setText(assessmentName);
         textViewAssessmentType.setText(assessmentType);
         textViewScheduled.setText(assessmentDate.format(Utils.dateFormatter_MMddyyyy));
-
     }
-
 }

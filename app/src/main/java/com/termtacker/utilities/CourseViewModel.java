@@ -65,6 +65,7 @@ public class CourseViewModel extends AndroidViewModel
     public LocalDate getTermEndDate(int termId)
     {
         return termRepository.getTermEndDate(termId);
+
     }
     public LocalDate getTermStartDate(int termId) { return termRepository.getTermStartDate(termId); }
 
@@ -75,7 +76,9 @@ public class CourseViewModel extends AndroidViewModel
 
     public String getCourseNotes(int courseId)
     {
-        return repository.getCourseNotes(courseId);
+        String notes = repository.getCourseNotes(courseId);
+
+        return notes;
     }
 
     public void updateCourseNotes(int courseId, String note)

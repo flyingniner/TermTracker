@@ -65,4 +65,18 @@ public class AssessmentViewModel extends AndroidViewModel
         return assessmentRepo.getStaticCourseAssessments(courseId);
     }
 
+    public int getAssessmentCountForCourse(int courseId)
+    {
+        int count;
+
+        try {
+            count = assessmentRepo.getAssessmentCountForCourse(courseId);
+        }
+        catch (NullPointerException npe)
+        {
+            return 0;
+        }
+        return count;
+    }
+
 }
